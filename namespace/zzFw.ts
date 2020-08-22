@@ -763,6 +763,14 @@ namespace zz {
     getUI(uiName: string) {
       return this.uiMap.get(uiName);
     }
+    isUIShown(uiName: string) {
+      let ui = this.getUI(uiName);
+      if (!ui) return false;
+      if (!ui.node) return false;
+      if (!ui.node.active) return false;
+      if (!ui.node.opacity) return false;
+      return true;
+    }
     reloadUI(uiName: string) {
       this.destroyUI(uiName);
       this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
