@@ -1,0 +1,19 @@
+{
+    "version": "1.4.0",
+    "configurations": [
+        {
+            "name": "Launch localhost in Microsoft Edge (Chromium) beta",
+            "type": "edge",            
+            "runtimeExecutable": "C:/Program Files (x86)/Microsoft/Edge Dev/Application/msedge.exe",
+            "request": "launch",
+            "url": "http://localhost:7456",
+            "sourceMaps": true,
+            "userDataDir": "${workspaceFolder}/.vscode/chrome",
+            "diagnosticLogging": false,
+            "pathMapping": {
+                "/preview-scripts/assets": "${workspaceFolder}/temp/quick-scripts/dst/assets",
+                "/": "${workspaceFolder}"
+            },
+        }
+    ]
+}
