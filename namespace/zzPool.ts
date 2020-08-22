@@ -1,3 +1,4 @@
+/// <reference path="zzUtils.ts" />
 namespace zz {
   export class NdPool {
     readonly rootNd: cc.Node = undefined;

@@ -1,3 +1,4 @@
+/// <reference path="zzStructure.ts" />
 namespace zz {
   class Delegate {
     private callback: Function;
@@ -324,8 +325,7 @@ namespace zz {
     }
   }
   class SoundMgr {
-    dict_clip: Map<string, cc.AudioClip> = new Map<string, cc.AudioClip>();
-    //TODO 此处用MultiDict来做.
+    dict_clip: Map<string, cc.AudioClip> = new Map<string, cc.AudioClip>();    
     dict_soundId: MultiDictionary<string, number> = new MultiDictionary<
       string,
       number
