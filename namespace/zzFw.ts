@@ -1,4 +1,5 @@
 /// <reference path="zzStructure.ts" />
+/// <reference path="zzLog.ts" />
 namespace zz {
   class Delegate {
     private callback: Function;
@@ -325,7 +326,7 @@ namespace zz {
     }
   }
   class SoundMgr {
-    dict_clip: Map<string, cc.AudioClip> = new Map<string, cc.AudioClip>();    
+    dict_clip: Map<string, cc.AudioClip> = new Map<string, cc.AudioClip>();
     dict_soundId: MultiDictionary<string, number> = new MultiDictionary<
       string,
       number
@@ -527,11 +528,22 @@ namespace zz {
     private _uiRoot: cc.Node = undefined;
     private get uiRoot() {
       if (!this._uiRoot) {
+        log('[UIMgr] not set root ui node, find UIRoot node.');
         this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
       }
       if (!this._uiRoot) {
-        this._uiRoot = cc.Canvas.instance.node;
+        log('[UIMgr] found no UIRoot, set as Scene node.');
+        this._uiRoot = cc.director.getScene();
       }
+      if (!this._uiRoot.isValid) {
+        log('[UIMgr] scene node destroyed. find root again');
+        this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+        if (!this._uiRoot) {
+          log('[UIMgr] found no UIRoot again, set as current Scene node again.')
+          this._uiRoot = cc.director.getScene();
+        }
+      }
+      log('[UIRoot] get:' + this._uiRoot);
       return this._uiRoot;
     }
     /**进度条函数; 从外部注入; */
@@ -582,9 +594,13 @@ namespace zz {
       if (this.uiMap.has(uiName)) {
         let ui = this.uiMap.get(uiName);
         let uiNd = ui.node;
-        this.openUINode(uiNd, uiArgs);
-        this.openUIClass(ui, uiArgs);
-        return undefined;
+        if (uiNd && uiNd.isValid) {
+          this.openUINode(uiNd, uiArgs);
+          this.openUIClass(ui, uiArgs);
+          return undefined;
+        } else {
+          this.uiMap.delete(uiName);
+        }
       }
 
       if (this.loadingFlagMap.get(uiName)) {
@@ -656,6 +672,8 @@ namespace zz {
       ui.node.opacity = 255;
       ui.onOpen(uiArgs.openArgs || []);
       ui.onShow();
+      let widget = ui.node.getComponent(cc.Widget);
+      if (widget) widget.updateAlignment();
       let cb = uiArgs.callbackArgs;
       cb && cb.fn && cb.fn.call(uiArgs.caller, ...cb.args);
     }

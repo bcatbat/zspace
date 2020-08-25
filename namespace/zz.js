@@ -3259,7 +3259,51 @@ var zz;
     }());
     zz.MultiRootTree = MultiRootTree;
 })(zz || (zz = {}));
+var zz;
+(function (zz) {
+    var LogLevel;
+    (function (LogLevel) {
+        LogLevel[LogLevel["Log"] = 0] = "Log";
+        LogLevel[LogLevel["Warn"] = 1] = "Warn";
+        LogLevel[LogLevel["Error"] = 2] = "Error";
+        LogLevel[LogLevel["No"] = 3] = "No";
+    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
+    /**0 */
+    zz.logLevel = LogLevel.Log;
+    function log() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Log)
+            console.log.apply(console, data);
+    }
+    zz.log = log;
+    function warn() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Warn)
+            console.warn.apply(console, data);
+    }
+    zz.warn = warn;
+    function error() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Error)
+            console.error.apply(console, data);
+    }
+    zz.error = error;
+    function assertEqual(a, b, msg) {
+        console.assert(a == b, msg);
+    }
+    zz.assertEqual = assertEqual;
+})(zz || (zz = {}));
 /// <reference path="zzStructure.ts" />
+/// <reference path="zzLog.ts" />
 var zz;
 (function (zz) {
     var Delegate = /** @class */ (function () {
@@ -3834,11 +3878,22 @@ var zz;
         Object.defineProperty(UIMgr.prototype, "uiRoot", {
             get: function () {
                 if (!this._uiRoot) {
+                    zz.log('[UIMgr] not set root ui node, find UIRoot node.');
                     this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
                 }
                 if (!this._uiRoot) {
-                    this._uiRoot = cc.Canvas.instance.node;
+                    zz.log('[UIMgr] found no UIRoot, set as Scene node.');
+                    this._uiRoot = cc.director.getScene();
                 }
+                if (!this._uiRoot.isValid) {
+                    zz.log('[UIMgr] scene node destroyed. find root again');
+                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+                    if (!this._uiRoot) {
+                        zz.log('[UIMgr] found no UIRoot again, set as current Scene node again.');
+                        this._uiRoot = cc.director.getScene();
+                    }
+                }
+                zz.log('[UIRoot] get:' + this._uiRoot);
                 return this._uiRoot;
             },
             enumerable: false,
@@ -3868,9 +3923,14 @@ var zz;
                             if (this.uiMap.has(uiName)) {
                                 ui_1 = this.uiMap.get(uiName);
                                 uiNd = ui_1.node;
-                                this.openUINode(uiNd, uiArgs);
-                                this.openUIClass(ui_1, uiArgs);
-                                return [2 /*return*/, undefined];
+                                if (uiNd && uiNd.isValid) {
+                                    this.openUINode(uiNd, uiArgs);
+                                    this.openUIClass(ui_1, uiArgs);
+                                    return [2 /*return*/, undefined];
+                                }
+                                else {
+                                    this.uiMap.delete(uiName);
+                                }
                             }
                             if (this.loadingFlagMap.get(uiName)) {
                                 zz.warn('[openUI] 正在加载' + uiName);
@@ -3946,6 +4006,9 @@ var zz;
             ui.node.opacity = 255;
             ui.onOpen(uiArgs.openArgs || []);
             ui.onShow();
+            var widget = ui.node.getComponent(cc.Widget);
+            if (widget)
+                widget.updateAlignment();
             var cb = uiArgs.callbackArgs;
             cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
         };
@@ -4239,49 +4302,6 @@ var zz;
     zz.ui = new UIMgr();
     zz.res = new ResMgr();
     zz.proc = new ProcedureMgr();
-})(zz || (zz = {}));
-var zz;
-(function (zz) {
-    var LogLevel;
-    (function (LogLevel) {
-        LogLevel[LogLevel["Log"] = 0] = "Log";
-        LogLevel[LogLevel["Warn"] = 1] = "Warn";
-        LogLevel[LogLevel["Error"] = 2] = "Error";
-        LogLevel[LogLevel["No"] = 3] = "No";
-    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
-    /**0 */
-    zz.logLevel = LogLevel.Log;
-    function log() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Log)
-            console.log.apply(console, data);
-    }
-    zz.log = log;
-    function warn() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Warn)
-            console.warn.apply(console, data);
-    }
-    zz.warn = warn;
-    function error() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Error)
-            console.error.apply(console, data);
-    }
-    zz.error = error;
-    function assertEqual(a, b, msg) {
-        console.assert(a == b, msg);
-    }
-    zz.assertEqual = assertEqual;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
