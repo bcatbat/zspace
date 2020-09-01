@@ -506,1132 +506,6 @@ var zz;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
-    var Delegate = /** @class */ (function () {
-        function Delegate(callback, argArray, isOnce) {
-            if (isOnce === void 0) { isOnce = false; }
-            this.isOnce = false;
-            this.callback = callback;
-            this.argArray = argArray;
-            this.isOnce = isOnce;
-        }
-        Object.defineProperty(Delegate.prototype, "Callback", {
-            get: function () {
-                return this.callback;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(Delegate.prototype, "ArgArray", {
-            get: function () {
-                return this.argArray;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(Delegate.prototype, "IsOnce", {
-            get: function () {
-                return this.isOnce;
-            },
-            set: function (v) {
-                this.isOnce = v;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        return Delegate;
-    }());
-    var EventMgr = /** @class */ (function () {
-        function EventMgr() {
-            this.mEventMap = new Map();
-        }
-        EventMgr.prototype.has = function (eventType, caller, callback) {
-            return !!this.find(eventType, caller, callback);
-        };
-        EventMgr.prototype.fire = function (eventType) {
-            var _a;
-            var argArray = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                argArray[_i - 1] = arguments[_i];
-            }
-            if (!eventType) {
-                console.error('Event eventType is null!');
-                return false;
-            }
-            var delegateList = [];
-            var callerList = [];
-            var eventMap = this.mEventMap.get(eventType);
-            if (eventMap) {
-                eventMap.forEach(function (eventList, caller) {
-                    for (var _i = 0, eventList_1 = eventList; _i < eventList_1.length; _i++) {
-                        var delegate = eventList_1[_i];
-                        delegateList.push(delegate);
-                        callerList.push(caller);
-                    }
-                    for (var index = eventList.length - 1; index >= 0; --index) {
-                        if (eventList[index].IsOnce) {
-                            eventList.splice(index, 1);
-                        }
-                    }
-                    if (eventList.length <= 0) {
-                        eventMap.delete(caller);
-                    }
-                });
-                if (eventMap.size <= 0) {
-                    this.mEventMap.delete(eventType);
-                }
-            }
-            var length = delegateList.length;
-            for (var index = 0; index < length; index++) {
-                var delegate = delegateList[index];
-                (_a = delegate.Callback).call.apply(_a, __spreadArrays([callerList[index]], delegate.ArgArray, argArray));
-            }
-            return length > 0;
-        };
-        EventMgr.prototype.register = function (eventType, caller, callback) {
-            var argArray = [];
-            for (var _i = 3; _i < arguments.length; _i++) {
-                argArray[_i - 3] = arguments[_i];
-            }
-            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, false], argArray));
-        };
-        EventMgr.prototype.registerOnce = function (eventType, caller, callback) {
-            var argArray = [];
-            for (var _i = 3; _i < arguments.length; _i++) {
-                argArray[_i - 3] = arguments[_i];
-            }
-            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, true], argArray));
-        };
-        EventMgr.prototype.delRegister = function (type, caller, callback, onceOnly) {
-            this.removeBy(function (eventType, listenerCaller, delegate) {
-                if (type && type !== eventType) {
-                    return false;
-                }
-                if (caller && caller !== listenerCaller) {
-                    return false;
-                }
-                if (callback && callback !== delegate.Callback) {
-                    return false;
-                }
-                if (onceOnly && !delegate.IsOnce) {
-                    return false;
-                }
-                return true;
-            });
-        };
-        EventMgr.prototype.delAllRegister = function (caller) {
-            var _this = this;
-            this.mEventMap.forEach(function (eventMap, type) {
-                eventMap.delete(caller);
-                if (eventMap.size <= 0) {
-                    _this.mEventMap.delete(type);
-                }
-            });
-        };
-        EventMgr.prototype.find = function (eventType, caller, callback) {
-            if (!eventType) {
-                console.error('Event eventType is null!');
-                return null;
-            }
-            if (!caller) {
-                console.error('Caller eventType is null!');
-                return null;
-            }
-            if (!callback) {
-                console.error('Listener is null!');
-                return null;
-            }
-            var eventMap;
-            if (this.mEventMap.has(eventType)) {
-                eventMap = this.mEventMap.get(eventType);
-            }
-            else {
-                eventMap = new Map();
-                this.mEventMap.set(eventType, eventMap);
-            }
-            var eventList;
-            if (eventMap.has(caller)) {
-                eventList = eventMap.get(caller);
-            }
-            else {
-                eventList = [];
-                eventMap.set(caller, eventList);
-            }
-            for (var _i = 0, eventList_2 = eventList; _i < eventList_2.length; _i++) {
-                var delegate = eventList_2[_i];
-                if (delegate.Callback === callback) {
-                    return delegate;
-                }
-            }
-            return null;
-        };
-        EventMgr.prototype.addListener = function (eventType, caller, callback, isOnce) {
-            var argArray = [];
-            for (var _i = 4; _i < arguments.length; _i++) {
-                argArray[_i - 4] = arguments[_i];
-            }
-            var delegate = this.find(eventType, caller, callback);
-            if (delegate) {
-                delegate.IsOnce = isOnce;
-                console.error('Listener is already exist!');
-            }
-            else {
-                var delegate_1 = new Delegate(callback, argArray, isOnce);
-                this.mEventMap.get(eventType).get(caller).push(delegate_1);
-            }
-        };
-        EventMgr.prototype.removeBy = function (predicate) {
-            var _this = this;
-            if (!predicate) {
-                return;
-            }
-            this.mEventMap.forEach(function (eventMap, eventType) {
-                eventMap.forEach(function (eventList, caller) {
-                    for (var index = eventList.length - 1; index >= 0; --index) {
-                        var delegate = eventList[index];
-                        if (predicate(eventType, caller, delegate)) {
-                            eventList.splice(index, 1);
-                        }
-                    }
-                    if (eventList.length <= 0) {
-                        eventMap.delete(caller);
-                    }
-                });
-                if (eventMap.size <= 0) {
-                    _this.mEventMap.delete(eventType);
-                }
-            });
-        };
-        return EventMgr;
-    }());
-    var TableMgr = /** @class */ (function () {
-        function TableMgr() {
-            this.allTables = null;
-            this.count = 0;
-            this.tol = 0;
-            this.allTables = new Map();
-        }
-        TableMgr.prototype.loadConfig = function (tableType) {
-            var arg = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                arg[_i - 1] = arguments[_i];
-            }
-            return __awaiter(this, void 0, void 0, function () {
-                var jsonAsset_1, jsonObj, tableMap, k, obj, err_1_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (this.allTables.has(tableType)) {
-                                this.allTables.set(tableType, new Map());
-                            }
-                            this.count++;
-                            zz.log('[Table] 开始加载表格:' + tableType);
-                            if (this.tol < this.count)
-                                this.tol = this.count;
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 3, , 4]);
-                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes('configs/' + tableType, function (err, jsonAsset) {
-                                        err ? rejectFn(err) : resolveFn(jsonAsset);
-                                    });
-                                })];
-                        case 2:
-                            jsonAsset_1 = _a.sent();
-                            zz.log('[Table] ' + tableType + '加载完毕');
-                            jsonObj = jsonAsset_1.json;
-                            tableMap = new Map();
-                            for (k in jsonObj) {
-                                obj = JSON.parse(JSON.stringify(jsonObj[k]));
-                                tableMap.set(obj.id, obj);
-                            }
-                            this.allTables.set(tableType, tableMap);
-                            this.count--;
-                            return [2 /*return*/, this.count];
-                        case 3:
-                            err_1_1 = _a.sent();
-                            zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_1);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        /**
-         * TableComponent：获取表所有数据
-         * @param tableType 数据表类型名称
-         */
-        TableMgr.prototype.getTable = function (tableType) {
-            if (this.allTables.has(tableType)) {
-                return this.allTables.get(tableType);
-            }
-            return null;
-        };
-        /**
-         * TableComponent：获取表数据项目
-         * @param tableType 数据表类型名称
-         * @param key 数据表id
-         */
-        TableMgr.prototype.getTableItem = function (tableType, key) {
-            if (this.allTables.has(tableType)) {
-                return this.allTables.get(tableType).get(key);
-            }
-            else {
-                console.error('[Table] GetTableItem Error! tableType:' + tableType + '; key:' + key);
-                return null;
-            }
-        };
-        /**
-         * TableComponent：表是否存在数据项目
-         * @param tableType 数据表类型名称
-         * @param key 数据表id
-         */
-        TableMgr.prototype.hasTableItem = function (tableType, key) {
-            if (this.allTables.has(tableType)) {
-                return this.allTables.get(tableType).has(key);
-            }
-            else {
-                console.error('[Table] HasTableItem Error! tableType' + tableType + '; key:' + key);
-                return false;
-            }
-        };
-        return TableMgr;
-    }());
-    var StorageMgr = /** @class */ (function () {
-        function StorageMgr() {
-        }
-        StorageMgr.prototype.clear = function () {
-            cc.sys.localStorage.clear();
-        };
-        StorageMgr.prototype.remove = function (key) {
-            cc.sys.localStorage.removeItem(key);
-        };
-        StorageMgr.prototype.saveInt = function (key, value) {
-            cc.sys.localStorage.setItem(key, Math.trunc(value));
-        };
-        /**默认为0 */
-        StorageMgr.prototype.getInt = function (key) {
-            var sto = cc.sys.localStorage.getItem(key);
-            // null | undefine
-            if (!sto)
-                return 0;
-            var n = parseInt(sto);
-            // NaN
-            if (!sto)
-                return 0;
-            return n;
-        };
-        StorageMgr.prototype.saveNumber = function (key, value) {
-            cc.sys.localStorage.setItem(key, value);
-        };
-        /**默认为0 */
-        StorageMgr.prototype.getNumber = function (key) {
-            var sto = cc.sys.localStorage.getItem(key);
-            // null | undefine
-            if (!sto)
-                return 0;
-            var n = parseFloat(sto);
-            // NaN
-            if (!sto)
-                return 0;
-            return n;
-        };
-        StorageMgr.prototype.saveString = function (key, value) {
-            cc.sys.localStorage.setItem(key, value);
-        };
-        /**默认为"" */
-        StorageMgr.prototype.getString = function (key) {
-            var sto = cc.sys.localStorage.getItem(key);
-            if (!sto)
-                return '';
-            return sto;
-        };
-        return StorageMgr;
-    }());
-    var SoundMgr = /** @class */ (function () {
-        function SoundMgr() {
-            this.dict_clip = new Map();
-            //TODO 此处用MultiDict来做.
-            this.dict_soundId = new Map();
-            this.dict_musicID = new Map();
-            this.soundVolume = 1.0;
-            this.musicVolume = 0.5;
-            this._isMusicOn = true;
-            this._isSoundOn = true;
-            this._isAllOn = true;
-        }
-        Object.defineProperty(SoundMgr.prototype, "SoundVolume", {
-            set: function (volume) {
-                this.soundVolume = volume;
-                cc.audioEngine.setEffectsVolume(volume);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundMgr.prototype, "MusicVolume", {
-            set: function (volume) {
-                this.musicVolume = volume;
-                cc.audioEngine.setMusicVolume(volume);
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundMgr.prototype, "isMusicOn", {
-            /**音乐开关 */
-            get: function () {
-                return this._isMusicOn;
-            },
-            set: function (v) {
-                if (v == false) {
-                    this.stopMusic();
-                }
-                this._isMusicOn = v;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundMgr.prototype, "isSoundOn", {
-            /**音效开关 */
-            get: function () {
-                return this._isSoundOn;
-            },
-            set: function (v) {
-                if (!v) {
-                    this.stopAllSounds();
-                }
-                this._isSoundOn = v;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        Object.defineProperty(SoundMgr.prototype, "isAllOn", {
-            /**声音是否打开 */
-            get: function () {
-                return this._isAllOn;
-            },
-            set: function (v) {
-                this._isAllOn = v;
-                if (!v) {
-                    this.stopAllSounds();
-                    this.stopMusic();
-                }
-            },
-            enumerable: false,
-            configurable: true
-        });
-        SoundMgr.prototype.playSound = function (soundName, loop) {
-            var _this = this;
-            if (loop === void 0) { loop = false; }
-            if (!this.isAllOn) {
-                return;
-            }
-            if (!this.isSoundOn) {
-                return;
-            }
-            if (this.dict_clip.has(soundName)) {
-                var clip = this.dict_clip.get(soundName);
-                var soundID_1 = cc.audioEngine.playEffect(clip, loop);
-                var ids = this.dict_soundId.get(soundName) || [];
-                ids.push(soundID_1);
-                this.dict_soundId.set(soundName, ids);
-                cc.audioEngine.setFinishCallback(soundID_1, function () {
-                    if (!loop) {
-                        console.log('[SOUND] sound finish:' + soundID_1);
-                        var d = _this.dict_soundId.get(soundName);
-                        d && d.pop();
-                    }
-                });
-            }
-            else {
-                cc.loader.loadRes('audio/' + soundName, cc.AudioClip, function (err, clip) {
-                    if (_this.dict_clip.get(soundName))
-                        return;
-                    _this.dict_clip.set(soundName, clip);
-                    var soundID = cc.audioEngine.playEffect(clip, loop);
-                    _this.dict_soundId.set(soundName, []);
-                    _this.dict_soundId.get(soundName).push(soundID);
-                    cc.audioEngine.setFinishCallback(soundID, function () {
-                        if (!loop) {
-                            console.log('[SOUND] sound finish:' + soundID);
-                            var d = _this.dict_soundId.get(soundName);
-                            d && d.pop();
-                        }
-                    });
-                });
-            }
-        };
-        SoundMgr.prototype.playMusic = function (musicName, loop) {
-            var _this = this;
-            if (loop === void 0) { loop = true; }
-            if (!this.isAllOn) {
-                console.log('声音已经关闭');
-                return;
-            }
-            if (!this.isMusicOn) {
-                console.log('音乐已经关闭');
-                return;
-            }
-            if (this.dict_musicID.has(musicName) &&
-                this.dict_musicID.get(musicName) &&
-                this.dict_musicID.get(musicName).length > 0) {
-                console.warn('[SOUND] Music正在播放,不再重复播放');
-                return;
-            }
-            if (this.dict_clip.has(musicName)) {
-                var clip = this.dict_clip.get(musicName);
-                var id_1 = cc.audioEngine.playMusic(clip, loop);
-                var ids = this.dict_musicID.get(musicName) || [];
-                ids.push(id_1);
-                this.dict_musicID.set(musicName, ids);
-                cc.audioEngine.setFinishCallback(id_1, function () {
-                    if (!loop) {
-                        console.log('[SOUND] sound finish:' + id_1);
-                        var d = _this.dict_musicID.get(musicName);
-                        d && d.pop();
-                    }
-                });
-            }
-            else {
-                cc.loader.loadRes('audio/' + musicName, cc.AudioClip, function (err, clip) {
-                    if (err) {
-                        zz.error(err);
-                        return;
-                    }
-                    if (_this.dict_clip.has(musicName))
-                        return;
-                    _this.dict_clip.set(musicName, clip);
-                    var id = cc.audioEngine.playMusic(clip, loop);
-                    _this.dict_musicID.set(musicName, []);
-                    _this.dict_musicID.get(musicName).push(id);
-                    cc.audioEngine.setFinishCallback(id, function () {
-                        if (!loop) {
-                            console.log('[SOUND] sound finish:' + id);
-                            var d = _this.dict_musicID.get(musicName);
-                            d && d.pop();
-                        }
-                    });
-                });
-            }
-        };
-        /**切换音乐; 模拟的渐变切换; 替换PlayMusic使用*/
-        SoundMgr.prototype.changeMusic = function (musicName, loop, inTime, outTime) {
-            var _this = this;
-            if (loop === void 0) { loop = true; }
-            if (inTime === void 0) { inTime = 1; }
-            if (outTime === void 0) { outTime = 1; }
-            var iTime = inTime;
-            var oTime = outTime;
-            var it = 0.1;
-            var iLen = iTime / it;
-            var oLen = oTime / it;
-            var volLmt = this.musicVolume;
-            var iVolIt = volLmt / iLen;
-            var _loop_1 = function (i) {
-                setTimeout(function () {
-                    cc.audioEngine.setMusicVolume(volLmt - iVolIt * i);
-                }, i * it * 1000);
-            };
-            for (var i = 0; i < iLen; i++) {
-                _loop_1(i);
-            }
-            setTimeout(function () {
-                _this.stopMusic();
-                _this.playMusic(musicName, loop);
-            }, iTime * 1000);
-            var oVolIt = volLmt / oLen;
-            var _loop_2 = function (i) {
-                setTimeout(function () {
-                    cc.audioEngine.setMusicVolume(oVolIt * i);
-                }, (i * it + iTime) * 1000);
-            };
-            for (var i = 0; i < oLen; i++) {
-                _loop_2(i);
-            }
-        };
-        SoundMgr.prototype.stopSound = function (soundName) {
-            if (this.dict_soundId.has(soundName)) {
-                this.dict_soundId.get(soundName).forEach(function (v) {
-                    cc.audioEngine.stopEffect(v);
-                });
-                this.dict_soundId.delete(soundName);
-            }
-        };
-        SoundMgr.prototype.stopMusic = function () {
-            console.log('[SOUND] StopAllMusic');
-            cc.audioEngine.stopMusic();
-            this.dict_musicID.clear();
-        };
-        SoundMgr.prototype.stopAllSounds = function () {
-            console.log('[SOUND] StopAllSound');
-            cc.audioEngine.stopAllEffects();
-            this.dict_soundId.clear();
-        };
-        SoundMgr.prototype.releaseSound = function (soundName) {
-            if (this.dict_soundId.has(soundName)) {
-                this.dict_soundId.get(soundName).forEach(function (v) {
-                    cc.audioEngine.stopEffect(v);
-                });
-                this.dict_soundId.delete(soundName);
-            }
-            if (this.dict_clip.has(soundName)) {
-                this.dict_clip.delete(soundName);
-            }
-        };
-        return SoundMgr;
-    }());
-    var UIMgr = /** @class */ (function () {
-        function UIMgr() {
-            /**UI根节点; 从外部注入; */
-            this._uiRoot = undefined;
-            /**进度条函数; 从外部注入; */
-            this.progressFn = undefined;
-            this.uiMap = new Map();
-            this.pathMap = new Map();
-            this.layerMap = new Map();
-            this.loadingFlagMap = new Map();
-            this.openingMap = new Map();
-            this.attachMapClient = new Map();
-            this.attachMapHost = new Map();
-            this.topZIndex = 0;
-        }
-        Object.defineProperty(UIMgr.prototype, "uiRoot", {
-            get: function () {
-                if (!this._uiRoot) {
-                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
-                }
-                if (!this._uiRoot) {
-                    this._uiRoot = cc.Canvas.instance.node;
-                }
-                return this._uiRoot;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        UIMgr.prototype.setUIRoot = function (rootNd) {
-            this._uiRoot = rootNd;
-        };
-        UIMgr.prototype.setUIParams = function (params) {
-            var _this = this;
-            params.forEach(function (v) {
-                _this.pathMap.set(v.uiName, v.path);
-                _this.layerMap.set(v.uiName, v.zIndex);
-            });
-        };
-        UIMgr.prototype.setProgressFn = function (fn) {
-            this.progressFn = fn;
-        };
-        UIMgr.prototype.openUI = function (uiArgs) {
-            return __awaiter(this, void 0, void 0, function () {
-                var uiName, ui_1, uiNd, path, prefab_1, uiNode, ui_2, err_1_2;
-                var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            uiName = uiArgs.uiName;
-                            if (this.uiMap.has(uiName)) {
-                                ui_1 = this.uiMap.get(uiName);
-                                uiNd = ui_1.node;
-                                this.openUINode(uiNd, uiArgs);
-                                this.openUIClass(ui_1, uiArgs);
-                                return [2 /*return*/, undefined];
-                            }
-                            if (this.loadingFlagMap.get(uiName)) {
-                                zz.warn('[openUI] 正在加载' + uiName);
-                                this.openingMap.set(uiName, uiArgs);
-                                this.progressFn(true, Math.random(), '');
-                                return [2 /*return*/, undefined];
-                            }
-                            this.loadingFlagMap.set(uiName, true);
-                            path = this.getUIPath(uiName);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 3, , 4]);
-                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes(path, function (completedCount, totalCount, item) {
-                                        if (uiArgs.progressArgs) {
-                                            if (uiArgs.progressArgs.showProgressUI) {
-                                                _this.progressFn
-                                                    ? _this.progressFn(true, completedCount / totalCount, uiArgs.progressArgs.desTxt)
-                                                    : zz.error('[UI] 没有注入进度条函数');
-                                            }
-                                        }
-                                    }, function (err, prefab) {
-                                        err ? rejectFn(err) : resolveFn(prefab);
-                                    });
-                                })];
-                        case 2:
-                            prefab_1 = _a.sent();
-                            zz.log('[openUI] ' + uiName + ' open succes');
-                            this.progressFn && this.progressFn(false, 0, '');
-                            this.loadingFlagMap.delete(uiName);
-                            uiNode = cc.instantiate(prefab_1);
-                            uiNode.parent = this.uiRoot;
-                            ui_2 = uiNode.getComponent(uiName);
-                            this.uiMap.set(uiName, ui_2);
-                            this.openUINode(uiNode, uiArgs);
-                            this.openUIClass(ui_2, uiArgs);
-                            if (this.openingMap.has(uiName))
-                                this.openingMap.delete(uiName);
-                            return [3 /*break*/, 4];
-                        case 3:
-                            err_1_2 = _a.sent();
-                            zz.error('[openUI] error:' + err_1_2);
-                            return [2 /*return*/, undefined];
-                        case 4: return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        UIMgr.prototype.openUINode = function (uiNd, uiArgs) {
-            var uiName = uiArgs.uiName;
-            if (!uiNd.parent) {
-                uiNd.parent = this.uiRoot;
-            }
-            if (uiArgs.zIndex) {
-                uiNd.zIndex = uiArgs.zIndex;
-            }
-            else {
-                if (this.layerMap.has(uiName)) {
-                    var z = this.layerMap.get(uiName);
-                    uiNd.zIndex = z;
-                    if (this.topZIndex < z)
-                        this.topZIndex = z;
-                }
-                else {
-                    uiNd.zIndex = ++this.topZIndex;
-                }
-            }
-            uiNd.x = uiNd.y = 0;
-        };
-        UIMgr.prototype.openUIClass = function (ui, uiArgs) {
-            var _a;
-            ui.node.x = ui.node.y = 0;
-            ui.node.opacity = 255;
-            ui.onOpen(uiArgs.openArgs || []);
-            ui.onShow();
-            var cb = uiArgs.callbackArgs;
-            cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
-        };
-        UIMgr.prototype.getUIPath = function (uiName) {
-            return this.pathMap.get(uiName) + '/' + uiName;
-        };
-        /**从场景中移除UI; 保留本地缓存; */
-        UIMgr.prototype.closeUI = function (uiName) {
-            var _this = this;
-            if (this.uiMap.has(uiName)) {
-                this.hideUI(uiName);
-                var ui_3 = this.uiMap.get(uiName);
-                ui_3.node.parent = null;
-                ui_3.onHide();
-                ui_3.onClose();
-                if (this.attachMapHost.has(uiName)) {
-                    this.attachMapHost.get(uiName).forEach(function (v, k) {
-                        _this.closeUI(k) && zz.log('[closeUI] 同时关闭附属:' + k);
-                    });
-                }
-                return true;
-            }
-            return false;
-        };
-        UIMgr.prototype.preloadUI = function (uiName) {
-            return __awaiter(this, void 0, void 0, function () {
-                var path, prefab_1, uiNode, ui_4, args, err_1_3;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            if (this.uiMap.has(uiName)) {
-                                zz.warn('[preloadUI] 已经加载ui:' + uiName);
-                                return [2 /*return*/, undefined];
-                            }
-                            if (this.loadingFlagMap.get(uiName)) {
-                                zz.warn('[preloadUI] 正在加载' + uiName);
-                                return [2 /*return*/, undefined];
-                            }
-                            this.loadingFlagMap.set(uiName, true);
-                            path = this.getUIPath(uiName);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 3, , 4]);
-                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes(path, function (err, prefab) {
-                                        err ? rejectFn(err) : resolveFn(prefab);
-                                    });
-                                })];
-                        case 2:
-                            prefab_1 = _a.sent();
-                            zz.log('[preloadUI] ' + uiName + ' preload succes');
-                            this.loadingFlagMap.delete(uiName);
-                            uiNode = cc.instantiate(prefab_1);
-                            ui_4 = uiNode.getComponent(uiName);
-                            this.uiMap.set(uiName, ui_4);
-                            if (this.openingMap.has(uiName)) {
-                                args = this.openingMap.get(uiName);
-                                this.openingMap.delete(uiName);
-                                zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-                                this.progressFn(false, 0, '');
-                                this.openUINode(uiNode, args);
-                                this.openUIClass(ui_4, args);
-                            }
-                            return [2 /*return*/, uiNode];
-                        case 3:
-                            err_1_3 = _a.sent();
-                            zz.error('[preloadUI] error:' + err_1_3);
-                            return [2 /*return*/, undefined];
-                        case 4: return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        /**关闭ui; 移除本地缓存; */
-        UIMgr.prototype.destroyUI = function (uiName) {
-            this.closeUI(uiName);
-            var ui = this.uiMap.get(uiName);
-            if (ui)
-                ui.destroy();
-            this.uiMap.delete(uiName);
-        };
-        UIMgr.prototype.showUI = function (uiName) {
-            if (this.uiMap.has(uiName)) {
-                var ui_5 = this.uiMap.get(uiName);
-                var nd = ui_5.node;
-                if (!nd) {
-                    zz.warn('[showUI] ' + uiName + '被close过');
-                    return false;
-                }
-                nd.x = nd.y = 0;
-                nd.opacity = 255;
-                ui_5.onShow();
-                return true;
-            }
-            else {
-                zz.error('[shouUI] 未加载的UI:' + uiName);
-                return false;
-            }
-        };
-        UIMgr.prototype.hideUI = function (uiName) {
-            var _this = this;
-            if (this.uiMap.has(uiName)) {
-                var ui_6 = this.uiMap.get(uiName);
-                var nd = ui_6.node;
-                if (nd) {
-                    nd.position = cc.v3(zz.farPos);
-                    nd.opacity = 0;
-                    ui_6.onHide();
-                    if (this.attachMapHost.has(uiName)) {
-                        this.attachMapHost.get(uiName).forEach(function (v, k) {
-                            _this.hideUI(k) && zz.log('[hideUI] 同时隐藏附属:' + k);
-                        });
-                    }
-                    return true;
-                }
-                else {
-                    return false;
-                }
-            }
-            return false;
-        };
-        UIMgr.prototype.getUI = function (uiName) {
-            return this.uiMap.get(uiName);
-        };
-        UIMgr.prototype.reloadUI = function (uiName) {
-            this.destroyUI(uiName);
-            this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
-        };
-        /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
-        UIMgr.prototype.setUIAttachment = function (hostUI, clientUI) {
-            if (!this.attachMapClient.has(clientUI)) {
-                this.attachMapClient.set(clientUI, new Map());
-            }
-            if (!this.attachMapHost.has(hostUI)) {
-                this.attachMapHost.set(hostUI, new Map());
-            }
-            this.attachMapHost.get(hostUI).set(clientUI, true);
-            this.attachMapClient.get(clientUI).set(hostUI, true);
-        };
-        /**移除UI之间的依附关系 */
-        UIMgr.prototype.removeUIAttachment = function (hostUI, clientUI) {
-            if (this.attachMapClient.has(clientUI)) {
-                this.attachMapClient.get(clientUI).delete(hostUI);
-            }
-            if (this.attachMapHost.has(hostUI)) {
-                this.attachMapHost.get(hostUI).delete(clientUI);
-            }
-        };
-        return UIMgr;
-    }());
-    zz.farPos = cc.v3(10000, 10000, 0);
-    var UIBase = /** @class */ (function (_super) {
-        __extends(UIBase, _super);
-        function UIBase() {
-            return _super !== null && _super.apply(this, arguments) || this;
-        }
-        /**
-         * 在onLoad之后调用; 代替onLoad使用; 注意无法重置; 由于无法确保调用一次, 事件注册不宜置于此;
-         * @param args 参数列表
-         */
-        UIBase.prototype.onOpen = function (args) { };
-        /**代替onDestroy使用 */
-        UIBase.prototype.onClose = function () { };
-        /**代替onDiable使用 */
-        UIBase.prototype.onHide = function () { };
-        /**代替onEnable使用 */
-        UIBase.prototype.onShow = function () { };
-        return UIBase;
-    }(cc.Component));
-    zz.UIBase = UIBase;
-    var ResMgr = /** @class */ (function () {
-        function ResMgr() {
-            this.prefabMap = new Map();
-            this.spriteMap = new Map();
-        }
-        ResMgr.prototype.loadResDict = function (mainType, subType, type, assetMap) {
-            return __awaiter(this, void 0, void 0, function () {
-                var path, asset_1, subMap_1, err_1_4;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            path = mainType + '/' + subType + '/';
-                            zz.log('[Res] 开始加载' + path);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 3, , 4]);
-                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadResDir(path, type, function (err, res) {
-                                        err ? rejectFn(err) : resolveFn(res);
-                                    });
-                                })];
-                        case 2:
-                            asset_1 = _a.sent();
-                            if (!assetMap.has(subType)) {
-                                assetMap.set(subType, new Map());
-                            }
-                            subMap_1 = assetMap.get(subType);
-                            asset_1.forEach(function (v) {
-                                subMap_1.set(v.name, v);
-                            });
-                            zz.log('[Res] 完成加载' + path);
-                            return [3 /*break*/, 4];
-                        case 3:
-                            err_1_4 = _a.sent();
-                            zz.error('[loadResDict] error:' + err_1_4);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        ResMgr.prototype.loadPrefabs = function (type) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2 /*return*/, this.loadResDict('prefabs', type, cc.Prefab, this.prefabMap)];
-                });
-            });
-        };
-        ResMgr.prototype.loadSprites = function (type) {
-            this.loadResDict('sprites', type, cc.SpriteFrame, this.spriteMap);
-        };
-        ResMgr.prototype.getPrefab = function (type, name) {
-            if (!this.prefabMap.has(type)) {
-                this.prefabMap.set(type, new Map());
-            }
-            return this.prefabMap.get(type).get(name);
-        };
-        ResMgr.prototype.getSpriteframe = function (type, name) {
-            if (!this.spriteMap.has(type)) {
-                this.spriteMap.set(type, new Map());
-            }
-            return this.spriteMap.get(type).get(name);
-        };
-        return ResMgr;
-    }());
-    var ProcedureMgr = /** @class */ (function () {
-        function ProcedureMgr() {
-            this.procedureMap = new Map();
-            this.curProcedure = undefined;
-        }
-        Object.defineProperty(ProcedureMgr.prototype, "currentProcedure", {
-            get: function () {
-                return this.curProcedure;
-            },
-            enumerable: false,
-            configurable: true
-        });
-        ProcedureMgr.prototype.setProcedure = function (procName, procedure) {
-            this.procedureMap.set(procName, procedure);
-        };
-        ProcedureMgr.prototype.init = function (firstProc) {
-            if (this.procedureMap.has(firstProc)) {
-                this.curProcedure = firstProc;
-                this.procedureMap.get(firstProc).onStart();
-            }
-        };
-        ProcedureMgr.prototype.changeProcedure = function (procName) {
-            if (this.procedureMap.has(procName)) {
-                this.procedureMap.get(this.curProcedure).onLeave();
-                this.curProcedure = procName;
-                this.procedureMap.get(procName).onStart();
-            }
-            else {
-                zz.error('[changeProcedure] 不存在' + procName);
-            }
-        };
-        return ProcedureMgr;
-    }());
-    var ProcBase = /** @class */ (function () {
-        function ProcBase() {
-        }
-        return ProcBase;
-    }());
-    zz.ProcBase = ProcBase;
-    zz.event = new EventMgr();
-    zz.table = new TableMgr();
-    zz.sto = new StorageMgr();
-    zz.sound = new SoundMgr();
-    zz.ui = new UIMgr();
-    zz.res = new ResMgr();
-    zz.proc = new ProcedureMgr();
-})(zz || (zz = {}));
-var zz;
-(function (zz) {
-    var LogLevel;
-    (function (LogLevel) {
-        LogLevel[LogLevel["Log"] = 0] = "Log";
-        LogLevel[LogLevel["Warn"] = 1] = "Warn";
-        LogLevel[LogLevel["Error"] = 2] = "Error";
-        LogLevel[LogLevel["No"] = 3] = "No";
-    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
-    /**0 */
-    zz.logLevel = LogLevel.Log;
-    function log() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Log)
-            console.log.apply(console, data);
-    }
-    zz.log = log;
-    function warn() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Warn)
-            console.warn.apply(console, data);
-    }
-    zz.warn = warn;
-    function error() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Error)
-            console.error.apply(console, data);
-    }
-    zz.error = error;
-    function assertEqual(a, b, msg) {
-        console.assert(a == b, msg);
-    }
-    zz.assertEqual = assertEqual;
-})(zz || (zz = {}));
-var zz;
-(function (zz) {
-    var NdPool = /** @class */ (function () {
-        function NdPool(rootNd, prefab, defaultNum) {
-            if (defaultNum === void 0) { defaultNum = 10; }
-            this.rootNd = undefined;
-            this.prefab = undefined;
-            this.defaultNum = 10;
-            /**true-可用,未借出; false-不可用,已借出 */
-            // poolMap: Map<cc.Node, boolean> = new Map<cc.Node, boolean>();
-            this.pool = new Array();
-            this.rootNd = rootNd;
-            this.prefab = prefab;
-            this.defaultNum = defaultNum;
-            this.initPool();
-        }
-        NdPool.prototype.initPool = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var i, node;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            i = 0;
-                            _a.label = 1;
-                        case 1:
-                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
-                            return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
-                        case 2:
-                            node = _a.sent();
-                            node.parent = this.rootNd;
-                            this.pool.push(node);
-                            this.setActive(node, false);
-                            _a.label = 3;
-                        case 3:
-                            i++;
-                            return [3 /*break*/, 1];
-                        case 4:
-                            zz.log('[Pool] init complete!');
-                            return [2 /*return*/];
-                    }
-                });
-            });
-        };
-        NdPool.prototype.borrowFromPool = function () {
-            return __awaiter(this, void 0, void 0, function () {
-                var node;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            node = this.pool.pop();
-                            if (!node) return [3 /*break*/, 1];
-                            node.parent = this.rootNd;
-                            this.setActive(node, true);
-                            return [2 /*return*/, node];
-                        case 1: return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
-                        case 2:
-                            node = _a.sent();
-                            node.parent = this.rootNd;
-                            this.setActive(node, true);
-                            return [2 /*return*/, node];
-                    }
-                });
-            });
-        };
-        NdPool.prototype.returnBackToPool = function (node) {
-            this.setActive(node, false);
-            this.pool.push(node);
-        };
-        NdPool.prototype.returnAllNode = function () {
-            var _this = this;
-            this.rootNd.children.forEach(function (v) {
-                _this.returnBackToPool(v);
-            });
-        };
-        NdPool.prototype.releasePool = function () {
-            this.rootNd.children.forEach(function (v) {
-                v.parent = null;
-                v.destroy();
-            });
-            this.pool.forEach(function (v) {
-                v.destroy();
-            });
-            this.pool = new Array();
-        };
-        NdPool.prototype.setActive = function (node, active) {
-            if (active) {
-                node.opacity = 255;
-            }
-            else {
-                node.opacity = 0;
-                node.position = cc.v3(zz.farPos);
-            }
-        };
-        return NdPool;
-    }());
-    zz.NdPool = NdPool;
-})(zz || (zz = {}));
-var zz;
-(function (zz) {
     var util;
     (function (util) {
         var _hasOwnProperty = Object.prototype.hasOwnProperty;
@@ -4387,6 +3261,1052 @@ var zz;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
+    var LogLevel;
+    (function (LogLevel) {
+        LogLevel[LogLevel["Log"] = 0] = "Log";
+        LogLevel[LogLevel["Warn"] = 1] = "Warn";
+        LogLevel[LogLevel["Error"] = 2] = "Error";
+        LogLevel[LogLevel["No"] = 3] = "No";
+    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
+    /**0 */
+    zz.logLevel = LogLevel.Log;
+    function log() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Log)
+            console.log.apply(console, data);
+    }
+    zz.log = log;
+    function warn() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Warn)
+            console.warn.apply(console, data);
+    }
+    zz.warn = warn;
+    function error() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Error)
+            console.error.apply(console, data);
+    }
+    zz.error = error;
+    function assertEqual(a, b, msg) {
+        console.assert(a == b, msg);
+    }
+    zz.assertEqual = assertEqual;
+})(zz || (zz = {}));
+/// <reference path="zzStructure.ts" />
+/// <reference path="zzLog.ts" />
+var zz;
+(function (zz) {
+    var Delegate = /** @class */ (function () {
+        function Delegate(callback, argArray, isOnce) {
+            if (isOnce === void 0) { isOnce = false; }
+            this.isOnce = false;
+            this.callback = callback;
+            this.argArray = argArray;
+            this.isOnce = isOnce;
+        }
+        Object.defineProperty(Delegate.prototype, "Callback", {
+            get: function () {
+                return this.callback;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Delegate.prototype, "ArgArray", {
+            get: function () {
+                return this.argArray;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Delegate.prototype, "IsOnce", {
+            get: function () {
+                return this.isOnce;
+            },
+            set: function (v) {
+                this.isOnce = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Delegate;
+    }());
+    var EventMgr = /** @class */ (function () {
+        function EventMgr() {
+            this.mEventMap = new Map();
+        }
+        EventMgr.prototype.has = function (eventType, caller, callback) {
+            return !!this.find(eventType, caller, callback);
+        };
+        EventMgr.prototype.fire = function (eventType) {
+            var _a;
+            var argArray = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                argArray[_i - 1] = arguments[_i];
+            }
+            if (!eventType) {
+                console.error('Event eventType is null!');
+                return false;
+            }
+            var delegateList = [];
+            var callerList = [];
+            var eventMap = this.mEventMap.get(eventType);
+            if (eventMap) {
+                eventMap.forEach(function (eventList, caller) {
+                    for (var _i = 0, eventList_1 = eventList; _i < eventList_1.length; _i++) {
+                        var delegate = eventList_1[_i];
+                        delegateList.push(delegate);
+                        callerList.push(caller);
+                    }
+                    for (var index = eventList.length - 1; index >= 0; --index) {
+                        if (eventList[index].IsOnce) {
+                            eventList.splice(index, 1);
+                        }
+                    }
+                    if (eventList.length <= 0) {
+                        eventMap.delete(caller);
+                    }
+                });
+                if (eventMap.size <= 0) {
+                    this.mEventMap.delete(eventType);
+                }
+            }
+            var length = delegateList.length;
+            for (var index = 0; index < length; index++) {
+                var delegate = delegateList[index];
+                (_a = delegate.Callback).call.apply(_a, __spreadArrays([callerList[index]], delegate.ArgArray, argArray));
+            }
+            return length > 0;
+        };
+        EventMgr.prototype.register = function (eventType, caller, callback) {
+            var argArray = [];
+            for (var _i = 3; _i < arguments.length; _i++) {
+                argArray[_i - 3] = arguments[_i];
+            }
+            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, false], argArray));
+        };
+        EventMgr.prototype.registerOnce = function (eventType, caller, callback) {
+            var argArray = [];
+            for (var _i = 3; _i < arguments.length; _i++) {
+                argArray[_i - 3] = arguments[_i];
+            }
+            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, true], argArray));
+        };
+        EventMgr.prototype.delRegister = function (type, caller, callback, onceOnly) {
+            this.removeBy(function (eventType, listenerCaller, delegate) {
+                if (type && type !== eventType) {
+                    return false;
+                }
+                if (caller && caller !== listenerCaller) {
+                    return false;
+                }
+                if (callback && callback !== delegate.Callback) {
+                    return false;
+                }
+                if (onceOnly && !delegate.IsOnce) {
+                    return false;
+                }
+                return true;
+            });
+        };
+        EventMgr.prototype.delAllRegister = function (caller) {
+            var _this = this;
+            this.mEventMap.forEach(function (eventMap, type) {
+                eventMap.delete(caller);
+                if (eventMap.size <= 0) {
+                    _this.mEventMap.delete(type);
+                }
+            });
+        };
+        EventMgr.prototype.find = function (eventType, caller, callback) {
+            if (!eventType) {
+                console.error('Event eventType is null!');
+                return null;
+            }
+            if (!caller) {
+                console.error('Caller eventType is null!');
+                return null;
+            }
+            if (!callback) {
+                console.error('Listener is null!');
+                return null;
+            }
+            var eventMap;
+            if (this.mEventMap.has(eventType)) {
+                eventMap = this.mEventMap.get(eventType);
+            }
+            else {
+                eventMap = new Map();
+                this.mEventMap.set(eventType, eventMap);
+            }
+            var eventList;
+            if (eventMap.has(caller)) {
+                eventList = eventMap.get(caller);
+            }
+            else {
+                eventList = [];
+                eventMap.set(caller, eventList);
+            }
+            for (var _i = 0, eventList_2 = eventList; _i < eventList_2.length; _i++) {
+                var delegate = eventList_2[_i];
+                if (delegate.Callback === callback) {
+                    return delegate;
+                }
+            }
+            return null;
+        };
+        EventMgr.prototype.addListener = function (eventType, caller, callback, isOnce) {
+            var argArray = [];
+            for (var _i = 4; _i < arguments.length; _i++) {
+                argArray[_i - 4] = arguments[_i];
+            }
+            var delegate = this.find(eventType, caller, callback);
+            if (delegate) {
+                delegate.IsOnce = isOnce;
+                console.error('Listener is already exist!');
+            }
+            else {
+                var delegate_1 = new Delegate(callback, argArray, isOnce);
+                this.mEventMap.get(eventType).get(caller).push(delegate_1);
+            }
+        };
+        EventMgr.prototype.removeBy = function (predicate) {
+            var _this = this;
+            if (!predicate) {
+                return;
+            }
+            this.mEventMap.forEach(function (eventMap, eventType) {
+                eventMap.forEach(function (eventList, caller) {
+                    for (var index = eventList.length - 1; index >= 0; --index) {
+                        var delegate = eventList[index];
+                        if (predicate(eventType, caller, delegate)) {
+                            eventList.splice(index, 1);
+                        }
+                    }
+                    if (eventList.length <= 0) {
+                        eventMap.delete(caller);
+                    }
+                });
+                if (eventMap.size <= 0) {
+                    _this.mEventMap.delete(eventType);
+                }
+            });
+        };
+        return EventMgr;
+    }());
+    var TableMgr = /** @class */ (function () {
+        function TableMgr() {
+            this.allTables = null;
+            this.count = 0;
+            this.tol = 0;
+            this.allTables = new Map();
+        }
+        TableMgr.prototype.loadConfig = function (tableType) {
+            var arg = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                arg[_i - 1] = arguments[_i];
+            }
+            return __awaiter(this, void 0, void 0, function () {
+                var jsonAsset_1, jsonObj, tableMap, k, obj, err_1_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.allTables.has(tableType)) {
+                                this.allTables.set(tableType, new Map());
+                            }
+                            this.count++;
+                            zz.log('[Table] 开始加载表格:' + tableType);
+                            if (this.tol < this.count)
+                                this.tol = this.count;
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    cc.loader.loadRes('configs/' + tableType, function (err, jsonAsset) {
+                                        err ? rejectFn(err) : resolveFn(jsonAsset);
+                                    });
+                                })];
+                        case 2:
+                            jsonAsset_1 = _a.sent();
+                            zz.log('[Table] ' + tableType + '加载完毕');
+                            jsonObj = jsonAsset_1.json;
+                            tableMap = new Map();
+                            for (k in jsonObj) {
+                                obj = JSON.parse(JSON.stringify(jsonObj[k]));
+                                tableMap.set(obj.id, obj);
+                            }
+                            this.allTables.set(tableType, tableMap);
+                            this.count--;
+                            return [2 /*return*/, this.count];
+                        case 3:
+                            err_1_1 = _a.sent();
+                            zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        /**
+         * TableComponent：获取表所有数据
+         * @param tableType 数据表类型名称
+         */
+        TableMgr.prototype.getTable = function (tableType) {
+            if (this.allTables.has(tableType)) {
+                return this.allTables.get(tableType);
+            }
+            return null;
+        };
+        /**
+         * TableComponent：获取表数据项目
+         * @param tableType 数据表类型名称
+         * @param key 数据表id
+         */
+        TableMgr.prototype.getTableItem = function (tableType, key) {
+            if (this.allTables.has(tableType)) {
+                return this.allTables.get(tableType).get(key);
+            }
+            else {
+                console.error('[Table] GetTableItem Error! tableType:' + tableType + '; key:' + key);
+                return null;
+            }
+        };
+        /**
+         * TableComponent：表是否存在数据项目
+         * @param tableType 数据表类型名称
+         * @param key 数据表id
+         */
+        TableMgr.prototype.hasTableItem = function (tableType, key) {
+            if (this.allTables.has(tableType)) {
+                return this.allTables.get(tableType).has(key);
+            }
+            else {
+                console.error('[Table] HasTableItem Error! tableType' + tableType + '; key:' + key);
+                return false;
+            }
+        };
+        return TableMgr;
+    }());
+    var StorageMgr = /** @class */ (function () {
+        function StorageMgr() {
+        }
+        StorageMgr.prototype.clear = function () {
+            cc.sys.localStorage.clear();
+        };
+        StorageMgr.prototype.remove = function (key) {
+            cc.sys.localStorage.removeItem(key);
+        };
+        StorageMgr.prototype.saveInt = function (key, value) {
+            cc.sys.localStorage.setItem(key, Math.trunc(value));
+        };
+        /**默认为0 */
+        StorageMgr.prototype.getInt = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
+            // null | undefine
+            if (!sto)
+                return 0;
+            var n = parseInt(sto);
+            // NaN
+            if (!sto)
+                return 0;
+            return n;
+        };
+        StorageMgr.prototype.saveNumber = function (key, value) {
+            cc.sys.localStorage.setItem(key, value);
+        };
+        /**默认为0 */
+        StorageMgr.prototype.getNumber = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
+            // null | undefine
+            if (!sto)
+                return 0;
+            var n = parseFloat(sto);
+            // NaN
+            if (!sto)
+                return 0;
+            return n;
+        };
+        StorageMgr.prototype.saveString = function (key, value) {
+            cc.sys.localStorage.setItem(key, value);
+        };
+        /**默认为"" */
+        StorageMgr.prototype.getString = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
+            if (!sto)
+                return '';
+            return sto;
+        };
+        return StorageMgr;
+    }());
+    var SoundMgr = /** @class */ (function () {
+        function SoundMgr() {
+            this.dict_clip = new Map();
+            this.dict_soundId = new zz.MultiDictionary();
+            this.dict_musicID = new zz.MultiDictionary();
+            this.soundVolume = 1.0;
+            this.musicVolume = 0.5;
+            this._isMusicOn = true;
+            this._isSoundOn = true;
+            this._isAllOn = true;
+        }
+        Object.defineProperty(SoundMgr.prototype, "SoundVolume", {
+            set: function (volume) {
+                this.soundVolume = volume;
+                cc.audioEngine.setEffectsVolume(volume);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "MusicVolume", {
+            set: function (volume) {
+                this.musicVolume = volume;
+                cc.audioEngine.setMusicVolume(volume);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isMusicOn", {
+            /**音乐开关 */
+            get: function () {
+                return this._isMusicOn;
+            },
+            set: function (v) {
+                if (v == false) {
+                    this.stopMusic();
+                }
+                this._isMusicOn = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isSoundOn", {
+            /**音效开关 */
+            get: function () {
+                return this._isSoundOn;
+            },
+            set: function (v) {
+                if (!v) {
+                    this.stopAllSounds();
+                }
+                this._isSoundOn = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isAllOn", {
+            /**声音是否打开 */
+            get: function () {
+                return this._isAllOn;
+            },
+            set: function (v) {
+                this._isAllOn = v;
+                if (!v) {
+                    this.stopAllSounds();
+                    this.stopMusic();
+                }
+            },
+            enumerable: false,
+            configurable: true
+        });
+        SoundMgr.prototype.playSound = function (soundName, loop) {
+            var _this = this;
+            if (loop === void 0) { loop = false; }
+            if (!this.isAllOn) {
+                return;
+            }
+            if (!this.isSoundOn) {
+                return;
+            }
+            if (this.dict_clip.has(soundName)) {
+                var clip = this.dict_clip.get(soundName);
+                var soundID_1 = cc.audioEngine.playEffect(clip, loop);
+                this.dict_soundId.setValue(soundName, soundID_1);
+                cc.audioEngine.setFinishCallback(soundID_1, function () {
+                    if (!loop) {
+                        console.log('[SOUND] sound finish:' + soundID_1);
+                        _this.dict_soundId.remove(soundName, soundID_1);
+                    }
+                });
+            }
+            else {
+                cc.loader.loadRes('audio/' + soundName, cc.AudioClip, function (err, clip) {
+                    if (_this.dict_clip.get(soundName))
+                        return;
+                    _this.dict_clip.set(soundName, clip);
+                    var soundID = cc.audioEngine.playEffect(clip, loop);
+                    _this.dict_soundId.setValue(soundName, soundID);
+                    cc.audioEngine.setFinishCallback(soundID, function () {
+                        if (!loop) {
+                            console.log('[SOUND] sound finish:' + soundID);
+                            _this.dict_soundId.remove(soundName, soundID);
+                        }
+                    });
+                });
+            }
+        };
+        SoundMgr.prototype.playMusic = function (musicName, loop) {
+            var _this = this;
+            if (loop === void 0) { loop = true; }
+            if (!this.isAllOn) {
+                console.log('声音已经关闭');
+                return;
+            }
+            if (!this.isMusicOn) {
+                console.log('音乐已经关闭');
+                return;
+            }
+            if (this.dict_musicID.containsKey(musicName)) {
+                console.warn('[SOUND] Music正在播放,不再重复播放');
+                return;
+            }
+            if (this.dict_clip.has(musicName)) {
+                var clip = this.dict_clip.get(musicName);
+                var id_1 = cc.audioEngine.playMusic(clip, loop);
+                this.dict_musicID.setValue(musicName, id_1);
+                cc.audioEngine.setFinishCallback(id_1, function () {
+                    if (!loop) {
+                        console.log('[SOUND] sound finish:' + id_1);
+                        _this.dict_musicID.remove(musicName, id_1);
+                    }
+                });
+            }
+            else {
+                cc.loader.loadRes('audio/' + musicName, cc.AudioClip, function (err, clip) {
+                    if (err) {
+                        zz.error(err);
+                        return;
+                    }
+                    if (_this.dict_clip.has(musicName))
+                        return;
+                    _this.dict_clip.set(musicName, clip);
+                    var id = cc.audioEngine.playMusic(clip, loop);
+                    _this.dict_musicID.setValue(musicName, id);
+                    cc.audioEngine.setFinishCallback(id, function () {
+                        if (!loop) {
+                            console.log('[SOUND] sound finish:' + id);
+                            _this.dict_musicID.remove(musicName, id);
+                        }
+                    });
+                });
+            }
+        };
+        /**切换音乐; 模拟的渐变切换; 替换PlayMusic使用*/
+        SoundMgr.prototype.changeMusic = function (musicName, loop, inTime, outTime) {
+            var _this = this;
+            if (loop === void 0) { loop = true; }
+            if (inTime === void 0) { inTime = 1; }
+            if (outTime === void 0) { outTime = 1; }
+            var iTime = inTime;
+            var oTime = outTime;
+            var it = 0.1;
+            var iLen = iTime / it;
+            var oLen = oTime / it;
+            var volLmt = this.musicVolume;
+            var iVolIt = volLmt / iLen;
+            var _loop_1 = function (i) {
+                setTimeout(function () {
+                    cc.audioEngine.setMusicVolume(volLmt - iVolIt * i);
+                }, i * it * 1000);
+            };
+            for (var i = 0; i < iLen; i++) {
+                _loop_1(i);
+            }
+            setTimeout(function () {
+                _this.stopMusic();
+                _this.playMusic(musicName, loop);
+            }, iTime * 1000);
+            var oVolIt = volLmt / oLen;
+            var _loop_2 = function (i) {
+                setTimeout(function () {
+                    cc.audioEngine.setMusicVolume(oVolIt * i);
+                }, (i * it + iTime) * 1000);
+            };
+            for (var i = 0; i < oLen; i++) {
+                _loop_2(i);
+            }
+        };
+        SoundMgr.prototype.stopSound = function (soundName) {
+            if (this.dict_soundId.containsKey(soundName)) {
+                this.dict_soundId.getValue(soundName).forEach(function (v) {
+                    cc.audioEngine.stopEffect(v);
+                });
+                this.dict_soundId.remove(soundName);
+            }
+        };
+        SoundMgr.prototype.stopMusic = function () {
+            console.log('[SOUND] StopAllMusic');
+            cc.audioEngine.stopMusic();
+            this.dict_musicID.clear();
+        };
+        SoundMgr.prototype.stopAllSounds = function () {
+            console.log('[SOUND] StopAllSound');
+            cc.audioEngine.stopAllEffects();
+            this.dict_soundId.clear();
+        };
+        SoundMgr.prototype.releaseSound = function (soundName) {
+            this.stopSound(soundName);
+            if (this.dict_clip.has(soundName)) {
+                this.dict_clip.delete(soundName);
+            }
+        };
+        return SoundMgr;
+    }());
+    var UIMgr = /** @class */ (function () {
+        function UIMgr() {
+            /**UI根节点; 从外部注入; */
+            this._uiRoot = undefined;
+            /**进度条函数; 从外部注入; */
+            this.progressFn = undefined;
+            this.uiMap = new Map();
+            this.pathMap = new Map();
+            this.layerMap = new Map();
+            this.loadingFlagMap = new Map();
+            this.openingMap = new Map();
+            this.attachMapClient = new Map();
+            this.attachMapHost = new Map();
+            this.topZIndex = 0;
+        }
+        Object.defineProperty(UIMgr.prototype, "uiRoot", {
+            get: function () {
+                if (!this._uiRoot) {
+                    zz.log('[UIMgr] not set root ui node, find UIRoot node.');
+                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+                }
+                if (!this._uiRoot) {
+                    zz.log('[UIMgr] found no UIRoot, set as Scene node.');
+                    this._uiRoot = cc.director.getScene();
+                }
+                if (!this._uiRoot.isValid) {
+                    zz.log('[UIMgr] scene node destroyed. find root again');
+                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+                    if (!this._uiRoot) {
+                        zz.log('[UIMgr] found no UIRoot again, set as current Scene node again.');
+                        this._uiRoot = cc.director.getScene();
+                    }
+                }
+                zz.log('[UIRoot] get:' + this._uiRoot);
+                return this._uiRoot;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        UIMgr.prototype.setUIRoot = function (rootNd) {
+            this._uiRoot = rootNd;
+        };
+        UIMgr.prototype.setUIParams = function (params) {
+            var _this = this;
+            params.forEach(function (v) {
+                _this.pathMap.set(v.uiName, v.path);
+                _this.layerMap.set(v.uiName, v.zIndex);
+            });
+        };
+        UIMgr.prototype.setProgressFn = function (fn) {
+            this.progressFn = fn;
+        };
+        UIMgr.prototype.openUI = function (uiArgs) {
+            return __awaiter(this, void 0, void 0, function () {
+                var uiName, ui_1, uiNd, path, prefab_1, uiNode, ui_2, err_1_2;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            uiName = uiArgs.uiName;
+                            if (this.uiMap.has(uiName)) {
+                                ui_1 = this.uiMap.get(uiName);
+                                uiNd = ui_1.node;
+                                if (uiNd && uiNd.isValid) {
+                                    this.openUINode(uiNd, uiArgs);
+                                    this.openUIClass(ui_1, uiArgs);
+                                    return [2 /*return*/, undefined];
+                                }
+                                else {
+                                    this.uiMap.delete(uiName);
+                                }
+                            }
+                            if (this.loadingFlagMap.get(uiName)) {
+                                zz.warn('[openUI] 正在加载' + uiName);
+                                this.openingMap.set(uiName, uiArgs);
+                                this.progressFn(true, Math.random(), '');
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingFlagMap.set(uiName, true);
+                            path = this.getUIPath(uiName);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    cc.loader.loadRes(path, function (completedCount, totalCount, item) {
+                                        if (uiArgs.progressArgs) {
+                                            if (uiArgs.progressArgs.showProgressUI) {
+                                                _this.progressFn
+                                                    ? _this.progressFn(true, completedCount / totalCount, uiArgs.progressArgs.desTxt)
+                                                    : zz.error('[UI] 没有注入进度条函数');
+                                            }
+                                        }
+                                    }, function (err, prefab) {
+                                        err ? rejectFn(err) : resolveFn(prefab);
+                                    });
+                                })];
+                        case 2:
+                            prefab_1 = _a.sent();
+                            zz.log('[openUI] ' + uiName + ' open succes');
+                            this.progressFn && this.progressFn(false, 0, '');
+                            this.loadingFlagMap.delete(uiName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 3:
+                            uiNode = _a.sent();
+                            uiNode.parent = this.uiRoot;
+                            ui_2 = uiNode.getComponent(uiName);
+                            this.uiMap.set(uiName, ui_2);
+                            this.openUINode(uiNode, uiArgs);
+                            this.openUIClass(ui_2, uiArgs);
+                            if (this.openingMap.has(uiName))
+                                this.openingMap.delete(uiName);
+                            return [3 /*break*/, 5];
+                        case 4:
+                            err_1_2 = _a.sent();
+                            zz.error('[openUI] error:' + err_1_2);
+                            return [2 /*return*/, undefined];
+                        case 5: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        UIMgr.prototype.openUINode = function (uiNd, uiArgs) {
+            var uiName = uiArgs.uiName;
+            if (!uiNd.parent) {
+                uiNd.parent = this.uiRoot;
+            }
+            if (uiArgs.zIndex) {
+                uiNd.zIndex = uiArgs.zIndex;
+            }
+            else {
+                if (this.layerMap.has(uiName)) {
+                    var z = this.layerMap.get(uiName);
+                    uiNd.zIndex = z;
+                    if (this.topZIndex < z)
+                        this.topZIndex = z;
+                }
+                else {
+                    uiNd.zIndex = ++this.topZIndex;
+                }
+            }
+            uiNd.x = uiNd.y = 0;
+        };
+        UIMgr.prototype.openUIClass = function (ui, uiArgs) {
+            var _a;
+            ui.node.x = ui.node.y = 0;
+            ui.node.opacity = 255;
+            ui.onOpen(uiArgs.openArgs || []);
+            ui.onShow();
+            var widget = ui.node.getComponent(cc.Widget);
+            if (widget)
+                widget.updateAlignment();
+            var cb = uiArgs.callbackArgs;
+            cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
+        };
+        UIMgr.prototype.getUIPath = function (uiName) {
+            return this.pathMap.get(uiName) + '/' + uiName;
+        };
+        /**从场景中移除UI; 保留本地缓存; */
+        UIMgr.prototype.closeUI = function (uiName) {
+            var _this = this;
+            if (this.uiMap.has(uiName)) {
+                this.hideUI(uiName);
+                var ui_3 = this.uiMap.get(uiName);
+                ui_3.node.parent = null;
+                ui_3.onHide();
+                ui_3.onClose();
+                if (this.attachMapHost.has(uiName)) {
+                    this.attachMapHost.get(uiName).forEach(function (v, k) {
+                        _this.closeUI(k) && zz.log('[closeUI] 同时关闭附属:' + k);
+                    });
+                }
+                return true;
+            }
+            return false;
+        };
+        UIMgr.prototype.preloadUI = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var path, prefab_1, uiNode, ui_4, args, err_1_3;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.uiMap.has(uiName)) {
+                                zz.warn('[preloadUI] 已经加载ui:' + uiName);
+                                return [2 /*return*/, undefined];
+                            }
+                            if (this.loadingFlagMap.get(uiName)) {
+                                zz.warn('[preloadUI] 正在加载' + uiName);
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingFlagMap.set(uiName, true);
+                            path = this.getUIPath(uiName);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    cc.loader.loadRes(path, function (err, prefab) {
+                                        err ? rejectFn(err) : resolveFn(prefab);
+                                    });
+                                })];
+                        case 2:
+                            prefab_1 = _a.sent();
+                            zz.log('[preloadUI] ' + uiName + ' preload succes');
+                            this.loadingFlagMap.delete(uiName);
+                            uiNode = cc.instantiate(prefab_1);
+                            ui_4 = uiNode.getComponent(uiName);
+                            this.uiMap.set(uiName, ui_4);
+                            if (this.openingMap.has(uiName)) {
+                                args = this.openingMap.get(uiName);
+                                this.openingMap.delete(uiName);
+                                zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
+                                this.progressFn(false, 0, '');
+                                this.openUINode(uiNode, args);
+                                this.openUIClass(ui_4, args);
+                            }
+                            return [2 /*return*/, uiNode];
+                        case 3:
+                            err_1_3 = _a.sent();
+                            zz.error('[preloadUI] error:' + err_1_3);
+                            return [2 /*return*/, undefined];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        /**关闭ui; 移除本地缓存; */
+        UIMgr.prototype.destroyUI = function (uiName) {
+            this.closeUI(uiName);
+            var ui = this.uiMap.get(uiName);
+            if (ui)
+                ui.destroy();
+            this.uiMap.delete(uiName);
+        };
+        UIMgr.prototype.showUI = function (uiName) {
+            if (this.uiMap.has(uiName)) {
+                var ui_5 = this.uiMap.get(uiName);
+                var nd = ui_5.node;
+                if (!nd) {
+                    zz.warn('[showUI] ' + uiName + '被close过');
+                    return false;
+                }
+                nd.x = nd.y = 0;
+                nd.opacity = 255;
+                ui_5.onShow();
+                return true;
+            }
+            else {
+                zz.error('[shouUI] 未加载的UI:' + uiName);
+                return false;
+            }
+        };
+        UIMgr.prototype.hideUI = function (uiName) {
+            var _this = this;
+            if (this.uiMap.has(uiName)) {
+                var ui_6 = this.uiMap.get(uiName);
+                var nd = ui_6.node;
+                if (nd) {
+                    nd.position = cc.v3(zz.farPos);
+                    nd.opacity = 0;
+                    ui_6.onHide();
+                    if (this.attachMapHost.has(uiName)) {
+                        this.attachMapHost.get(uiName).forEach(function (v, k) {
+                            _this.hideUI(k) && zz.log('[hideUI] 同时隐藏附属:' + k);
+                        });
+                    }
+                    return true;
+                }
+                else {
+                    return false;
+                }
+            }
+            return false;
+        };
+        UIMgr.prototype.getUI = function (uiName) {
+            return this.uiMap.get(uiName);
+        };
+        UIMgr.prototype.isUIShown = function (uiName) {
+            var ui = this.getUI(uiName);
+            if (!ui)
+                return false;
+            if (!ui.node)
+                return false;
+            if (!ui.node.active)
+                return false;
+            if (!ui.node.opacity)
+                return false;
+            return true;
+        };
+        UIMgr.prototype.reloadUI = function (uiName) {
+            this.destroyUI(uiName);
+            this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
+        };
+        /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
+        UIMgr.prototype.setUIAttachment = function (hostUI, clientUI) {
+            if (!this.attachMapClient.has(clientUI)) {
+                this.attachMapClient.set(clientUI, new Map());
+            }
+            if (!this.attachMapHost.has(hostUI)) {
+                this.attachMapHost.set(hostUI, new Map());
+            }
+            this.attachMapHost.get(hostUI).set(clientUI, true);
+            this.attachMapClient.get(clientUI).set(hostUI, true);
+        };
+        /**移除UI之间的依附关系 */
+        UIMgr.prototype.removeUIAttachment = function (hostUI, clientUI) {
+            if (this.attachMapClient.has(clientUI)) {
+                this.attachMapClient.get(clientUI).delete(hostUI);
+            }
+            if (this.attachMapHost.has(hostUI)) {
+                this.attachMapHost.get(hostUI).delete(clientUI);
+            }
+        };
+        return UIMgr;
+    }());
+    zz.farPos = cc.v3(10000, 10000, 0);
+    var UIBase = /** @class */ (function (_super) {
+        __extends(UIBase, _super);
+        function UIBase() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
+        /**
+         * 在onLoad之后调用; 代替onLoad使用; 注意无法重置; 由于无法确保调用一次, 事件注册不宜置于此;
+         * @param args 参数列表
+         */
+        UIBase.prototype.onOpen = function (args) { };
+        /**代替onDestroy使用 */
+        UIBase.prototype.onClose = function () { };
+        /**代替onDiable使用 */
+        UIBase.prototype.onHide = function () { };
+        /**代替onEnable使用 */
+        UIBase.prototype.onShow = function () { };
+        return UIBase;
+    }(cc.Component));
+    zz.UIBase = UIBase;
+    var ResMgr = /** @class */ (function () {
+        function ResMgr() {
+            this.prefabMap = new Map();
+            this.spriteMap = new Map();
+        }
+        ResMgr.prototype.loadResDict = function (mainType, subType, type, assetMap) {
+            return __awaiter(this, void 0, void 0, function () {
+                var path, asset_1, subMap_1, err_1_4;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            path = mainType + '/' + subType + '/';
+                            zz.log('[Res] 开始加载' + path);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    cc.loader.loadResDir(path, type, function (err, res) {
+                                        err ? rejectFn(err) : resolveFn(res);
+                                    });
+                                })];
+                        case 2:
+                            asset_1 = _a.sent();
+                            if (!assetMap.has(subType)) {
+                                assetMap.set(subType, new Map());
+                            }
+                            subMap_1 = assetMap.get(subType);
+                            asset_1.forEach(function (v) {
+                                subMap_1.set(v.name, v);
+                            });
+                            zz.log('[Res] 完成加载' + path);
+                            return [3 /*break*/, 4];
+                        case 3:
+                            err_1_4 = _a.sent();
+                            zz.error('[loadResDict] error:' + err_1_4);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        ResMgr.prototype.loadPrefabs = function (type) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    return [2 /*return*/, this.loadResDict('prefabs', type, cc.Prefab, this.prefabMap)];
+                });
+            });
+        };
+        ResMgr.prototype.loadSprites = function (type) {
+            this.loadResDict('sprites', type, cc.SpriteFrame, this.spriteMap);
+        };
+        ResMgr.prototype.getPrefab = function (type, name) {
+            if (!this.prefabMap.has(type)) {
+                this.prefabMap.set(type, new Map());
+            }
+            return this.prefabMap.get(type).get(name);
+        };
+        ResMgr.prototype.getSpriteframe = function (type, name) {
+            if (!this.spriteMap.has(type)) {
+                this.spriteMap.set(type, new Map());
+            }
+            return this.spriteMap.get(type).get(name);
+        };
+        return ResMgr;
+    }());
+    var ProcedureMgr = /** @class */ (function () {
+        function ProcedureMgr() {
+            this.procedureMap = new Map();
+            this.curProcedure = undefined;
+        }
+        Object.defineProperty(ProcedureMgr.prototype, "currentProcedure", {
+            get: function () {
+                return this.curProcedure;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        ProcedureMgr.prototype.setProcedure = function (procName, procedure) {
+            this.procedureMap.set(procName, procedure);
+        };
+        ProcedureMgr.prototype.init = function (firstProc) {
+            if (this.procedureMap.has(firstProc)) {
+                this.curProcedure = firstProc;
+                this.procedureMap.get(firstProc).onStart();
+            }
+        };
+        ProcedureMgr.prototype.changeProcedure = function (procName) {
+            if (this.procedureMap.has(procName)) {
+                this.procedureMap.get(this.curProcedure).onLeave();
+                this.curProcedure = procName;
+                this.procedureMap.get(procName).onStart();
+            }
+            else {
+                zz.error('[changeProcedure] 不存在' + procName);
+            }
+        };
+        return ProcedureMgr;
+    }());
+    var ProcBase = /** @class */ (function () {
+        function ProcBase() {
+        }
+        return ProcBase;
+    }());
+    zz.ProcBase = ProcBase;
+    zz.event = new EventMgr();
+    zz.table = new TableMgr();
+    zz.sto = new StorageMgr();
+    zz.sound = new SoundMgr();
+    zz.ui = new UIMgr();
+    zz.res = new ResMgr();
+    zz.proc = new ProcedureMgr();
+})(zz || (zz = {}));
+var zz;
+(function (zz) {
     var utils;
     (function (utils) {
         /**打乱字符串 */
@@ -4428,7 +4348,7 @@ var zz;
         }
         utils.clamp = clamp;
         function randomInt(lowerValue, upperValue) {
-            return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
         }
         utils.randomInt = randomInt;
         function randomIndex(len) {
@@ -4507,8 +4427,14 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, new Promise(function (resolve) {
-                                var node = cc.instantiate(prefab);
-                                resolve(node);
+                                if (prefab instanceof cc.Prefab) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                                if (prefab instanceof cc.Node) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
                             })];
                         case 1: return [2 /*return*/, _a.sent()];
                     }
@@ -4519,3 +4445,196 @@ var zz;
     })(utils = zz.utils || (zz.utils = {}));
 })(zz || (zz = {}));
 window.zz = zz;
+/// <reference path="zzUtils.ts" />
+var zz;
+(function (zz) {
+    var NdPool = /** @class */ (function () {
+        function NdPool(rootNd, prefab, defaultNum) {
+            if (defaultNum === void 0) { defaultNum = 10; }
+            this.rootNd = undefined;
+            this.prefab = undefined;
+            this.defaultNum = 10;
+            /**true-可用,未借出; false-不可用,已借出 */
+            // poolMap: Map<cc.Node, boolean> = new Map<cc.Node, boolean>();
+            this.pool = new Array();
+            this.rootNd = rootNd;
+            this.prefab = prefab;
+            this.defaultNum = defaultNum;
+            this.initPool();
+        }
+        NdPool.prototype.initPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var i, node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.pool.push(node);
+                            this.setActive(node, false);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4:
+                            zz.log('[Pool] init complete!');
+                            return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        NdPool.prototype.borrowFromPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            node = this.pool.pop();
+                            if (!node) return [3 /*break*/, 1];
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                        case 1: return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                    }
+                });
+            });
+        };
+        NdPool.prototype.returnBackToPool = function (node) {
+            this.setActive(node, false);
+            this.pool.push(node);
+        };
+        NdPool.prototype.returnAllNode = function () {
+            var _this = this;
+            this.rootNd.children.forEach(function (v) {
+                _this.returnBackToPool(v);
+            });
+        };
+        NdPool.prototype.releasePool = function () {
+            this.rootNd.children.forEach(function (v) {
+                v.parent = null;
+                v.destroy();
+            });
+            this.pool.forEach(function (v) {
+                v.destroy();
+            });
+            this.pool = new Array();
+        };
+        NdPool.prototype.setActive = function (node, active) {
+            if (active) {
+                node.opacity = 255;
+            }
+            else {
+                node.opacity = 0;
+                node.position = cc.v3(zz.farPos);
+            }
+        };
+        return NdPool;
+    }());
+    zz.NdPool = NdPool;
+    var RandomNodePool = /** @class */ (function () {
+        function RandomNodePool(rootNd, prefabs, defaultNum) {
+            if (defaultNum === void 0) { defaultNum = 2; }
+            this.rootNd = undefined;
+            this.defaultNum = 2;
+            this.prefabs = [];
+            this.pool = new Array();
+            this.rootNd = rootNd;
+            this.prefabs = prefabs;
+            this.defaultNum = defaultNum;
+            this.initPool();
+        }
+        RandomNodePool.prototype.initPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var i, rndPrefab, node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.pool.push(node);
+                            this.setActive(node, false);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        RandomNodePool.prototype.selectRandomPrefab = function () {
+            return zz.utils.randomItem(this.prefabs);
+        };
+        RandomNodePool.prototype.borrowFromPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var node, rndPrefab;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            node = this.pool.pop();
+                            if (!node) return [3 /*break*/, 1];
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                        case 1:
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                    }
+                });
+            });
+        };
+        RandomNodePool.prototype.returnBackToPool = function (node) {
+            this.setActive(node, false);
+            this.pool.push(node);
+        };
+        RandomNodePool.prototype.returnAllNode = function () {
+            var _this = this;
+            this.rootNd.children.forEach(function (v) {
+                _this.returnBackToPool(v);
+            });
+        };
+        RandomNodePool.prototype.releasePool = function () {
+            this.rootNd.children.forEach(function (v) {
+                v.parent = undefined;
+                v.destroy();
+            });
+            this.pool.forEach(function (v) {
+                v.destroy();
+            });
+            this.pool = new Array();
+        };
+        RandomNodePool.prototype.setActive = function (node, active) {
+            if (active) {
+                node.opacity = 255;
+            }
+            else {
+                node.opacity = 0;
+                node.position = cc.v3(zz.farPos);
+            }
+        };
+        return RandomNodePool;
+    }());
+    zz.RandomNodePool = RandomNodePool;
+})(zz || (zz = {}));

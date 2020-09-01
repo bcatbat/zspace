@@ -32,9 +32,7 @@ namespace zz.utils {
     return val;
   }
   export function randomInt(lowerValue: number, upperValue: number) {
-    return Math.floor(
-      Math.random() * (upperValue - lowerValue + 1) + lowerValue
-    );
+    return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
   }
   export function randomIndex(len: number) {
     return randomInt(0, len);
@@ -96,10 +94,16 @@ namespace zz.utils {
     let p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
     return p_c;
   }
-  export async function instantiatePrefab(prefab: cc.Prefab) {
+  export async function instantiatePrefab(prefab: cc.Prefab | cc.Node) {
     return await new Promise<cc.Node>(resolve => {
-      let node = cc.instantiate(prefab);
-      resolve(node);
+      if (prefab instanceof cc.Prefab) {
+        let node = cc.instantiate(prefab);
+        resolve(node);
+      }
+      if (prefab instanceof cc.Node) {
+        let node = cc.instantiate(prefab);
+        resolve(node);
+      }
     });
   }
 }

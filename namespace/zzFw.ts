@@ -613,7 +613,7 @@ namespace zz {
       this.loadingFlagMap.set(uiName, true);
       let path = this.getUIPath(uiName);
       try {
-        const prefab_1 = await new Promise((resolveFn, rejectFn) => {
+        const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
           cc.loader.loadRes(
             path,
             (completedCount: number, totalCount: number, item: any) => {
@@ -636,8 +636,8 @@ namespace zz {
         });
         log('[openUI] ' + uiName + ' open succes');
         this.progressFn && this.progressFn(false, 0, '');
-        this.loadingFlagMap.delete(uiName);
-        let uiNode: cc.Node = cc.instantiate(prefab_1) as cc.Node;
+        this.loadingFlagMap.delete(uiName);        
+        let uiNode:cc.Node =await utils.instantiatePrefab(prefab_1) 
         uiNode.parent = this.uiRoot;
         let ui_2 = uiNode.getComponent(uiName) as UIBase;
         this.uiMap.set(uiName, ui_2);

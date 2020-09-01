@@ -3942,7 +3942,7 @@ var zz;
                             path = this.getUIPath(uiName);
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     cc.loader.loadRes(path, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
@@ -3961,7 +3961,9 @@ var zz;
                             zz.log('[openUI] ' + uiName + ' open succes');
                             this.progressFn && this.progressFn(false, 0, '');
                             this.loadingFlagMap.delete(uiName);
-                            uiNode = cc.instantiate(prefab_1);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 3:
+                            uiNode = _a.sent();
                             uiNode.parent = this.uiRoot;
                             ui_2 = uiNode.getComponent(uiName);
                             this.uiMap.set(uiName, ui_2);
@@ -3969,12 +3971,12 @@ var zz;
                             this.openUIClass(ui_2, uiArgs);
                             if (this.openingMap.has(uiName))
                                 this.openingMap.delete(uiName);
-                            return [3 /*break*/, 4];
-                        case 3:
+                            return [3 /*break*/, 5];
+                        case 4:
                             err_1_2 = _a.sent();
                             zz.error('[openUI] error:' + err_1_2);
                             return [2 /*return*/, undefined];
-                        case 4: return [2 /*return*/];
+                        case 5: return [2 /*return*/];
                     }
                 });
             });
@@ -4346,7 +4348,7 @@ var zz;
         }
         utils.clamp = clamp;
         function randomInt(lowerValue, upperValue) {
-            return Math.floor(Math.random() * (upperValue - lowerValue + 1) + lowerValue);
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
         }
         utils.randomInt = randomInt;
         function randomIndex(len) {
@@ -4425,8 +4427,14 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0: return [4 /*yield*/, new Promise(function (resolve) {
-                                var node = cc.instantiate(prefab);
-                                resolve(node);
+                                if (prefab instanceof cc.Prefab) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                                if (prefab instanceof cc.Node) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
                             })];
                         case 1: return [2 /*return*/, _a.sent()];
                     }
@@ -4534,4 +4542,99 @@ var zz;
         return NdPool;
     }());
     zz.NdPool = NdPool;
+    var RandomNodePool = /** @class */ (function () {
+        function RandomNodePool(rootNd, prefabs, defaultNum) {
+            if (defaultNum === void 0) { defaultNum = 2; }
+            this.rootNd = undefined;
+            this.defaultNum = 2;
+            this.prefabs = [];
+            this.pool = new Array();
+            this.rootNd = rootNd;
+            this.prefabs = prefabs;
+            this.defaultNum = defaultNum;
+            this.initPool();
+        }
+        RandomNodePool.prototype.initPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var i, rndPrefab, node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.pool.push(node);
+                            this.setActive(node, false);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        RandomNodePool.prototype.selectRandomPrefab = function () {
+            return zz.utils.randomItem(this.prefabs);
+        };
+        RandomNodePool.prototype.borrowFromPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var node, rndPrefab;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            node = this.pool.pop();
+                            if (!node) return [3 /*break*/, 1];
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                        case 1:
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                    }
+                });
+            });
+        };
+        RandomNodePool.prototype.returnBackToPool = function (node) {
+            this.setActive(node, false);
+            this.pool.push(node);
+        };
+        RandomNodePool.prototype.returnAllNode = function () {
+            var _this = this;
+            this.rootNd.children.forEach(function (v) {
+                _this.returnBackToPool(v);
+            });
+        };
+        RandomNodePool.prototype.releasePool = function () {
+            this.rootNd.children.forEach(function (v) {
+                v.parent = undefined;
+                v.destroy();
+            });
+            this.pool.forEach(function (v) {
+                v.destroy();
+            });
+            this.pool = new Array();
+        };
+        RandomNodePool.prototype.setActive = function (node, active) {
+            if (active) {
+                node.opacity = 255;
+            }
+            else {
+                node.opacity = 0;
+                node.position = cc.v3(zz.farPos);
+            }
+        };
+        return RandomNodePool;
+    }());
+    zz.RandomNodePool = RandomNodePool;
 })(zz || (zz = {}));
