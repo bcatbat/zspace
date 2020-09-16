@@ -3757,15 +3757,15 @@ var zz;
             var _this = this;
             if (loop === void 0) { loop = true; }
             if (!this.isAllOn) {
-                console.log('声音已经关闭');
+                console.log('[SOUND] sound off');
                 return;
             }
             if (!this.isMusicOn) {
-                console.log('音乐已经关闭');
+                console.log('[SOUND] music off');
                 return;
             }
             if (this.dict_musicID.containsKey(musicName)) {
-                console.warn('[SOUND] Music正在播放,不再重复播放');
+                console.warn('[SOUND] music playing, no repeat.');
                 return;
             }
             if (this.dict_clip.has(musicName)) {
@@ -3893,7 +3893,7 @@ var zz;
                         this._uiRoot = cc.director.getScene();
                     }
                 }
-                zz.log('[UIRoot] get:' + this._uiRoot);
+                zz.log('[UIRoot] get:' + this._uiRoot.name);
                 return this._uiRoot;
             },
             enumerable: false,
@@ -4442,6 +4442,38 @@ var zz;
             });
         }
         utils.instantiatePrefab = instantiatePrefab;
+        var TanOneEighthPi = Math.tan(Math.PI / 8);
+        function getDirectionOct(dir) {
+            var x = dir.x;
+            var y = dir.y;
+            var t = TanOneEighthPi;
+            var r1 = x + y * t;
+            var r2 = x - y * t;
+            if (r1 < 0 && r2 >= 0)
+                return 'S';
+            if (r1 >= 0 && r2 < 0)
+                return 'N';
+            var r3 = t * x + y;
+            var r4 = t * x - y;
+            if (r3 >= 0 && r4 >= 0)
+                return 'E';
+            if (r3 < 0 && r4 < 0)
+                return 'W';
+            var r5 = x + t * y;
+            var r6 = x * t + y;
+            if (r5 >= 0 && r6 < 0)
+                return 'SE';
+            if (r5 < 0 && r6 >= 0)
+                return 'NW';
+            var r7 = x - y * t;
+            var r8 = x * t - y;
+            if (r7 >= 0 && r8 < 0)
+                return 'NE';
+            if (r7 < 0 && r8 >= 0)
+                return 'SW';
+            throw new Error('计算方向时,出现错误');
+        }
+        utils.getDirectionOct = getDirectionOct;
     })(utils = zz.utils || (zz.utils = {}));
 })(zz || (zz = {}));
 window.zz = zz;

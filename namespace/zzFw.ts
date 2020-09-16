@@ -422,15 +422,15 @@ namespace zz {
 
     playMusic(musicName: string, loop: boolean = true) {
       if (!this.isAllOn) {
-        console.log('声音已经关闭');
+        console.log('[SOUND] sound off');
         return;
       }
       if (!this.isMusicOn) {
-        console.log('音乐已经关闭');
+        console.log('[SOUND] music off');
         return;
       }
       if (this.dict_musicID.containsKey(musicName)) {
-        console.warn('[SOUND] Music正在播放,不再重复播放');
+        console.warn('[SOUND] music playing, no repeat.');
         return;
       }
       if (this.dict_clip.has(musicName)) {
@@ -539,11 +539,13 @@ namespace zz {
         log('[UIMgr] scene node destroyed. find root again');
         this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
         if (!this._uiRoot) {
-          log('[UIMgr] found no UIRoot again, set as current Scene node again.')
+          log(
+            '[UIMgr] found no UIRoot again, set as current Scene node again.'
+          );
           this._uiRoot = cc.director.getScene();
         }
       }
-      log('[UIRoot] get:' + this._uiRoot);
+      log('[UIRoot] get:' + this._uiRoot.name);
       return this._uiRoot;
     }
     /**进度条函数; 从外部注入; */
@@ -636,8 +638,8 @@ namespace zz {
         });
         log('[openUI] ' + uiName + ' open succes');
         this.progressFn && this.progressFn(false, 0, '');
-        this.loadingFlagMap.delete(uiName);        
-        let uiNode:cc.Node =await utils.instantiatePrefab(prefab_1) 
+        this.loadingFlagMap.delete(uiName);
+        let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
         uiNode.parent = this.uiRoot;
         let ui_2 = uiNode.getComponent(uiName) as UIBase;
         this.uiMap.set(uiName, ui_2);

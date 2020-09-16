@@ -106,6 +106,36 @@ namespace zz.utils {
       }
     });
   }
+  const TanOneEighthPi = Math.tan(Math.PI / 8);
+  export function getDirectionOct(dir: {
+    x: number;
+    y: number;
+  }): 'S' | 'N' | 'E' | 'W' | 'SE' | 'NW' | 'NE' | 'SW' {
+    let x = dir.x;
+    let y = dir.y;
+    let t = TanOneEighthPi;
+    let r1 = x + y * t;
+    let r2 = x - y * t;
+    if (r1 < 0 && r2 >= 0) return 'S';
+    if (r1 >= 0 && r2 < 0) return 'N';
+
+    let r3 = t * x + y;
+    let r4 = t * x - y;
+    if (r3 >= 0 && r4 >= 0) return 'E';
+    if (r3 < 0 && r4 < 0) return 'W';
+
+    let r5 = x + t * y;
+    let r6 = x * t + y;
+    if (r5 >= 0 && r6 < 0) return 'SE';
+    if (r5 < 0 && r6 >= 0) return 'NW';
+
+    let r7 = x - y * t;
+    let r8 = x * t - y;
+    if (r7 >= 0 && r8 < 0) return 'NE';
+    if (r7 < 0 && r8 >= 0) return 'SW';
+
+    throw new Error('计算方向时,出现错误');
+  }
 }
 
 window.zz = zz;
