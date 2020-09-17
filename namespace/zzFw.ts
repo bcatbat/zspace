@@ -1,5 +1,6 @@
 /// <reference path="zzStructure.ts" />
 /// <reference path="zzLog.ts" />
+/// <reference path="zzUtils.ts" />
 namespace zz {
   class Delegate {
     private callback: Function;
@@ -199,24 +200,15 @@ namespace zz {
     public constructor() {
       this.allTables = new Map<string, Map<number, any>>();
     }
-
-    private count: number = 0;
-    private tol: number = 0;
-    public async loadConfig<T extends { id: string }>(
-      tableType: string,
-      ...arg: any[]
-    ) {
+    public async loadConfig<T extends { id: string }>(tableType: string) {
       if (this.allTables.has(tableType)) {
         this.allTables.set(tableType, new Map<number, any>());
       }
-      this.count++;
       log('[Table] 开始加载表格:' + tableType);
-      if (this.tol < this.count) this.tol = this.count;
-
       try {
         const jsonAsset_1 = await new Promise<cc.JsonAsset>(
           (resolveFn, rejectFn) => {
-            cc.loader.loadRes(
+            cc.resources.load(
               'configs/' + tableType,
               (err, jsonAsset: cc.JsonAsset) => {
                 err ? rejectFn(err) : resolveFn(jsonAsset);
@@ -232,8 +224,7 @@ namespace zz {
           tableMap.set(obj.id, obj);
         }
         this.allTables.set(tableType, tableMap);
-        this.count--;
-        return this.count;
+        cc.resources.release('configs/' + tableType);
       } catch (err_1) {
         error('[Table] loading error! table:' + tableType + '; err:' + err_1);
       }
@@ -341,10 +332,16 @@ namespace zz {
       this.soundVolume = volume;
       cc.audioEngine.setEffectsVolume(volume);
     }
+    get SoundVolume() {
+      return this.soundVolume;
+    }
     private musicVolume: number = 0.5;
     set MusicVolume(volume: number) {
       this.musicVolume = volume;
       cc.audioEngine.setMusicVolume(volume);
+    }
+    get MusicVolume() {
+      return this.musicVolume;
     }
 
     private _isMusicOn: boolean = true;
@@ -382,7 +379,7 @@ namespace zz {
       }
     }
 
-    playSound(soundName: string, loop: boolean = false) {
+    async playSound(soundName: string, loop: boolean = false) {
       if (!this.isAllOn) {
         return;
       }
@@ -401,26 +398,23 @@ namespace zz {
           }
         });
       } else {
-        cc.loader.loadRes(
-          'audio/' + soundName,
-          cc.AudioClip,
-          (err, clip: cc.AudioClip) => {
-            if (this.dict_clip.get(soundName)) return;
-            this.dict_clip.set(soundName, clip);
-            let soundID = cc.audioEngine.playEffect(clip, loop);
-            this.dict_soundId.setValue(soundName, soundID);
-            cc.audioEngine.setFinishCallback(soundID, () => {
-              if (!loop) {
-                console.log('[SOUND] sound finish:' + soundID);
-                this.dict_soundId.remove(soundName, soundID);
-              }
-            });
-          }
-        );
+        let bundle = await utils.getBundle('audio');
+        bundle.load(soundName, cc.AudioClip, (err, clip: cc.AudioClip) => {
+          if (this.dict_clip.get(soundName)) return;
+          this.dict_clip.set(soundName, clip);
+          let soundID = cc.audioEngine.playEffect(clip, loop);
+          this.dict_soundId.setValue(soundName, soundID);
+          cc.audioEngine.setFinishCallback(soundID, () => {
+            if (!loop) {
+              console.log('[SOUND] sound finish:' + soundID);
+              this.dict_soundId.remove(soundName, soundID);
+            }
+          });
+        });
       }
     }
 
-    playMusic(musicName: string, loop: boolean = true) {
+    async playMusic(musicName: string, loop: boolean = true) {
       if (!this.isAllOn) {
         console.log('[SOUND] sound off');
         return;
@@ -444,26 +438,31 @@ namespace zz {
           }
         });
       } else {
-        cc.loader.loadRes(
-          'audio/' + musicName,
-          cc.AudioClip,
-          (err, clip: cc.AudioClip) => {
-            if (err) {
-              error(err);
-              return;
-            }
-            if (this.dict_clip.has(musicName)) return;
-            this.dict_clip.set(musicName, clip);
-            let id = cc.audioEngine.playMusic(clip, loop);
-            this.dict_musicID.setValue(musicName, id);
-            cc.audioEngine.setFinishCallback(id, () => {
-              if (!loop) {
-                console.log('[SOUND] sound finish:' + id);
-                this.dict_musicID.remove(musicName, id);
+        try {
+          let bundle = await utils.getBundle('audio');
+          bundle.load(
+            musicName,
+            cc.AudioClip,
+            (err: Error, clip: cc.AudioClip) => {
+              if (err) {
+                error(err);
+                return;
               }
-            });
-          }
-        );
+              if (this.dict_clip.has(musicName)) return;
+              this.dict_clip.set(musicName, clip);
+              let id = cc.audioEngine.playMusic(clip, loop);
+              this.dict_musicID.setValue(musicName, id);
+              cc.audioEngine.setFinishCallback(id, () => {
+                if (!loop) {
+                  console.log('[SOUND] sound finish:' + id);
+                  this.dict_musicID.remove(musicName, id);
+                }
+              });
+            }
+          );
+        } catch (err) {
+          error(err);
+        }
       }
     }
     /**切换音乐; 模拟的渐变切换; 替换PlayMusic使用*/
@@ -514,12 +513,14 @@ namespace zz {
       cc.audioEngine.stopAllEffects();
       this.dict_soundId.clear();
     }
-
     releaseSound(soundName: string) {
       this.stopSound(soundName);
       if (this.dict_clip.has(soundName)) {
         this.dict_clip.delete(soundName);
       }
+      utils.getBundle('audio').then(bundle => {
+        bundle.release(soundName);
+      });
     }
   }
   class UIMgr {
@@ -613,11 +614,12 @@ namespace zz {
       }
 
       this.loadingFlagMap.set(uiName, true);
-      let path = this.getUIPath(uiName);
+
       try {
+        const bundle = await this.getUIBundle(uiName);
         const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
-          cc.loader.loadRes(
-            path,
+          bundle.load(
+            uiName,
             (completedCount: number, totalCount: number, item: any) => {
               if (uiArgs.progressArgs) {
                 if (uiArgs.progressArgs.showProgressUI) {
@@ -679,8 +681,11 @@ namespace zz {
       let cb = uiArgs.callbackArgs;
       cb && cb.fn && cb.fn.call(uiArgs.caller, ...cb.args);
     }
-    private getUIPath(uiName: string) {
-      return this.pathMap.get(uiName) + '/' + uiName;
+    private async getUIBundle(uiName: string) {
+      let path = this.pathMap.get(uiName);
+      if (!path) path = 'resources';
+      let bundle = await utils.getBundle(path);
+      return bundle;
     }
     /**从场景中移除UI; 保留本地缓存; */
     closeUI(uiName: string): boolean {
@@ -710,10 +715,10 @@ namespace zz {
       }
 
       this.loadingFlagMap.set(uiName, true);
-      let path = this.getUIPath(uiName);
       try {
+        const bundle = await this.getUIBundle(uiName);
         const prefab_1 = await new Promise((resolveFn, rejectFn) => {
-          cc.loader.loadRes(path, (err, prefab: cc.Prefab) => {
+          bundle.load(uiName, (err, prefab: cc.Prefab) => {
             err ? rejectFn(err) : resolveFn(prefab);
           });
         });
@@ -815,6 +820,14 @@ namespace zz {
         this.attachMapHost.get(hostUI).delete(clientUI);
       }
     }
+    async releaseUI(uiName: string) {
+      try {
+        let bundle = await this.getUIBundle(uiName);
+        bundle.release(uiName);
+      } catch (err) {
+        error(err);
+      }
+    }
   }
   export const farPos: cc.Vec3 = cc.v3(10000, 10000, 0);
   export abstract class UIBase extends cc.Component {
@@ -869,27 +882,27 @@ namespace zz {
     >();
 
     private async loadResDict(
-      mainType: string,
-      subType: string,
+      bundleName: string,
+      typeName: string,
       type: typeof cc.Asset,
       assetMap: Map<string, Map<string, cc.Asset>>
     ) {
-      let path = mainType + '/' + subType + '/';
-      zz.log('[Res] 开始加载' + path);
+      zz.log('[Res] 开始加载,bundle:' + bundleName + ',name:' + typeName);
       try {
+        let bundle = await utils.getBundle(bundleName);
         const asset_1: cc.Asset[] = await new Promise((resolveFn, rejectFn) => {
-          cc.loader.loadResDir(path, type, (err, res: cc.Asset[]) => {
+          bundle.loadDir(typeName, type, (err, res: cc.Asset[]) => {
             err ? rejectFn(err) : resolveFn(res);
           });
         });
-        if (!assetMap.has(subType)) {
-          assetMap.set(subType, new Map<string, cc.Asset>());
+        if (!assetMap.has(typeName)) {
+          assetMap.set(typeName, new Map<string, cc.Asset>());
         }
-        let subMap = assetMap.get(subType);
+        let subMap = assetMap.get(typeName);
         asset_1.forEach(v => {
           subMap.set(v.name, v);
         });
-        zz.log('[Res] 完成加载' + path);
+        zz.log('[Res] 完成加载,bundle:' + bundleName + ',name:' + typeName);
       } catch (err_1) {
         error('[loadResDict] error:' + err_1);
       }

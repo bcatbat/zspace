@@ -106,6 +106,20 @@ namespace zz.utils {
       }
     });
   }
+  export async function getBundle(bundleName: string) {
+    let bundle = cc.assetManager.getBundle(bundleName);
+    if (!bundle) {
+      bundle = await new Promise<cc.AssetManager.Bundle>((resolve, reject) => {
+        cc.assetManager.loadBundle(
+          bundleName,
+          (err: Error, bundle: cc.AssetManager.Bundle) => {
+            err ? reject(err) : resolve(bundle);
+          }
+        );
+      });
+    }
+    return bundle;
+  }
   const TanOneEighthPi = Math.tan(Math.PI / 8);
   export function getDirectionOct(dir: {
     x: number;

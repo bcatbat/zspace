@@ -3506,15 +3506,9 @@ var zz;
     var TableMgr = /** @class */ (function () {
         function TableMgr() {
             this.allTables = null;
-            this.count = 0;
-            this.tol = 0;
             this.allTables = new Map();
         }
         TableMgr.prototype.loadConfig = function (tableType) {
-            var arg = [];
-            for (var _i = 1; _i < arguments.length; _i++) {
-                arg[_i - 1] = arguments[_i];
-            }
             return __awaiter(this, void 0, void 0, function () {
                 var jsonAsset_1, jsonObj, tableMap, k, obj, err_1_1;
                 return __generator(this, function (_a) {
@@ -3523,15 +3517,12 @@ var zz;
                             if (this.allTables.has(tableType)) {
                                 this.allTables.set(tableType, new Map());
                             }
-                            this.count++;
                             zz.log('[Table] 开始加载表格:' + tableType);
-                            if (this.tol < this.count)
-                                this.tol = this.count;
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 3, , 4]);
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes('configs/' + tableType, function (err, jsonAsset) {
+                                    cc.resources.load('configs/' + tableType, function (err, jsonAsset) {
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
@@ -3545,8 +3536,8 @@ var zz;
                                 tableMap.set(obj.id, obj);
                             }
                             this.allTables.set(tableType, tableMap);
-                            this.count--;
-                            return [2 /*return*/, this.count];
+                            cc.resources.release('configs/' + tableType);
+                            return [3 /*break*/, 4];
                         case 3:
                             err_1_1 = _a.sent();
                             zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_1);
@@ -3659,6 +3650,9 @@ var zz;
             this._isAllOn = true;
         }
         Object.defineProperty(SoundMgr.prototype, "SoundVolume", {
+            get: function () {
+                return this.soundVolume;
+            },
             set: function (volume) {
                 this.soundVolume = volume;
                 cc.audioEngine.setEffectsVolume(volume);
@@ -3667,6 +3661,9 @@ var zz;
             configurable: true
         });
         Object.defineProperty(SoundMgr.prototype, "MusicVolume", {
+            get: function () {
+                return this.musicVolume;
+            },
             set: function (volume) {
                 this.musicVolume = volume;
                 cc.audioEngine.setMusicVolume(volume);
@@ -3718,86 +3715,114 @@ var zz;
             configurable: true
         });
         SoundMgr.prototype.playSound = function (soundName, loop) {
-            var _this = this;
             if (loop === void 0) { loop = false; }
-            if (!this.isAllOn) {
-                return;
-            }
-            if (!this.isSoundOn) {
-                return;
-            }
-            if (this.dict_clip.has(soundName)) {
-                var clip = this.dict_clip.get(soundName);
-                var soundID_1 = cc.audioEngine.playEffect(clip, loop);
-                this.dict_soundId.setValue(soundName, soundID_1);
-                cc.audioEngine.setFinishCallback(soundID_1, function () {
-                    if (!loop) {
-                        console.log('[SOUND] sound finish:' + soundID_1);
-                        _this.dict_soundId.remove(soundName, soundID_1);
+            return __awaiter(this, void 0, void 0, function () {
+                var clip, soundID_1, bundle;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!this.isAllOn) {
+                                return [2 /*return*/];
+                            }
+                            if (!this.isSoundOn) {
+                                return [2 /*return*/];
+                            }
+                            if (!this.dict_clip.has(soundName)) return [3 /*break*/, 1];
+                            clip = this.dict_clip.get(soundName);
+                            soundID_1 = cc.audioEngine.playEffect(clip, loop);
+                            this.dict_soundId.setValue(soundName, soundID_1);
+                            cc.audioEngine.setFinishCallback(soundID_1, function () {
+                                if (!loop) {
+                                    console.log('[SOUND] sound finish:' + soundID_1);
+                                    _this.dict_soundId.remove(soundName, soundID_1);
+                                }
+                            });
+                            return [3 /*break*/, 3];
+                        case 1: return [4 /*yield*/, zz.utils.getBundle('audio')];
+                        case 2:
+                            bundle = _a.sent();
+                            bundle.load(soundName, cc.AudioClip, function (err, clip) {
+                                if (_this.dict_clip.get(soundName))
+                                    return;
+                                _this.dict_clip.set(soundName, clip);
+                                var soundID = cc.audioEngine.playEffect(clip, loop);
+                                _this.dict_soundId.setValue(soundName, soundID);
+                                cc.audioEngine.setFinishCallback(soundID, function () {
+                                    if (!loop) {
+                                        console.log('[SOUND] sound finish:' + soundID);
+                                        _this.dict_soundId.remove(soundName, soundID);
+                                    }
+                                });
+                            });
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
                 });
-            }
-            else {
-                cc.loader.loadRes('audio/' + soundName, cc.AudioClip, function (err, clip) {
-                    if (_this.dict_clip.get(soundName))
-                        return;
-                    _this.dict_clip.set(soundName, clip);
-                    var soundID = cc.audioEngine.playEffect(clip, loop);
-                    _this.dict_soundId.setValue(soundName, soundID);
-                    cc.audioEngine.setFinishCallback(soundID, function () {
-                        if (!loop) {
-                            console.log('[SOUND] sound finish:' + soundID);
-                            _this.dict_soundId.remove(soundName, soundID);
-                        }
-                    });
-                });
-            }
+            });
         };
         SoundMgr.prototype.playMusic = function (musicName, loop) {
-            var _this = this;
             if (loop === void 0) { loop = true; }
-            if (!this.isAllOn) {
-                console.log('[SOUND] sound off');
-                return;
-            }
-            if (!this.isMusicOn) {
-                console.log('[SOUND] music off');
-                return;
-            }
-            if (this.dict_musicID.containsKey(musicName)) {
-                console.warn('[SOUND] music playing, no repeat.');
-                return;
-            }
-            if (this.dict_clip.has(musicName)) {
-                var clip = this.dict_clip.get(musicName);
-                var id_1 = cc.audioEngine.playMusic(clip, loop);
-                this.dict_musicID.setValue(musicName, id_1);
-                cc.audioEngine.setFinishCallback(id_1, function () {
-                    if (!loop) {
-                        console.log('[SOUND] sound finish:' + id_1);
-                        _this.dict_musicID.remove(musicName, id_1);
+            return __awaiter(this, void 0, void 0, function () {
+                var clip, id_1, bundle, err_2;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!this.isAllOn) {
+                                console.log('[SOUND] sound off');
+                                return [2 /*return*/];
+                            }
+                            if (!this.isMusicOn) {
+                                console.log('[SOUND] music off');
+                                return [2 /*return*/];
+                            }
+                            if (this.dict_musicID.containsKey(musicName)) {
+                                console.warn('[SOUND] music playing, no repeat.');
+                                return [2 /*return*/];
+                            }
+                            if (!this.dict_clip.has(musicName)) return [3 /*break*/, 1];
+                            clip = this.dict_clip.get(musicName);
+                            id_1 = cc.audioEngine.playMusic(clip, loop);
+                            this.dict_musicID.setValue(musicName, id_1);
+                            cc.audioEngine.setFinishCallback(id_1, function () {
+                                if (!loop) {
+                                    console.log('[SOUND] sound finish:' + id_1);
+                                    _this.dict_musicID.remove(musicName, id_1);
+                                }
+                            });
+                            return [3 /*break*/, 4];
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, zz.utils.getBundle('audio')];
+                        case 2:
+                            bundle = _a.sent();
+                            bundle.load(musicName, cc.AudioClip, function (err, clip) {
+                                if (err) {
+                                    zz.error(err);
+                                    return;
+                                }
+                                if (_this.dict_clip.has(musicName))
+                                    return;
+                                _this.dict_clip.set(musicName, clip);
+                                var id = cc.audioEngine.playMusic(clip, loop);
+                                _this.dict_musicID.setValue(musicName, id);
+                                cc.audioEngine.setFinishCallback(id, function () {
+                                    if (!loop) {
+                                        console.log('[SOUND] sound finish:' + id);
+                                        _this.dict_musicID.remove(musicName, id);
+                                    }
+                                });
+                            });
+                            return [3 /*break*/, 4];
+                        case 3:
+                            err_2 = _a.sent();
+                            zz.error(err_2);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
                 });
-            }
-            else {
-                cc.loader.loadRes('audio/' + musicName, cc.AudioClip, function (err, clip) {
-                    if (err) {
-                        zz.error(err);
-                        return;
-                    }
-                    if (_this.dict_clip.has(musicName))
-                        return;
-                    _this.dict_clip.set(musicName, clip);
-                    var id = cc.audioEngine.playMusic(clip, loop);
-                    _this.dict_musicID.setValue(musicName, id);
-                    cc.audioEngine.setFinishCallback(id, function () {
-                        if (!loop) {
-                            console.log('[SOUND] sound finish:' + id);
-                            _this.dict_musicID.remove(musicName, id);
-                        }
-                    });
-                });
-            }
+            });
         };
         /**切换音乐; 模拟的渐变切换; 替换PlayMusic使用*/
         SoundMgr.prototype.changeMusic = function (musicName, loop, inTime, outTime) {
@@ -3857,6 +3882,9 @@ var zz;
             if (this.dict_clip.has(soundName)) {
                 this.dict_clip.delete(soundName);
             }
+            zz.utils.getBundle('audio').then(function (bundle) {
+                bundle.release(soundName);
+            });
         };
         return SoundMgr;
     }());
@@ -3914,7 +3942,7 @@ var zz;
         };
         UIMgr.prototype.openUI = function (uiArgs) {
             return __awaiter(this, void 0, void 0, function () {
-                var uiName, ui_1, uiNd, path, prefab_1, uiNode, ui_2, err_1_2;
+                var uiName, ui_1, uiNd, bundle_1, prefab_1, uiNode, ui_2, err_1_2;
                 var _this = this;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
@@ -3939,12 +3967,14 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            path = this.getUIPath(uiName);
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 4, , 5]);
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 2:
+                            bundle_1 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes(path, function (completedCount, totalCount, item) {
+                                    bundle_1.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
                                             if (uiArgs.progressArgs.showProgressUI) {
                                                 _this.progressFn
@@ -3956,13 +3986,13 @@ var zz;
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
-                        case 2:
+                        case 3:
                             prefab_1 = _a.sent();
                             zz.log('[openUI] ' + uiName + ' open succes');
                             this.progressFn && this.progressFn(false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
-                        case 3:
+                        case 4:
                             uiNode = _a.sent();
                             uiNode.parent = this.uiRoot;
                             ui_2 = uiNode.getComponent(uiName);
@@ -3971,12 +4001,12 @@ var zz;
                             this.openUIClass(ui_2, uiArgs);
                             if (this.openingMap.has(uiName))
                                 this.openingMap.delete(uiName);
-                            return [3 /*break*/, 5];
-                        case 4:
+                            return [3 /*break*/, 6];
+                        case 5:
                             err_1_2 = _a.sent();
                             zz.error('[openUI] error:' + err_1_2);
                             return [2 /*return*/, undefined];
-                        case 5: return [2 /*return*/];
+                        case 6: return [2 /*return*/];
                     }
                 });
             });
@@ -4014,8 +4044,22 @@ var zz;
             var cb = uiArgs.callbackArgs;
             cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
         };
-        UIMgr.prototype.getUIPath = function (uiName) {
-            return this.pathMap.get(uiName) + '/' + uiName;
+        UIMgr.prototype.getUIBundle = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var path, bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            path = this.pathMap.get(uiName);
+                            if (!path)
+                                path = 'resources';
+                            return [4 /*yield*/, zz.utils.getBundle(path)];
+                        case 1:
+                            bundle = _a.sent();
+                            return [2 /*return*/, bundle];
+                    }
+                });
+            });
         };
         /**从场景中移除UI; 保留本地缓存; */
         UIMgr.prototype.closeUI = function (uiName) {
@@ -4037,7 +4081,7 @@ var zz;
         };
         UIMgr.prototype.preloadUI = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
-                var path, prefab_1, uiNode, ui_4, args, err_1_3;
+                var bundle_2, prefab_1, uiNode, ui_4, args, err_1_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4050,16 +4094,18 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            path = this.getUIPath(uiName);
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 2:
+                            bundle_2 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadRes(path, function (err, prefab) {
+                                    bundle_2.load(uiName, function (err, prefab) {
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
-                        case 2:
+                        case 3:
                             prefab_1 = _a.sent();
                             zz.log('[preloadUI] ' + uiName + ' preload succes');
                             this.loadingFlagMap.delete(uiName);
@@ -4075,11 +4121,11 @@ var zz;
                                 this.openUIClass(ui_4, args);
                             }
                             return [2 /*return*/, uiNode];
-                        case 3:
+                        case 4:
                             err_1_3 = _a.sent();
                             zz.error('[preloadUI] error:' + err_1_3);
                             return [2 /*return*/, undefined];
-                        case 4: return [2 /*return*/];
+                        case 5: return [2 /*return*/];
                     }
                 });
             });
@@ -4171,6 +4217,27 @@ var zz;
                 this.attachMapHost.get(hostUI).delete(clientUI);
             }
         };
+        UIMgr.prototype.releaseUI = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle, err_3;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 2, , 3]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 1:
+                            bundle = _a.sent();
+                            bundle.release(uiName);
+                            return [3 /*break*/, 3];
+                        case 2:
+                            err_3 = _a.sent();
+                            zz.error(err_3);
+                            return [3 /*break*/, 3];
+                        case 3: return [2 /*return*/];
+                    }
+                });
+            });
+        };
         return UIMgr;
     }());
     zz.farPos = cc.v3(10000, 10000, 0);
@@ -4198,38 +4265,40 @@ var zz;
             this.prefabMap = new Map();
             this.spriteMap = new Map();
         }
-        ResMgr.prototype.loadResDict = function (mainType, subType, type, assetMap) {
+        ResMgr.prototype.loadResDict = function (bundleName, typeName, type, assetMap) {
             return __awaiter(this, void 0, void 0, function () {
-                var path, asset_1, subMap_1, err_1_4;
+                var bundle_3, asset_1, subMap_1, err_1_4;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            path = mainType + '/' + subType + '/';
-                            zz.log('[Res] 开始加载' + path);
+                            zz.log('[Res] 开始加载,bundle:' + bundleName + ',name:' + typeName);
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_3 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.loader.loadResDir(path, type, function (err, res) {
+                                    bundle_3.loadDir(typeName, type, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
-                        case 2:
+                        case 3:
                             asset_1 = _a.sent();
-                            if (!assetMap.has(subType)) {
-                                assetMap.set(subType, new Map());
+                            if (!assetMap.has(typeName)) {
+                                assetMap.set(typeName, new Map());
                             }
-                            subMap_1 = assetMap.get(subType);
+                            subMap_1 = assetMap.get(typeName);
                             asset_1.forEach(function (v) {
                                 subMap_1.set(v.name, v);
                             });
-                            zz.log('[Res] 完成加载' + path);
-                            return [3 /*break*/, 4];
-                        case 3:
+                            zz.log('[Res] 完成加载,bundle:' + bundleName + ',name:' + typeName);
+                            return [3 /*break*/, 5];
+                        case 4:
                             err_1_4 = _a.sent();
                             zz.error('[loadResDict] error:' + err_1_4);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
+                            return [3 /*break*/, 5];
+                        case 5: return [2 /*return*/];
                     }
                 });
             });
@@ -4442,6 +4511,28 @@ var zz;
             });
         }
         utils.instantiatePrefab = instantiatePrefab;
+        function getBundle(bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            bundle = cc.assetManager.getBundle(bundleName);
+                            if (!!bundle) return [3 /*break*/, 2];
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
+                                        err ? reject(err) : resolve(bundle);
+                                    });
+                                })];
+                        case 1:
+                            bundle = _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, bundle];
+                    }
+                });
+            });
+        }
+        utils.getBundle = getBundle;
         var TanOneEighthPi = Math.tan(Math.PI / 8);
         function getDirectionOct(dir) {
             var x = dir.x;

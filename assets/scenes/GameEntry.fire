@@ -174,7 +174,7 @@
       "array": [
         0,
         0,
-        478.9120482927946,
+        526.5434455009387,
         0,
         0,
         0,
@@ -643,7 +643,7 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "showInEditor": false,
-    "_id": "26eePMF/1H1r0vajvM5oZJ"
+    "_id": "aeQiG64K5JZaisSZ8E7sT0"
   },
   {
     "__type__": "cc.Label",
@@ -658,6 +658,8 @@
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
     "_useOriginalSize": true,
     "_string": "Rich",
     "_N$string": "Rich",
@@ -675,7 +677,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "2cG4sC5pVBS46QrFsfIGYJ"
+    "_id": "d2+Dd9nFRP/4s39obkZJQ2"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -685,7 +687,7 @@
     "asset": {
       "__uuid__": "b7c86995-c72a-450b-8c7e-c85e84b7a9ca"
     },
-    "fileId": "26eePMF/1H1r0vajvM5oZJ",
+    "fileId": "aeQiG64K5JZaisSZ8E7sT0",
     "sync": false
   },
   {
@@ -751,7 +753,7 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "showInEditor": false,
-    "_id": "1c0eNsN8NFGLHcu0oibOyb"
+    "_id": "988IyGaedLDagHLP+FdlVK"
   },
   {
     "__type__": "cc.Label",
@@ -766,6 +768,8 @@
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
     "_useOriginalSize": true,
     "_string": "Text",
     "_N$string": "Text",
@@ -783,7 +787,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "74VZsg/uRE/a8ZpzfXHz+Z"
+    "_id": "95dBkXY9lB+b4wh0nVy7k8"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -793,7 +797,7 @@
     "asset": {
       "__uuid__": "b7c86995-c72a-450b-8c7e-c85e84b7a9ca"
     },
-    "fileId": "1c0eNsN8NFGLHcu0oibOyb",
+    "fileId": "988IyGaedLDagHLP+FdlVK",
     "sync": false
   },
   {
@@ -1441,6 +1445,8 @@
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
     "_useOriginalSize": false,
     "_string": "99%",
     "_N$string": "99%",
@@ -1548,6 +1554,8 @@
         "__uuid__": "eca5d2f2-8ef6-41c2-bbe6-f9c79d09c432"
       }
     ],
+    "_srcBlendFactor": 770,
+    "_dstBlendFactor": 771,
     "_useOriginalSize": false,
     "_string": "加载中...",
     "_N$string": "加载中...",

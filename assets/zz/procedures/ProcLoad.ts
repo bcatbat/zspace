@@ -1,6 +1,3 @@
-/** @format */
-
-import { TableEnum } from '../tables/TableEnum';
 import { ProcEnum } from './ProcEnum';
 import { EventType } from '../constValue/EventType';
 import { zMdl } from '../GameEntry';
@@ -9,6 +6,7 @@ import { ConstText } from '../constValue/ConstText';
 export default class ProcLoad extends zz.ProcBase {
   onStart() {
     zz.log('[Procedure] Load, onStart');
+    //TODO 此处增加公用资源bundle的加载;
     this.LoadTables();
   }
   onLeave() {
@@ -16,8 +14,7 @@ export default class ProcLoad extends zz.ProcBase {
   }
 
   async LoadTables() {
-    let tableArr = [
-    ];
+    let tableArr = [];
     zz.event.fire(EventType.LoadingPage, true, 0, ConstText.loading_table);
     for (let i = 0, len = tableArr.length; i < len; i++) {
       await zz.table.loadConfig(tableArr[i]);
