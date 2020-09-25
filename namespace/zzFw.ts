@@ -326,6 +326,7 @@ namespace zz {
       string,
       number
     >();
+    dict_flag: Map<string, number> = new Map<string, number>();
 
     private soundVolume: number = 1.0;
     set SoundVolume(volume: number) {
@@ -386,13 +387,13 @@ namespace zz {
       if (!this.isSoundOn) {
         return;
       }
-
+      this.dict_flag.set(soundName, 1);
       if (this.dict_clip.has(soundName)) {
         let clip = this.dict_clip.get(soundName);
         let soundID = cc.audioEngine.playEffect(clip, loop);
-        this.dict_soundId.setValue(soundName, soundID);
+        this.dict_soundId.setValue(soundName, soundID);        
         cc.audioEngine.setFinishCallback(soundID, () => {
-          if (!loop) {
+          if (!loop || !this.dict_flag.get(soundName)) {
             console.log('[SOUND] sound finish:' + soundID);
             this.dict_soundId.remove(soundName, soundID);
           }
@@ -401,11 +402,12 @@ namespace zz {
         let bundle = await utils.getBundle('audio');
         bundle.load(soundName, cc.AudioClip, (err, clip: cc.AudioClip) => {
           if (this.dict_clip.get(soundName)) return;
+          if (!this.dict_flag.get(soundName)) return;
           this.dict_clip.set(soundName, clip);
           let soundID = cc.audioEngine.playEffect(clip, loop);
           this.dict_soundId.setValue(soundName, soundID);
           cc.audioEngine.setFinishCallback(soundID, () => {
-            if (!loop) {
+            if (!loop || !this.dict_flag.get(soundName)) {
               console.log('[SOUND] sound finish:' + soundID);
               this.dict_soundId.remove(soundName, soundID);
             }
@@ -496,6 +498,7 @@ namespace zz {
       }
     }
     stopSound(soundName: string) {
+      this.dict_flag.set(soundName, 0);
       if (this.dict_soundId.containsKey(soundName)) {
         this.dict_soundId.getValue(soundName).forEach(v => {
           cc.audioEngine.stopEffect(v);
@@ -511,6 +514,9 @@ namespace zz {
     stopAllSounds() {
       console.log('[SOUND] StopAllSound');
       cc.audioEngine.stopAllEffects();
+      this.dict_soundId.keys().forEach(v => {
+        this.dict_flag.set(v, 0);
+      });
       this.dict_soundId.clear();
     }
     releaseSound(soundName: string) {

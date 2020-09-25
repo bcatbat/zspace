@@ -3302,8 +3302,203 @@ var zz;
     }
     zz.assertEqual = assertEqual;
 })(zz || (zz = {}));
+var zz;
+(function (zz) {
+    var utils;
+    (function (utils) {
+        /**打乱字符串 */
+        function upsetString(oStr) {
+            var orginStr = oStr.split('');
+            var len = orginStr.length;
+            var result = '';
+            var tmp;
+            for (var i = len - 1; i > 0; i--) {
+                var index = Math.floor(len * Math.random()); //随机数的产生范围不变
+                //每次与最后一位交换顺序
+                tmp = orginStr[index];
+                orginStr[index] = orginStr[i];
+                orginStr[i] = tmp;
+            }
+            for (var _i = 0, orginStr_1 = orginStr; _i < orginStr_1.length; _i++) {
+                var node = orginStr_1[_i];
+                result += node;
+            }
+            return result;
+        }
+        utils.upsetString = upsetString;
+        /**字符串转unicode数字的累加和 */
+        function str2Unicode2Number(str) {
+            var num = 0;
+            for (var i = 0, len = str.length; i < len; i++) {
+                var strH = str.charCodeAt(i);
+                num += +strH;
+            }
+            return num;
+        }
+        utils.str2Unicode2Number = str2Unicode2Number;
+        function clamp(val, min, max) {
+            if (val > max)
+                return max;
+            if (val < min)
+                return min;
+            return val;
+        }
+        utils.clamp = clamp;
+        function randomInt(lowerValue, upperValue) {
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
+        }
+        utils.randomInt = randomInt;
+        function randomIndex(len) {
+            return randomInt(0, len);
+        }
+        utils.randomIndex = randomIndex;
+        function randomIndexFromWeight(weightArr) {
+            var tol = 0;
+            weightArr.forEach(function (v) { return (tol += v); });
+            var rnd = Math.random() * tol;
+            var acc = 0;
+            var len = weightArr.length;
+            for (var i = 0; i < len; i++) {
+                acc += weightArr[i];
+                if (rnd < acc)
+                    return i;
+            }
+            return -1;
+        }
+        utils.randomIndexFromWeight = randomIndexFromWeight;
+        function randomItem(arr) {
+            return arr[randomIndex(arr.length)];
+        }
+        utils.randomItem = randomItem;
+        function convertArrayD2toD1(arr) {
+            var res = [];
+            arr.forEach(function (v) {
+                res.push.apply(res, v);
+            });
+            return res;
+        }
+        utils.convertArrayD2toD1 = convertArrayD2toD1;
+        function convertArrayD1toD2(arr, col) {
+            var len = arr.length;
+            if (len % col != 0) {
+                throw new Error('传入的二维数组不合格');
+            }
+            var res = [];
+            for (var i = 0; i < len; i++) {
+                res.push(arr.slice(i, i + col));
+            }
+            return res;
+        }
+        utils.convertArrayD1toD2 = convertArrayD1toD2;
+        function shuffleArray(arr) {
+            var len = arr.length;
+            var res = Array.from(arr);
+            for (var i = 0; i < len; i++) {
+                var temp = res[i];
+                var tar = randomIndex(len);
+                res[i] = res[tar];
+                res[tar] = temp;
+            }
+            return res;
+        }
+        utils.shuffleArray = shuffleArray;
+        /**格式化秒数,例如132s->02:12 */
+        function formatSeconds(seconds) {
+            var min = Math.floor(seconds / 60).toFixed(0);
+            var sec = (seconds % 60).toFixed(0);
+            if (min.length == 1)
+                min = '0' + min;
+            if (sec.length == 1)
+                sec = '0' + sec;
+            return min + ':' + sec;
+        }
+        utils.formatSeconds = formatSeconds;
+        function getPosInMainCamera(node) {
+            var p_w = node.convertToWorldSpaceAR(cc.v2());
+            var p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
+            return p_c;
+        }
+        utils.getPosInMainCamera = getPosInMainCamera;
+        function instantiatePrefab(prefab) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, new Promise(function (resolve) {
+                                if (prefab instanceof cc.Prefab) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                                if (prefab instanceof cc.Node) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                            })];
+                        case 1: return [2 /*return*/, _a.sent()];
+                    }
+                });
+            });
+        }
+        utils.instantiatePrefab = instantiatePrefab;
+        function getBundle(bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            bundle = cc.assetManager.getBundle(bundleName);
+                            if (!!bundle) return [3 /*break*/, 2];
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
+                                        err ? reject(err) : resolve(bundle);
+                                    });
+                                })];
+                        case 1:
+                            bundle = _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, bundle];
+                    }
+                });
+            });
+        }
+        utils.getBundle = getBundle;
+        var TanOneEighthPi = Math.tan(Math.PI / 8);
+        function getDirectionOct(dir) {
+            var x = dir.x;
+            var y = dir.y;
+            var t = TanOneEighthPi;
+            var r1 = x + y * t;
+            var r2 = x - y * t;
+            if (r1 < 0 && r2 >= 0)
+                return 'S';
+            if (r1 >= 0 && r2 < 0)
+                return 'N';
+            var r3 = t * x + y;
+            var r4 = t * x - y;
+            if (r3 >= 0 && r4 >= 0)
+                return 'E';
+            if (r3 < 0 && r4 < 0)
+                return 'W';
+            var r5 = x + t * y;
+            var r6 = x * t + y;
+            if (r5 >= 0 && r6 < 0)
+                return 'SE';
+            if (r5 < 0 && r6 >= 0)
+                return 'NW';
+            var r7 = x - y * t;
+            var r8 = x * t - y;
+            if (r7 >= 0 && r8 < 0)
+                return 'NE';
+            if (r7 < 0 && r8 >= 0)
+                return 'SW';
+            throw new Error('计算方向时,出现错误');
+        }
+        utils.getDirectionOct = getDirectionOct;
+    })(utils = zz.utils || (zz.utils = {}));
+})(zz || (zz = {}));
+window.zz = zz;
 /// <reference path="zzStructure.ts" />
 /// <reference path="zzLog.ts" />
+/// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
     var Delegate = /** @class */ (function () {
@@ -3643,6 +3838,7 @@ var zz;
             this.dict_clip = new Map();
             this.dict_soundId = new zz.MultiDictionary();
             this.dict_musicID = new zz.MultiDictionary();
+            this.dict_flag = new Map();
             this.soundVolume = 1.0;
             this.musicVolume = 0.5;
             this._isMusicOn = true;
@@ -3728,12 +3924,13 @@ var zz;
                             if (!this.isSoundOn) {
                                 return [2 /*return*/];
                             }
+                            this.dict_flag.set(soundName, 1);
                             if (!this.dict_clip.has(soundName)) return [3 /*break*/, 1];
                             clip = this.dict_clip.get(soundName);
                             soundID_1 = cc.audioEngine.playEffect(clip, loop);
                             this.dict_soundId.setValue(soundName, soundID_1);
                             cc.audioEngine.setFinishCallback(soundID_1, function () {
-                                if (!loop) {
+                                if (!loop || !_this.dict_flag.get(soundName)) {
                                     console.log('[SOUND] sound finish:' + soundID_1);
                                     _this.dict_soundId.remove(soundName, soundID_1);
                                 }
@@ -3745,11 +3942,13 @@ var zz;
                             bundle.load(soundName, cc.AudioClip, function (err, clip) {
                                 if (_this.dict_clip.get(soundName))
                                     return;
+                                if (!_this.dict_flag.get(soundName))
+                                    return;
                                 _this.dict_clip.set(soundName, clip);
                                 var soundID = cc.audioEngine.playEffect(clip, loop);
                                 _this.dict_soundId.setValue(soundName, soundID);
                                 cc.audioEngine.setFinishCallback(soundID, function () {
-                                    if (!loop) {
+                                    if (!loop || !_this.dict_flag.get(soundName)) {
                                         console.log('[SOUND] sound finish:' + soundID);
                                         _this.dict_soundId.remove(soundName, soundID);
                                     }
@@ -3860,6 +4059,7 @@ var zz;
             }
         };
         SoundMgr.prototype.stopSound = function (soundName) {
+            this.dict_flag.set(soundName, 0);
             if (this.dict_soundId.containsKey(soundName)) {
                 this.dict_soundId.getValue(soundName).forEach(function (v) {
                     cc.audioEngine.stopEffect(v);
@@ -3873,8 +4073,12 @@ var zz;
             this.dict_musicID.clear();
         };
         SoundMgr.prototype.stopAllSounds = function () {
+            var _this = this;
             console.log('[SOUND] StopAllSound');
             cc.audioEngine.stopAllEffects();
+            this.dict_soundId.keys().forEach(function (v) {
+                _this.dict_flag.set(v, 0);
+            });
             this.dict_soundId.clear();
         };
         SoundMgr.prototype.releaseSound = function (soundName) {
@@ -4374,200 +4578,6 @@ var zz;
     zz.res = new ResMgr();
     zz.proc = new ProcedureMgr();
 })(zz || (zz = {}));
-var zz;
-(function (zz) {
-    var utils;
-    (function (utils) {
-        /**打乱字符串 */
-        function upsetString(oStr) {
-            var orginStr = oStr.split('');
-            var len = orginStr.length;
-            var result = '';
-            var tmp;
-            for (var i = len - 1; i > 0; i--) {
-                var index = Math.floor(len * Math.random()); //随机数的产生范围不变
-                //每次与最后一位交换顺序
-                tmp = orginStr[index];
-                orginStr[index] = orginStr[i];
-                orginStr[i] = tmp;
-            }
-            for (var _i = 0, orginStr_1 = orginStr; _i < orginStr_1.length; _i++) {
-                var node = orginStr_1[_i];
-                result += node;
-            }
-            return result;
-        }
-        utils.upsetString = upsetString;
-        /**字符串转unicode数字的累加和 */
-        function str2Unicode2Number(str) {
-            var num = 0;
-            for (var i = 0, len = str.length; i < len; i++) {
-                var strH = str.charCodeAt(i);
-                num += +strH;
-            }
-            return num;
-        }
-        utils.str2Unicode2Number = str2Unicode2Number;
-        function clamp(val, min, max) {
-            if (val > max)
-                return max;
-            if (val < min)
-                return min;
-            return val;
-        }
-        utils.clamp = clamp;
-        function randomInt(lowerValue, upperValue) {
-            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
-        }
-        utils.randomInt = randomInt;
-        function randomIndex(len) {
-            return randomInt(0, len);
-        }
-        utils.randomIndex = randomIndex;
-        function randomIndexFromWeight(weightArr) {
-            var tol = 0;
-            weightArr.forEach(function (v) { return (tol += v); });
-            var rnd = Math.random() * tol;
-            var acc = 0;
-            var len = weightArr.length;
-            for (var i = 0; i < len; i++) {
-                acc += weightArr[i];
-                if (rnd < acc)
-                    return i;
-            }
-            return -1;
-        }
-        utils.randomIndexFromWeight = randomIndexFromWeight;
-        function randomItem(arr) {
-            return arr[randomIndex(arr.length)];
-        }
-        utils.randomItem = randomItem;
-        function convertArrayD2toD1(arr) {
-            var res = [];
-            arr.forEach(function (v) {
-                res.push.apply(res, v);
-            });
-            return res;
-        }
-        utils.convertArrayD2toD1 = convertArrayD2toD1;
-        function convertArrayD1toD2(arr, col) {
-            var len = arr.length;
-            if (len % col != 0) {
-                throw new Error('传入的二维数组不合格');
-            }
-            var res = [];
-            for (var i = 0; i < len; i++) {
-                res.push(arr.slice(i, i + col));
-            }
-            return res;
-        }
-        utils.convertArrayD1toD2 = convertArrayD1toD2;
-        function shuffleArray(arr) {
-            var len = arr.length;
-            var res = Array.from(arr);
-            for (var i = 0; i < len; i++) {
-                var temp = res[i];
-                var tar = randomIndex(len);
-                res[i] = res[tar];
-                res[tar] = temp;
-            }
-            return res;
-        }
-        utils.shuffleArray = shuffleArray;
-        /**格式化秒数,例如132s->02:12 */
-        function formatSeconds(seconds) {
-            var min = Math.floor(seconds / 60).toFixed(0);
-            var sec = (seconds % 60).toFixed(0);
-            if (min.length == 1)
-                min = '0' + min;
-            if (sec.length == 1)
-                sec = '0' + sec;
-            return min + ':' + sec;
-        }
-        utils.formatSeconds = formatSeconds;
-        function getPosInMainCamera(node) {
-            var p_w = node.convertToWorldSpaceAR(cc.v2());
-            var p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
-            return p_c;
-        }
-        utils.getPosInMainCamera = getPosInMainCamera;
-        function instantiatePrefab(prefab) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, new Promise(function (resolve) {
-                                if (prefab instanceof cc.Prefab) {
-                                    var node = cc.instantiate(prefab);
-                                    resolve(node);
-                                }
-                                if (prefab instanceof cc.Node) {
-                                    var node = cc.instantiate(prefab);
-                                    resolve(node);
-                                }
-                            })];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                });
-            });
-        }
-        utils.instantiatePrefab = instantiatePrefab;
-        function getBundle(bundleName) {
-            return __awaiter(this, void 0, void 0, function () {
-                var bundle;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            bundle = cc.assetManager.getBundle(bundleName);
-                            if (!!bundle) return [3 /*break*/, 2];
-                            return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
-                                        err ? reject(err) : resolve(bundle);
-                                    });
-                                })];
-                        case 1:
-                            bundle = _a.sent();
-                            _a.label = 2;
-                        case 2: return [2 /*return*/, bundle];
-                    }
-                });
-            });
-        }
-        utils.getBundle = getBundle;
-        var TanOneEighthPi = Math.tan(Math.PI / 8);
-        function getDirectionOct(dir) {
-            var x = dir.x;
-            var y = dir.y;
-            var t = TanOneEighthPi;
-            var r1 = x + y * t;
-            var r2 = x - y * t;
-            if (r1 < 0 && r2 >= 0)
-                return 'S';
-            if (r1 >= 0 && r2 < 0)
-                return 'N';
-            var r3 = t * x + y;
-            var r4 = t * x - y;
-            if (r3 >= 0 && r4 >= 0)
-                return 'E';
-            if (r3 < 0 && r4 < 0)
-                return 'W';
-            var r5 = x + t * y;
-            var r6 = x * t + y;
-            if (r5 >= 0 && r6 < 0)
-                return 'SE';
-            if (r5 < 0 && r6 >= 0)
-                return 'NW';
-            var r7 = x - y * t;
-            var r8 = x * t - y;
-            if (r7 >= 0 && r8 < 0)
-                return 'NE';
-            if (r7 < 0 && r8 >= 0)
-                return 'SW';
-            throw new Error('计算方向时,出现错误');
-        }
-        utils.getDirectionOct = getDirectionOct;
-    })(utils = zz.utils || (zz.utils = {}));
-})(zz || (zz = {}));
-window.zz = zz;
 /// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
@@ -4760,4 +4770,47 @@ var zz;
         return RandomNodePool;
     }());
     zz.RandomNodePool = RandomNodePool;
+})(zz || (zz = {}));
+var zz;
+(function (zz) {
+    function int(x) {
+        return x | 0;
+    }
+    zz.int = int;
+    function uint(x) {
+        return x >>> 0;
+    }
+    zz.uint = uint;
+    function int8(x) {
+        return (x << 24) >> 24;
+    }
+    zz.int8 = int8;
+    function int16(x) {
+        return (x << 16) >> 16;
+    }
+    zz.int16 = int16;
+    function int32(x) {
+        return x | 0;
+    }
+    zz.int32 = int32;
+    function uint8(x) {
+        return x & 255;
+    }
+    zz.uint8 = uint8;
+    function uint16(x) {
+        return x & 65535;
+    }
+    zz.uint16 = uint16;
+    function uint32(x) {
+        return x >>> 0;
+    }
+    zz.uint32 = uint32;
+    function float(x) {
+        return Math.fround(x);
+    }
+    zz.float = float;
+    function double(x) {
+        return +x;
+    }
+    zz.double = double;
 })(zz || (zz = {}));
