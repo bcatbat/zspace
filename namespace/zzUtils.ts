@@ -6,7 +6,7 @@ namespace zz.utils {
     let result = '';
     let tmp;
     for (let i = len - 1; i > 0; i--) {
-      let index = Math.floor(len * Math.random()); //随机数的产生范围不变
+      let index = int(len * Math.random()); //随机数的产生范围不变
       //每次与最后一位交换顺序
       tmp = orginStr[index];
       orginStr[index] = orginStr[i];
@@ -83,7 +83,7 @@ namespace zz.utils {
   }
   /**格式化秒数,例如132s->02:12 */
   export function formatSeconds(seconds: number) {
-    let min = Math.floor(seconds / 60).toFixed(0);
+    let min = int(seconds / 60).toFixed(0);
     let sec = (seconds % 60).toFixed(0);
     if (min.length == 1) min = '0' + min;
     if (sec.length == 1) sec = '0' + sec;

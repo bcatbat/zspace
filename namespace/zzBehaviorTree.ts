@@ -111,7 +111,7 @@ namespace zz {
         let n = this.children.length;
         while (n > 1) {
           n--;
-          let k = Math.floor(Math.random() * (n + 1));
+          let k = int(Math.random() * (n + 1));
           let val = this.children[k];
           this.children[k] = this.children[n];
           this.children[n] = val;

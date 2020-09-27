@@ -391,7 +391,7 @@ namespace zz {
       if (this.dict_clip.has(soundName)) {
         let clip = this.dict_clip.get(soundName);
         let soundID = cc.audioEngine.playEffect(clip, loop);
-        this.dict_soundId.setValue(soundName, soundID);        
+        this.dict_soundId.setValue(soundName, soundID);
         cc.audioEngine.setFinishCallback(soundID, () => {
           if (!loop || !this.dict_flag.get(soundName)) {
             console.log('[SOUND] sound finish:' + soundID);
@@ -645,7 +645,7 @@ namespace zz {
           );
         });
         log('[openUI] ' + uiName + ' open succes');
-        this.progressFn && this.progressFn(false, 0, '');
+        this.progressFn?.(false, 0, '');
         this.loadingFlagMap.delete(uiName);
         let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
         uiNode.parent = this.uiRoot;
@@ -685,7 +685,7 @@ namespace zz {
       let widget = ui.node.getComponent(cc.Widget);
       if (widget) widget.updateAlignment();
       let cb = uiArgs.callbackArgs;
-      cb && cb.fn && cb.fn.call(uiArgs.caller, ...cb.args);
+      cb?.fn?.call(uiArgs.caller, ...cb.args);
     }
     private async getUIBundle(uiName: string) {
       let path = this.pathMap.get(uiName);

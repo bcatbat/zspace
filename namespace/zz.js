@@ -194,7 +194,7 @@ var zz;
                 var n = _this.children.length;
                 while (n > 1) {
                     n--;
-                    var k = Math.floor(Math.random() * (n + 1));
+                    var k = zz.int(Math.random() * (n + 1));
                     var val = _this.children[k];
                     _this.children[k] = _this.children[n];
                     _this.children[n] = val;
@@ -3313,7 +3313,7 @@ var zz;
             var result = '';
             var tmp;
             for (var i = len - 1; i > 0; i--) {
-                var index = Math.floor(len * Math.random()); //随机数的产生范围不变
+                var index = zz.int(len * Math.random()); //随机数的产生范围不变
                 //每次与最后一位交换顺序
                 tmp = orginStr[index];
                 orginStr[index] = orginStr[i];
@@ -3404,7 +3404,7 @@ var zz;
         utils.shuffleArray = shuffleArray;
         /**格式化秒数,例如132s->02:12 */
         function formatSeconds(seconds) {
-            var min = Math.floor(seconds / 60).toFixed(0);
+            var min = zz.int(seconds / 60).toFixed(0);
             var sec = (seconds % 60).toFixed(0);
             if (min.length == 1)
                 min = '0' + min;
@@ -4145,11 +4145,12 @@ var zz;
             this.progressFn = fn;
         };
         UIMgr.prototype.openUI = function (uiArgs) {
+            var _a;
             return __awaiter(this, void 0, void 0, function () {
                 var uiName, ui_1, uiNd, bundle_1, prefab_1, uiNode, ui_2, err_1_2;
                 var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             uiName = uiArgs.uiName;
                             if (this.uiMap.has(uiName)) {
@@ -4171,12 +4172,12 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            _a.label = 1;
+                            _b.label = 1;
                         case 1:
-                            _a.trys.push([1, 5, , 6]);
+                            _b.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_1 = _a.sent();
+                            bundle_1 = _b.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_1.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
@@ -4191,13 +4192,13 @@ var zz;
                                     });
                                 })];
                         case 3:
-                            prefab_1 = _a.sent();
+                            prefab_1 = _b.sent();
                             zz.log('[openUI] ' + uiName + ' open succes');
-                            this.progressFn && this.progressFn(false, 0, '');
+                            (_a = this.progressFn) === null || _a === void 0 ? void 0 : _a.call(this, false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
                         case 4:
-                            uiNode = _a.sent();
+                            uiNode = _b.sent();
                             uiNode.parent = this.uiRoot;
                             ui_2 = uiNode.getComponent(uiName);
                             this.uiMap.set(uiName, ui_2);
@@ -4207,7 +4208,7 @@ var zz;
                                 this.openingMap.delete(uiName);
                             return [3 /*break*/, 6];
                         case 5:
-                            err_1_2 = _a.sent();
+                            err_1_2 = _b.sent();
                             zz.error('[openUI] error:' + err_1_2);
                             return [2 /*return*/, undefined];
                         case 6: return [2 /*return*/];
@@ -4246,7 +4247,7 @@ var zz;
             if (widget)
                 widget.updateAlignment();
             var cb = uiArgs.callbackArgs;
-            cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
+            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
         };
         UIMgr.prototype.getUIBundle = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
@@ -4589,7 +4590,8 @@ var zz;
             this.defaultNum = 10;
             /**true-可用,未借出; false-不可用,已借出 */
             // poolMap: Map<cc.Node, boolean> = new Map<cc.Node, boolean>();
-            this.pool = new Array();
+            this.poolLeft = new Array();
+            this.poolOut = new Array();
             this.rootNd = rootNd;
             this.prefab = prefab;
             this.defaultNum = defaultNum;
@@ -4609,26 +4611,25 @@ var zz;
                         case 2:
                             node = _a.sent();
                             node.parent = this.rootNd;
-                            this.pool.push(node);
+                            this.poolLeft.push(node);
                             this.setActive(node, false);
                             _a.label = 3;
                         case 3:
                             i++;
                             return [3 /*break*/, 1];
-                        case 4:
-                            zz.log('[Pool] init complete!');
-                            return [2 /*return*/];
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
         };
-        NdPool.prototype.borrowFromPool = function () {
+        /**异步方法 */
+        NdPool.prototype.borrowFromPoolAsync = function () {
             return __awaiter(this, void 0, void 0, function () {
                 var node;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            node = this.pool.pop();
+                            node = this.poolLeft.pop();
                             if (!node) return [3 /*break*/, 1];
                             node.parent = this.rootNd;
                             this.setActive(node, true);
@@ -4636,6 +4637,7 @@ var zz;
                         case 1: return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
                         case 2:
                             node = _a.sent();
+                            // zz.log('[Pool] not enough, instantiate new node');
                             node.parent = this.rootNd;
                             this.setActive(node, true);
                             return [2 /*return*/, node];
@@ -4643,28 +4645,47 @@ var zz;
                 });
             });
         };
+        /**同步方法 */
+        NdPool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
+            if (!node) {
+                node = cc.instantiate(this.prefab);
+                // zz.log('[Pool] not enough, instantiate new node');
+                node.parent = this.rootNd;
+            }
+            node.parent = this.rootNd;
+            this.setActive(node, true);
+            return node;
+        };
         NdPool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
-            this.pool.push(node);
+            this.poolLeft.push(node);
         };
         NdPool.prototype.returnAllNode = function () {
             var _this = this;
-            this.rootNd.children.forEach(function (v) {
+            this.poolOut.forEach(function (v) {
                 _this.returnBackToPool(v);
             });
+            this.poolOut = [];
+            // zz.log('[Pool] return all, count:' + this.poolLeft.length);
         };
         NdPool.prototype.releasePool = function () {
-            this.rootNd.children.forEach(function (v) {
+            this.returnAllNode();
+            // zz.log(
+            //   '[Pool] release pool,left count:' +
+            //     this.poolLeft.length +
+            //     ', out count:' +
+            //     this.poolOut.length
+            // );
+            this.poolLeft.forEach(function (v) {
                 v.parent = null;
                 v.destroy();
             });
-            this.pool.forEach(function (v) {
-                v.destroy();
-            });
-            this.pool = new Array();
+            this.poolLeft = new Array();
         };
         NdPool.prototype.setActive = function (node, active) {
             if (active) {
+                this.poolOut.push(node);
                 node.opacity = 255;
             }
             else {
@@ -4681,7 +4702,8 @@ var zz;
             this.rootNd = undefined;
             this.defaultNum = 2;
             this.prefabs = [];
-            this.pool = new Array();
+            this.poolLeft = new Array();
+            this.poolOut = new Array();
             this.rootNd = rootNd;
             this.prefabs = prefabs;
             this.defaultNum = defaultNum;
@@ -4702,7 +4724,7 @@ var zz;
                         case 2:
                             node = _a.sent();
                             node.parent = this.rootNd;
-                            this.pool.push(node);
+                            this.poolLeft.push(node);
                             this.setActive(node, false);
                             _a.label = 3;
                         case 3:
@@ -4722,7 +4744,7 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            node = this.pool.pop();
+                            node = this.poolLeft.pop();
                             if (!node) return [3 /*break*/, 1];
                             this.setActive(node, true);
                             return [2 /*return*/, node];
@@ -4738,28 +4760,43 @@ var zz;
                 });
             });
         };
+        /**同步方法 */
+        RandomNodePool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
+            if (!node) {
+                var rndPrefb = this.selectRandomPrefab();
+                node = cc.instantiate(rndPrefb);
+                // zz.log('[Pool] not enough, instantiate new node');
+                node.parent = this.rootNd;
+            }
+            node.parent = this.rootNd;
+            this.setActive(node, true);
+            return node;
+        };
         RandomNodePool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
-            this.pool.push(node);
+            this.poolLeft.push(node);
         };
         RandomNodePool.prototype.returnAllNode = function () {
             var _this = this;
-            this.rootNd.children.forEach(function (v) {
+            this.poolOut.forEach(function (v) {
                 _this.returnBackToPool(v);
             });
+            this.poolOut = [];
+            // zz.log('[Pool] return all, count:' + this.poolLeft.length);
         };
         RandomNodePool.prototype.releasePool = function () {
-            this.rootNd.children.forEach(function (v) {
+            this.returnAllNode();
+            // zz.log('[Pool] release pool, count:' + this.poolLeft.length);
+            this.poolLeft.forEach(function (v) {
                 v.parent = undefined;
                 v.destroy();
             });
-            this.pool.forEach(function (v) {
-                v.destroy();
-            });
-            this.pool = new Array();
+            this.poolLeft = new Array();
         };
         RandomNodePool.prototype.setActive = function (node, active) {
             if (active) {
+                this.poolOut.push(node);
                 node.opacity = 255;
             }
             else {
