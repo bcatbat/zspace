@@ -39,7 +39,6 @@ namespace zz {
         return node;
       } else {
         node = await utils.instantiatePrefab(this.prefab);
-        // zz.log('[Pool] not enough, instantiate new node');
         node.parent = this.rootNd;
         this.setActive(node, true);
         return node;
@@ -50,7 +49,6 @@ namespace zz {
       let node = this.poolLeft.pop();
       if (!node) {
         node = cc.instantiate(this.prefab) as cc.Node;
-        // zz.log('[Pool] not enough, instantiate new node');
         node.parent = this.rootNd;
       }
       node.parent = this.rootNd;
@@ -67,20 +65,13 @@ namespace zz {
         this.returnBackToPool(v);
       });
       this.poolOut = [];
-      // zz.log('[Pool] return all, count:' + this.poolLeft.length);
     }
 
     releasePool() {
       this.returnAllNode();
-      // zz.log(
-      //   '[Pool] release pool,left count:' +
-      //     this.poolLeft.length +
-      //     ', out count:' +
-      //     this.poolOut.length
-      // );
       this.poolLeft.forEach(v => {
         v.parent = null;
-        v.destroy();
+        v.destroy();        
       });
       this.poolLeft = new Array<cc.Node>();
     }
@@ -130,7 +121,6 @@ namespace zz {
         this.setActive(node, true);
         return node;
       } else {
-        // zz.log('[Pool] not enough, instantiate new node');
         let rndPrefab = this.selectRandomPrefab();
         node = await utils.instantiatePrefab(rndPrefab);
         node.parent = this.rootNd;
@@ -144,7 +134,6 @@ namespace zz {
       if (!node) {
         let rndPrefb = this.selectRandomPrefab();
         node = cc.instantiate(rndPrefb) as cc.Node;
-        // zz.log('[Pool] not enough, instantiate new node');
         node.parent = this.rootNd;
       }
       node.parent = this.rootNd;
@@ -160,11 +149,9 @@ namespace zz {
         this.returnBackToPool(v);
       });
       this.poolOut = [];
-      // zz.log('[Pool] return all, count:' + this.poolLeft.length);
     }
     releasePool() {
       this.returnAllNode();
-      // zz.log('[Pool] release pool, count:' + this.poolLeft.length);
       this.poolLeft.forEach(v => {
         v.parent = undefined;
         v.destroy();

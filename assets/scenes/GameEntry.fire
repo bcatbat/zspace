@@ -174,7 +174,7 @@
       "array": [
         0,
         0,
-        526.5434455009387,
+        526.0427745643758,
         0,
         0,
         0,
@@ -643,7 +643,7 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "showInEditor": false,
-    "_id": "aeQiG64K5JZaisSZ8E7sT0"
+    "_id": "4fW8e4NZhGFYZe8JJX5HhB"
   },
   {
     "__type__": "cc.Label",
@@ -677,7 +677,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "d2+Dd9nFRP/4s39obkZJQ2"
+    "_id": "07Y737QsRARZieC60cPMgz"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -687,7 +687,7 @@
     "asset": {
       "__uuid__": "b7c86995-c72a-450b-8c7e-c85e84b7a9ca"
     },
-    "fileId": "aeQiG64K5JZaisSZ8E7sT0",
+    "fileId": "4fW8e4NZhGFYZe8JJX5HhB",
     "sync": false
   },
   {
@@ -753,7 +753,7 @@
     "_groupIndex": 0,
     "groupIndex": 0,
     "showInEditor": false,
-    "_id": "988IyGaedLDagHLP+FdlVK"
+    "_id": "2cIxGlxiFKQIoOfVbG3gR+"
   },
   {
     "__type__": "cc.Label",
@@ -787,7 +787,7 @@
     "_N$fontFamily": "Arial",
     "_N$overflow": 0,
     "_N$cacheMode": 0,
-    "_id": "95dBkXY9lB+b4wh0nVy7k8"
+    "_id": "ddk7fOyh5Pm4nAa7HHM7uP"
   },
   {
     "__type__": "cc.PrefabInfo",
@@ -797,7 +797,7 @@
     "asset": {
       "__uuid__": "b7c86995-c72a-450b-8c7e-c85e84b7a9ca"
     },
-    "fileId": "988IyGaedLDagHLP+FdlVK",
+    "fileId": "2cIxGlxiFKQIoOfVbG3gR+",
     "sync": false
   },
   {

@@ -3712,7 +3712,6 @@ var zz;
                             if (this.allTables.has(tableType)) {
                                 this.allTables.set(tableType, new Map());
                             }
-                            zz.log('[Table] 开始加载表格:' + tableType);
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 3, , 4]);
@@ -3723,7 +3722,6 @@ var zz;
                                 })];
                         case 2:
                             jsonAsset_1 = _a.sent();
-                            zz.log('[Table] ' + tableType + '加载完毕');
                             jsonObj = jsonAsset_1.json;
                             tableMap = new Map();
                             for (k in jsonObj) {
@@ -3931,7 +3929,6 @@ var zz;
                             this.dict_soundId.setValue(soundName, soundID_1);
                             cc.audioEngine.setFinishCallback(soundID_1, function () {
                                 if (!loop || !_this.dict_flag.get(soundName)) {
-                                    console.log('[SOUND] sound finish:' + soundID_1);
                                     _this.dict_soundId.remove(soundName, soundID_1);
                                 }
                             });
@@ -3949,7 +3946,6 @@ var zz;
                                 _this.dict_soundId.setValue(soundName, soundID);
                                 cc.audioEngine.setFinishCallback(soundID, function () {
                                     if (!loop || !_this.dict_flag.get(soundName)) {
-                                        console.log('[SOUND] sound finish:' + soundID);
                                         _this.dict_soundId.remove(soundName, soundID);
                                     }
                                 });
@@ -3969,15 +3965,12 @@ var zz;
                     switch (_a.label) {
                         case 0:
                             if (!this.isAllOn) {
-                                console.log('[SOUND] sound off');
                                 return [2 /*return*/];
                             }
                             if (!this.isMusicOn) {
-                                console.log('[SOUND] music off');
                                 return [2 /*return*/];
                             }
                             if (this.dict_musicID.containsKey(musicName)) {
-                                console.warn('[SOUND] music playing, no repeat.');
                                 return [2 /*return*/];
                             }
                             if (!this.dict_clip.has(musicName)) return [3 /*break*/, 1];
@@ -3986,7 +3979,6 @@ var zz;
                             this.dict_musicID.setValue(musicName, id_1);
                             cc.audioEngine.setFinishCallback(id_1, function () {
                                 if (!loop) {
-                                    console.log('[SOUND] sound finish:' + id_1);
                                     _this.dict_musicID.remove(musicName, id_1);
                                 }
                             });
@@ -4008,7 +4000,6 @@ var zz;
                                 _this.dict_musicID.setValue(musicName, id);
                                 cc.audioEngine.setFinishCallback(id, function () {
                                     if (!loop) {
-                                        console.log('[SOUND] sound finish:' + id);
                                         _this.dict_musicID.remove(musicName, id);
                                     }
                                 });
@@ -4068,13 +4059,11 @@ var zz;
             }
         };
         SoundMgr.prototype.stopMusic = function () {
-            console.log('[SOUND] StopAllMusic');
             cc.audioEngine.stopMusic();
             this.dict_musicID.clear();
         };
         SoundMgr.prototype.stopAllSounds = function () {
             var _this = this;
-            console.log('[SOUND] StopAllSound');
             cc.audioEngine.stopAllEffects();
             this.dict_soundId.keys().forEach(function (v) {
                 _this.dict_flag.set(v, 0);
@@ -4110,22 +4099,17 @@ var zz;
         Object.defineProperty(UIMgr.prototype, "uiRoot", {
             get: function () {
                 if (!this._uiRoot) {
-                    zz.log('[UIMgr] not set root ui node, find UIRoot node.');
                     this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
                 }
                 if (!this._uiRoot) {
-                    zz.log('[UIMgr] found no UIRoot, set as Scene node.');
                     this._uiRoot = cc.director.getScene();
                 }
                 if (!this._uiRoot.isValid) {
-                    zz.log('[UIMgr] scene node destroyed. find root again');
                     this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
                     if (!this._uiRoot) {
-                        zz.log('[UIMgr] found no UIRoot again, set as current Scene node again.');
                         this._uiRoot = cc.director.getScene();
                     }
                 }
-                zz.log('[UIRoot] get:' + this._uiRoot.name);
                 return this._uiRoot;
             },
             enumerable: false,
@@ -4193,7 +4177,6 @@ var zz;
                                 })];
                         case 3:
                             prefab_1 = _b.sent();
-                            zz.log('[openUI] ' + uiName + ' open succes');
                             (_a = this.progressFn) === null || _a === void 0 ? void 0 : _a.call(this, false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
@@ -4277,7 +4260,7 @@ var zz;
                 ui_3.onClose();
                 if (this.attachMapHost.has(uiName)) {
                     this.attachMapHost.get(uiName).forEach(function (v, k) {
-                        _this.closeUI(k) && zz.log('[closeUI] 同时关闭附属:' + k);
+                        _this.closeUI(k);
                     });
                 }
                 return true;
@@ -4312,7 +4295,6 @@ var zz;
                                 })];
                         case 3:
                             prefab_1 = _a.sent();
-                            zz.log('[preloadUI] ' + uiName + ' preload succes');
                             this.loadingFlagMap.delete(uiName);
                             uiNode = cc.instantiate(prefab_1);
                             ui_4 = uiNode.getComponent(uiName);
@@ -4336,12 +4318,21 @@ var zz;
             });
         };
         /**关闭ui; 移除本地缓存; */
-        UIMgr.prototype.destroyUI = function (uiName) {
+        UIMgr.prototype.destroyUI = function (uiName, resRelease) {
             this.closeUI(uiName);
             var ui = this.uiMap.get(uiName);
-            if (ui)
-                ui.destroy();
+            ui === null || ui === void 0 ? void 0 : ui.destroy();
             this.uiMap.delete(uiName);
+            if (resRelease) {
+                this.getUIBundle(uiName)
+                    .then(function (bundle) {
+                    cc.assetManager.releaseAsset(bundle.get(uiName));
+                    bundle.release(uiName, cc.Prefab);
+                })
+                    .catch(function (reason) {
+                    zz.error('[UIMgr] release ' + uiName + ' fail; reason' + reason);
+                });
+            }
         };
         UIMgr.prototype.showUI = function (uiName) {
             if (this.uiMap.has(uiName)) {
@@ -4372,7 +4363,7 @@ var zz;
                     ui_6.onHide();
                     if (this.attachMapHost.has(uiName)) {
                         this.attachMapHost.get(uiName).forEach(function (v, k) {
-                            _this.hideUI(k) && zz.log('[hideUI] 同时隐藏附属:' + k);
+                            _this.hideUI(k);
                         });
                     }
                     return true;
@@ -4399,7 +4390,7 @@ var zz;
             return true;
         };
         UIMgr.prototype.reloadUI = function (uiName) {
-            this.destroyUI(uiName);
+            this.destroyUI(uiName, false);
             this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
         };
         /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
@@ -4476,19 +4467,16 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            zz.log('[Res] 开始加载,bundle:' + bundleName + ',name:' + typeName);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 4, , 5]);
+                            _a.trys.push([0, 3, , 4]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
-                        case 2:
+                        case 1:
                             bundle_3 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_3.loadDir(typeName, type, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
-                        case 3:
+                        case 2:
                             asset_1 = _a.sent();
                             if (!assetMap.has(typeName)) {
                                 assetMap.set(typeName, new Map());
@@ -4497,13 +4485,12 @@ var zz;
                             asset_1.forEach(function (v) {
                                 subMap_1.set(v.name, v);
                             });
-                            zz.log('[Res] 完成加载,bundle:' + bundleName + ',name:' + typeName);
-                            return [3 /*break*/, 5];
-                        case 4:
+                            return [3 /*break*/, 4];
+                        case 3:
                             err_1_4 = _a.sent();
                             zz.error('[loadResDict] error:' + err_1_4);
-                            return [3 /*break*/, 5];
-                        case 5: return [2 /*return*/];
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
@@ -4637,7 +4624,6 @@ var zz;
                         case 1: return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
                         case 2:
                             node = _a.sent();
-                            // zz.log('[Pool] not enough, instantiate new node');
                             node.parent = this.rootNd;
                             this.setActive(node, true);
                             return [2 /*return*/, node];
@@ -4650,7 +4636,6 @@ var zz;
             var node = this.poolLeft.pop();
             if (!node) {
                 node = cc.instantiate(this.prefab);
-                // zz.log('[Pool] not enough, instantiate new node');
                 node.parent = this.rootNd;
             }
             node.parent = this.rootNd;
@@ -4667,16 +4652,9 @@ var zz;
                 _this.returnBackToPool(v);
             });
             this.poolOut = [];
-            // zz.log('[Pool] return all, count:' + this.poolLeft.length);
         };
         NdPool.prototype.releasePool = function () {
             this.returnAllNode();
-            // zz.log(
-            //   '[Pool] release pool,left count:' +
-            //     this.poolLeft.length +
-            //     ', out count:' +
-            //     this.poolOut.length
-            // );
             this.poolLeft.forEach(function (v) {
                 v.parent = null;
                 v.destroy();
@@ -4766,7 +4744,6 @@ var zz;
             if (!node) {
                 var rndPrefb = this.selectRandomPrefab();
                 node = cc.instantiate(rndPrefb);
-                // zz.log('[Pool] not enough, instantiate new node');
                 node.parent = this.rootNd;
             }
             node.parent = this.rootNd;
@@ -4783,11 +4760,9 @@ var zz;
                 _this.returnBackToPool(v);
             });
             this.poolOut = [];
-            // zz.log('[Pool] return all, count:' + this.poolLeft.length);
         };
         RandomNodePool.prototype.releasePool = function () {
             this.returnAllNode();
-            // zz.log('[Pool] release pool, count:' + this.poolLeft.length);
             this.poolLeft.forEach(function (v) {
                 v.parent = undefined;
                 v.destroy();

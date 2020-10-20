@@ -194,7 +194,7 @@ var zz;
                 var n = _this.children.length;
                 while (n > 1) {
                     n--;
-                    var k = Math.floor(Math.random() * (n + 1));
+                    var k = zz.int(Math.random() * (n + 1));
                     var val = _this.children[k];
                     _this.children[k] = _this.children[n];
                     _this.children[n] = val;
@@ -3302,8 +3302,203 @@ var zz;
     }
     zz.assertEqual = assertEqual;
 })(zz || (zz = {}));
+var zz;
+(function (zz) {
+    var utils;
+    (function (utils) {
+        /**打乱字符串 */
+        function upsetString(oStr) {
+            var orginStr = oStr.split('');
+            var len = orginStr.length;
+            var result = '';
+            var tmp;
+            for (var i = len - 1; i > 0; i--) {
+                var index = zz.int(len * Math.random()); //随机数的产生范围不变
+                //每次与最后一位交换顺序
+                tmp = orginStr[index];
+                orginStr[index] = orginStr[i];
+                orginStr[i] = tmp;
+            }
+            for (var _i = 0, orginStr_1 = orginStr; _i < orginStr_1.length; _i++) {
+                var node = orginStr_1[_i];
+                result += node;
+            }
+            return result;
+        }
+        utils.upsetString = upsetString;
+        /**字符串转unicode数字的累加和 */
+        function str2Unicode2Number(str) {
+            var num = 0;
+            for (var i = 0, len = str.length; i < len; i++) {
+                var strH = str.charCodeAt(i);
+                num += +strH;
+            }
+            return num;
+        }
+        utils.str2Unicode2Number = str2Unicode2Number;
+        function clamp(val, min, max) {
+            if (val > max)
+                return max;
+            if (val < min)
+                return min;
+            return val;
+        }
+        utils.clamp = clamp;
+        function randomInt(lowerValue, upperValue) {
+            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
+        }
+        utils.randomInt = randomInt;
+        function randomIndex(len) {
+            return randomInt(0, len);
+        }
+        utils.randomIndex = randomIndex;
+        function randomIndexFromWeight(weightArr) {
+            var tol = 0;
+            weightArr.forEach(function (v) { return (tol += v); });
+            var rnd = Math.random() * tol;
+            var acc = 0;
+            var len = weightArr.length;
+            for (var i = 0; i < len; i++) {
+                acc += weightArr[i];
+                if (rnd < acc)
+                    return i;
+            }
+            return -1;
+        }
+        utils.randomIndexFromWeight = randomIndexFromWeight;
+        function randomItem(arr) {
+            return arr[randomIndex(arr.length)];
+        }
+        utils.randomItem = randomItem;
+        function convertArrayD2toD1(arr) {
+            var res = [];
+            arr.forEach(function (v) {
+                res.push.apply(res, v);
+            });
+            return res;
+        }
+        utils.convertArrayD2toD1 = convertArrayD2toD1;
+        function convertArrayD1toD2(arr, col) {
+            var len = arr.length;
+            if (len % col != 0) {
+                throw new Error('传入的二维数组不合格');
+            }
+            var res = [];
+            for (var i = 0; i < len; i++) {
+                res.push(arr.slice(i, i + col));
+            }
+            return res;
+        }
+        utils.convertArrayD1toD2 = convertArrayD1toD2;
+        function shuffleArray(arr) {
+            var len = arr.length;
+            var res = Array.from(arr);
+            for (var i = 0; i < len; i++) {
+                var temp = res[i];
+                var tar = randomIndex(len);
+                res[i] = res[tar];
+                res[tar] = temp;
+            }
+            return res;
+        }
+        utils.shuffleArray = shuffleArray;
+        /**格式化秒数,例如132s->02:12 */
+        function formatSeconds(seconds) {
+            var min = zz.int(seconds / 60).toFixed(0);
+            var sec = (seconds % 60).toFixed(0);
+            if (min.length == 1)
+                min = '0' + min;
+            if (sec.length == 1)
+                sec = '0' + sec;
+            return min + ':' + sec;
+        }
+        utils.formatSeconds = formatSeconds;
+        function getPosInMainCamera(node) {
+            var p_w = node.convertToWorldSpaceAR(cc.v2());
+            var p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
+            return p_c;
+        }
+        utils.getPosInMainCamera = getPosInMainCamera;
+        function instantiatePrefab(prefab) {
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, new Promise(function (resolve) {
+                                if (prefab instanceof cc.Prefab) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                                if (prefab instanceof cc.Node) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                            })];
+                        case 1: return [2 /*return*/, _a.sent()];
+                    }
+                });
+            });
+        }
+        utils.instantiatePrefab = instantiatePrefab;
+        function getBundle(bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            bundle = cc.assetManager.getBundle(bundleName);
+                            if (!!bundle) return [3 /*break*/, 2];
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
+                                        err ? reject(err) : resolve(bundle);
+                                    });
+                                })];
+                        case 1:
+                            bundle = _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, bundle];
+                    }
+                });
+            });
+        }
+        utils.getBundle = getBundle;
+        var TanOneEighthPi = Math.tan(Math.PI / 8);
+        function getDirectionOct(dir) {
+            var x = dir.x;
+            var y = dir.y;
+            var t = TanOneEighthPi;
+            var r1 = x + y * t;
+            var r2 = x - y * t;
+            if (r1 < 0 && r2 >= 0)
+                return 'S';
+            if (r1 >= 0 && r2 < 0)
+                return 'N';
+            var r3 = t * x + y;
+            var r4 = t * x - y;
+            if (r3 >= 0 && r4 >= 0)
+                return 'E';
+            if (r3 < 0 && r4 < 0)
+                return 'W';
+            var r5 = x + t * y;
+            var r6 = x * t + y;
+            if (r5 >= 0 && r6 < 0)
+                return 'SE';
+            if (r5 < 0 && r6 >= 0)
+                return 'NW';
+            var r7 = x - y * t;
+            var r8 = x * t - y;
+            if (r7 >= 0 && r8 < 0)
+                return 'NE';
+            if (r7 < 0 && r8 >= 0)
+                return 'SW';
+            throw new Error('计算方向时,出现错误');
+        }
+        utils.getDirectionOct = getDirectionOct;
+    })(utils = zz.utils || (zz.utils = {}));
+})(zz || (zz = {}));
+window.zz = zz;
 /// <reference path="zzStructure.ts" />
 /// <reference path="zzLog.ts" />
+/// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
     var Delegate = /** @class */ (function () {
@@ -3517,7 +3712,6 @@ var zz;
                             if (this.allTables.has(tableType)) {
                                 this.allTables.set(tableType, new Map());
                             }
-                            zz.log('[Table] 开始加载表格:' + tableType);
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 3, , 4]);
@@ -3528,7 +3722,6 @@ var zz;
                                 })];
                         case 2:
                             jsonAsset_1 = _a.sent();
-                            zz.log('[Table] ' + tableType + '加载完毕');
                             jsonObj = jsonAsset_1.json;
                             tableMap = new Map();
                             for (k in jsonObj) {
@@ -3643,6 +3836,7 @@ var zz;
             this.dict_clip = new Map();
             this.dict_soundId = new zz.MultiDictionary();
             this.dict_musicID = new zz.MultiDictionary();
+            this.dict_flag = new Map();
             this.soundVolume = 1.0;
             this.musicVolume = 0.5;
             this._isMusicOn = true;
@@ -3728,13 +3922,13 @@ var zz;
                             if (!this.isSoundOn) {
                                 return [2 /*return*/];
                             }
+                            this.dict_flag.set(soundName, 1);
                             if (!this.dict_clip.has(soundName)) return [3 /*break*/, 1];
                             clip = this.dict_clip.get(soundName);
                             soundID_1 = cc.audioEngine.playEffect(clip, loop);
                             this.dict_soundId.setValue(soundName, soundID_1);
                             cc.audioEngine.setFinishCallback(soundID_1, function () {
-                                if (!loop) {
-                                    console.log('[SOUND] sound finish:' + soundID_1);
+                                if (!loop || !_this.dict_flag.get(soundName)) {
                                     _this.dict_soundId.remove(soundName, soundID_1);
                                 }
                             });
@@ -3745,12 +3939,13 @@ var zz;
                             bundle.load(soundName, cc.AudioClip, function (err, clip) {
                                 if (_this.dict_clip.get(soundName))
                                     return;
+                                if (!_this.dict_flag.get(soundName))
+                                    return;
                                 _this.dict_clip.set(soundName, clip);
                                 var soundID = cc.audioEngine.playEffect(clip, loop);
                                 _this.dict_soundId.setValue(soundName, soundID);
                                 cc.audioEngine.setFinishCallback(soundID, function () {
-                                    if (!loop) {
-                                        console.log('[SOUND] sound finish:' + soundID);
+                                    if (!loop || !_this.dict_flag.get(soundName)) {
                                         _this.dict_soundId.remove(soundName, soundID);
                                     }
                                 });
@@ -3770,15 +3965,12 @@ var zz;
                     switch (_a.label) {
                         case 0:
                             if (!this.isAllOn) {
-                                console.log('[SOUND] sound off');
                                 return [2 /*return*/];
                             }
                             if (!this.isMusicOn) {
-                                console.log('[SOUND] music off');
                                 return [2 /*return*/];
                             }
                             if (this.dict_musicID.containsKey(musicName)) {
-                                console.warn('[SOUND] music playing, no repeat.');
                                 return [2 /*return*/];
                             }
                             if (!this.dict_clip.has(musicName)) return [3 /*break*/, 1];
@@ -3787,7 +3979,6 @@ var zz;
                             this.dict_musicID.setValue(musicName, id_1);
                             cc.audioEngine.setFinishCallback(id_1, function () {
                                 if (!loop) {
-                                    console.log('[SOUND] sound finish:' + id_1);
                                     _this.dict_musicID.remove(musicName, id_1);
                                 }
                             });
@@ -3809,7 +4000,6 @@ var zz;
                                 _this.dict_musicID.setValue(musicName, id);
                                 cc.audioEngine.setFinishCallback(id, function () {
                                     if (!loop) {
-                                        console.log('[SOUND] sound finish:' + id);
                                         _this.dict_musicID.remove(musicName, id);
                                     }
                                 });
@@ -3860,6 +4050,7 @@ var zz;
             }
         };
         SoundMgr.prototype.stopSound = function (soundName) {
+            this.dict_flag.set(soundName, 0);
             if (this.dict_soundId.containsKey(soundName)) {
                 this.dict_soundId.getValue(soundName).forEach(function (v) {
                     cc.audioEngine.stopEffect(v);
@@ -3868,13 +4059,15 @@ var zz;
             }
         };
         SoundMgr.prototype.stopMusic = function () {
-            console.log('[SOUND] StopAllMusic');
             cc.audioEngine.stopMusic();
             this.dict_musicID.clear();
         };
         SoundMgr.prototype.stopAllSounds = function () {
-            console.log('[SOUND] StopAllSound');
+            var _this = this;
             cc.audioEngine.stopAllEffects();
+            this.dict_soundId.keys().forEach(function (v) {
+                _this.dict_flag.set(v, 0);
+            });
             this.dict_soundId.clear();
         };
         SoundMgr.prototype.releaseSound = function (soundName) {
@@ -3906,22 +4099,17 @@ var zz;
         Object.defineProperty(UIMgr.prototype, "uiRoot", {
             get: function () {
                 if (!this._uiRoot) {
-                    zz.log('[UIMgr] not set root ui node, find UIRoot node.');
                     this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
                 }
                 if (!this._uiRoot) {
-                    zz.log('[UIMgr] found no UIRoot, set as Scene node.');
                     this._uiRoot = cc.director.getScene();
                 }
                 if (!this._uiRoot.isValid) {
-                    zz.log('[UIMgr] scene node destroyed. find root again');
                     this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
                     if (!this._uiRoot) {
-                        zz.log('[UIMgr] found no UIRoot again, set as current Scene node again.');
                         this._uiRoot = cc.director.getScene();
                     }
                 }
-                zz.log('[UIRoot] get:' + this._uiRoot.name);
                 return this._uiRoot;
             },
             enumerable: false,
@@ -3941,11 +4129,12 @@ var zz;
             this.progressFn = fn;
         };
         UIMgr.prototype.openUI = function (uiArgs) {
+            var _a;
             return __awaiter(this, void 0, void 0, function () {
                 var uiName, ui_1, uiNd, bundle_1, prefab_1, uiNode, ui_2, err_1_2;
                 var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_b) {
+                    switch (_b.label) {
                         case 0:
                             uiName = uiArgs.uiName;
                             if (this.uiMap.has(uiName)) {
@@ -3967,12 +4156,12 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            _a.label = 1;
+                            _b.label = 1;
                         case 1:
-                            _a.trys.push([1, 5, , 6]);
+                            _b.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_1 = _a.sent();
+                            bundle_1 = _b.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_1.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
@@ -3987,13 +4176,12 @@ var zz;
                                     });
                                 })];
                         case 3:
-                            prefab_1 = _a.sent();
-                            zz.log('[openUI] ' + uiName + ' open succes');
-                            this.progressFn && this.progressFn(false, 0, '');
+                            prefab_1 = _b.sent();
+                            (_a = this.progressFn) === null || _a === void 0 ? void 0 : _a.call(this, false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
                         case 4:
-                            uiNode = _a.sent();
+                            uiNode = _b.sent();
                             uiNode.parent = this.uiRoot;
                             ui_2 = uiNode.getComponent(uiName);
                             this.uiMap.set(uiName, ui_2);
@@ -4003,7 +4191,7 @@ var zz;
                                 this.openingMap.delete(uiName);
                             return [3 /*break*/, 6];
                         case 5:
-                            err_1_2 = _a.sent();
+                            err_1_2 = _b.sent();
                             zz.error('[openUI] error:' + err_1_2);
                             return [2 /*return*/, undefined];
                         case 6: return [2 /*return*/];
@@ -4042,7 +4230,7 @@ var zz;
             if (widget)
                 widget.updateAlignment();
             var cb = uiArgs.callbackArgs;
-            cb && cb.fn && (_a = cb.fn).call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
+            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
         };
         UIMgr.prototype.getUIBundle = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
@@ -4072,7 +4260,7 @@ var zz;
                 ui_3.onClose();
                 if (this.attachMapHost.has(uiName)) {
                     this.attachMapHost.get(uiName).forEach(function (v, k) {
-                        _this.closeUI(k) && zz.log('[closeUI] 同时关闭附属:' + k);
+                        _this.closeUI(k);
                     });
                 }
                 return true;
@@ -4107,7 +4295,6 @@ var zz;
                                 })];
                         case 3:
                             prefab_1 = _a.sent();
-                            zz.log('[preloadUI] ' + uiName + ' preload succes');
                             this.loadingFlagMap.delete(uiName);
                             uiNode = cc.instantiate(prefab_1);
                             ui_4 = uiNode.getComponent(uiName);
@@ -4131,12 +4318,21 @@ var zz;
             });
         };
         /**关闭ui; 移除本地缓存; */
-        UIMgr.prototype.destroyUI = function (uiName) {
+        UIMgr.prototype.destroyUI = function (uiName, resRelease) {
             this.closeUI(uiName);
             var ui = this.uiMap.get(uiName);
-            if (ui)
-                ui.destroy();
+            ui === null || ui === void 0 ? void 0 : ui.destroy();
             this.uiMap.delete(uiName);
+            if (resRelease) {
+                this.getUIBundle(uiName)
+                    .then(function (bundle) {
+                    cc.assetManager.releaseAsset(bundle.get(uiName));
+                    bundle.release(uiName, cc.Prefab);
+                })
+                    .catch(function (reason) {
+                    zz.error('[UIMgr] release ' + uiName + ' fail; reason' + reason);
+                });
+            }
         };
         UIMgr.prototype.showUI = function (uiName) {
             if (this.uiMap.has(uiName)) {
@@ -4167,7 +4363,7 @@ var zz;
                     ui_6.onHide();
                     if (this.attachMapHost.has(uiName)) {
                         this.attachMapHost.get(uiName).forEach(function (v, k) {
-                            _this.hideUI(k) && zz.log('[hideUI] 同时隐藏附属:' + k);
+                            _this.hideUI(k);
                         });
                     }
                     return true;
@@ -4194,7 +4390,7 @@ var zz;
             return true;
         };
         UIMgr.prototype.reloadUI = function (uiName) {
-            this.destroyUI(uiName);
+            this.destroyUI(uiName, false);
             this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
         };
         /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
@@ -4271,19 +4467,16 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            zz.log('[Res] 开始加载,bundle:' + bundleName + ',name:' + typeName);
-                            _a.label = 1;
-                        case 1:
-                            _a.trys.push([1, 4, , 5]);
+                            _a.trys.push([0, 3, , 4]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
-                        case 2:
+                        case 1:
                             bundle_3 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_3.loadDir(typeName, type, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
-                        case 3:
+                        case 2:
                             asset_1 = _a.sent();
                             if (!assetMap.has(typeName)) {
                                 assetMap.set(typeName, new Map());
@@ -4292,13 +4485,12 @@ var zz;
                             asset_1.forEach(function (v) {
                                 subMap_1.set(v.name, v);
                             });
-                            zz.log('[Res] 完成加载,bundle:' + bundleName + ',name:' + typeName);
-                            return [3 /*break*/, 5];
-                        case 4:
+                            return [3 /*break*/, 4];
+                        case 3:
                             err_1_4 = _a.sent();
                             zz.error('[loadResDict] error:' + err_1_4);
-                            return [3 /*break*/, 5];
-                        case 5: return [2 /*return*/];
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
@@ -4374,200 +4566,6 @@ var zz;
     zz.res = new ResMgr();
     zz.proc = new ProcedureMgr();
 })(zz || (zz = {}));
-var zz;
-(function (zz) {
-    var utils;
-    (function (utils) {
-        /**打乱字符串 */
-        function upsetString(oStr) {
-            var orginStr = oStr.split('');
-            var len = orginStr.length;
-            var result = '';
-            var tmp;
-            for (var i = len - 1; i > 0; i--) {
-                var index = Math.floor(len * Math.random()); //随机数的产生范围不变
-                //每次与最后一位交换顺序
-                tmp = orginStr[index];
-                orginStr[index] = orginStr[i];
-                orginStr[i] = tmp;
-            }
-            for (var _i = 0, orginStr_1 = orginStr; _i < orginStr_1.length; _i++) {
-                var node = orginStr_1[_i];
-                result += node;
-            }
-            return result;
-        }
-        utils.upsetString = upsetString;
-        /**字符串转unicode数字的累加和 */
-        function str2Unicode2Number(str) {
-            var num = 0;
-            for (var i = 0, len = str.length; i < len; i++) {
-                var strH = str.charCodeAt(i);
-                num += +strH;
-            }
-            return num;
-        }
-        utils.str2Unicode2Number = str2Unicode2Number;
-        function clamp(val, min, max) {
-            if (val > max)
-                return max;
-            if (val < min)
-                return min;
-            return val;
-        }
-        utils.clamp = clamp;
-        function randomInt(lowerValue, upperValue) {
-            return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
-        }
-        utils.randomInt = randomInt;
-        function randomIndex(len) {
-            return randomInt(0, len);
-        }
-        utils.randomIndex = randomIndex;
-        function randomIndexFromWeight(weightArr) {
-            var tol = 0;
-            weightArr.forEach(function (v) { return (tol += v); });
-            var rnd = Math.random() * tol;
-            var acc = 0;
-            var len = weightArr.length;
-            for (var i = 0; i < len; i++) {
-                acc += weightArr[i];
-                if (rnd < acc)
-                    return i;
-            }
-            return -1;
-        }
-        utils.randomIndexFromWeight = randomIndexFromWeight;
-        function randomItem(arr) {
-            return arr[randomIndex(arr.length)];
-        }
-        utils.randomItem = randomItem;
-        function convertArrayD2toD1(arr) {
-            var res = [];
-            arr.forEach(function (v) {
-                res.push.apply(res, v);
-            });
-            return res;
-        }
-        utils.convertArrayD2toD1 = convertArrayD2toD1;
-        function convertArrayD1toD2(arr, col) {
-            var len = arr.length;
-            if (len % col != 0) {
-                throw new Error('传入的二维数组不合格');
-            }
-            var res = [];
-            for (var i = 0; i < len; i++) {
-                res.push(arr.slice(i, i + col));
-            }
-            return res;
-        }
-        utils.convertArrayD1toD2 = convertArrayD1toD2;
-        function shuffleArray(arr) {
-            var len = arr.length;
-            var res = Array.from(arr);
-            for (var i = 0; i < len; i++) {
-                var temp = res[i];
-                var tar = randomIndex(len);
-                res[i] = res[tar];
-                res[tar] = temp;
-            }
-            return res;
-        }
-        utils.shuffleArray = shuffleArray;
-        /**格式化秒数,例如132s->02:12 */
-        function formatSeconds(seconds) {
-            var min = Math.floor(seconds / 60).toFixed(0);
-            var sec = (seconds % 60).toFixed(0);
-            if (min.length == 1)
-                min = '0' + min;
-            if (sec.length == 1)
-                sec = '0' + sec;
-            return min + ':' + sec;
-        }
-        utils.formatSeconds = formatSeconds;
-        function getPosInMainCamera(node) {
-            var p_w = node.convertToWorldSpaceAR(cc.v2());
-            var p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
-            return p_c;
-        }
-        utils.getPosInMainCamera = getPosInMainCamera;
-        function instantiatePrefab(prefab) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0: return [4 /*yield*/, new Promise(function (resolve) {
-                                if (prefab instanceof cc.Prefab) {
-                                    var node = cc.instantiate(prefab);
-                                    resolve(node);
-                                }
-                                if (prefab instanceof cc.Node) {
-                                    var node = cc.instantiate(prefab);
-                                    resolve(node);
-                                }
-                            })];
-                        case 1: return [2 /*return*/, _a.sent()];
-                    }
-                });
-            });
-        }
-        utils.instantiatePrefab = instantiatePrefab;
-        function getBundle(bundleName) {
-            return __awaiter(this, void 0, void 0, function () {
-                var bundle;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
-                        case 0:
-                            bundle = cc.assetManager.getBundle(bundleName);
-                            if (!!bundle) return [3 /*break*/, 2];
-                            return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
-                                        err ? reject(err) : resolve(bundle);
-                                    });
-                                })];
-                        case 1:
-                            bundle = _a.sent();
-                            _a.label = 2;
-                        case 2: return [2 /*return*/, bundle];
-                    }
-                });
-            });
-        }
-        utils.getBundle = getBundle;
-        var TanOneEighthPi = Math.tan(Math.PI / 8);
-        function getDirectionOct(dir) {
-            var x = dir.x;
-            var y = dir.y;
-            var t = TanOneEighthPi;
-            var r1 = x + y * t;
-            var r2 = x - y * t;
-            if (r1 < 0 && r2 >= 0)
-                return 'S';
-            if (r1 >= 0 && r2 < 0)
-                return 'N';
-            var r3 = t * x + y;
-            var r4 = t * x - y;
-            if (r3 >= 0 && r4 >= 0)
-                return 'E';
-            if (r3 < 0 && r4 < 0)
-                return 'W';
-            var r5 = x + t * y;
-            var r6 = x * t + y;
-            if (r5 >= 0 && r6 < 0)
-                return 'SE';
-            if (r5 < 0 && r6 >= 0)
-                return 'NW';
-            var r7 = x - y * t;
-            var r8 = x * t - y;
-            if (r7 >= 0 && r8 < 0)
-                return 'NE';
-            if (r7 < 0 && r8 >= 0)
-                return 'SW';
-            throw new Error('计算方向时,出现错误');
-        }
-        utils.getDirectionOct = getDirectionOct;
-    })(utils = zz.utils || (zz.utils = {}));
-})(zz || (zz = {}));
-window.zz = zz;
 /// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
@@ -4579,7 +4577,8 @@ var zz;
             this.defaultNum = 10;
             /**true-可用,未借出; false-不可用,已借出 */
             // poolMap: Map<cc.Node, boolean> = new Map<cc.Node, boolean>();
-            this.pool = new Array();
+            this.poolLeft = new Array();
+            this.poolOut = new Array();
             this.rootNd = rootNd;
             this.prefab = prefab;
             this.defaultNum = defaultNum;
@@ -4599,26 +4598,25 @@ var zz;
                         case 2:
                             node = _a.sent();
                             node.parent = this.rootNd;
-                            this.pool.push(node);
+                            this.poolLeft.push(node);
                             this.setActive(node, false);
                             _a.label = 3;
                         case 3:
                             i++;
                             return [3 /*break*/, 1];
-                        case 4:
-                            zz.log('[Pool] init complete!');
-                            return [2 /*return*/];
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
         };
-        NdPool.prototype.borrowFromPool = function () {
+        /**异步方法 */
+        NdPool.prototype.borrowFromPoolAsync = function () {
             return __awaiter(this, void 0, void 0, function () {
                 var node;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            node = this.pool.pop();
+                            node = this.poolLeft.pop();
                             if (!node) return [3 /*break*/, 1];
                             node.parent = this.rootNd;
                             this.setActive(node, true);
@@ -4633,28 +4631,39 @@ var zz;
                 });
             });
         };
+        /**同步方法 */
+        NdPool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
+            if (!node) {
+                node = cc.instantiate(this.prefab);
+                node.parent = this.rootNd;
+            }
+            node.parent = this.rootNd;
+            this.setActive(node, true);
+            return node;
+        };
         NdPool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
-            this.pool.push(node);
+            this.poolLeft.push(node);
         };
         NdPool.prototype.returnAllNode = function () {
             var _this = this;
-            this.rootNd.children.forEach(function (v) {
+            this.poolOut.forEach(function (v) {
                 _this.returnBackToPool(v);
             });
+            this.poolOut = [];
         };
         NdPool.prototype.releasePool = function () {
-            this.rootNd.children.forEach(function (v) {
+            this.returnAllNode();
+            this.poolLeft.forEach(function (v) {
                 v.parent = null;
                 v.destroy();
             });
-            this.pool.forEach(function (v) {
-                v.destroy();
-            });
-            this.pool = new Array();
+            this.poolLeft = new Array();
         };
         NdPool.prototype.setActive = function (node, active) {
             if (active) {
+                this.poolOut.push(node);
                 node.opacity = 255;
             }
             else {
@@ -4671,7 +4680,8 @@ var zz;
             this.rootNd = undefined;
             this.defaultNum = 2;
             this.prefabs = [];
-            this.pool = new Array();
+            this.poolLeft = new Array();
+            this.poolOut = new Array();
             this.rootNd = rootNd;
             this.prefabs = prefabs;
             this.defaultNum = defaultNum;
@@ -4692,7 +4702,7 @@ var zz;
                         case 2:
                             node = _a.sent();
                             node.parent = this.rootNd;
-                            this.pool.push(node);
+                            this.poolLeft.push(node);
                             this.setActive(node, false);
                             _a.label = 3;
                         case 3:
@@ -4712,7 +4722,7 @@ var zz;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
-                            node = this.pool.pop();
+                            node = this.poolLeft.pop();
                             if (!node) return [3 /*break*/, 1];
                             this.setActive(node, true);
                             return [2 /*return*/, node];
@@ -4728,28 +4738,40 @@ var zz;
                 });
             });
         };
+        /**同步方法 */
+        RandomNodePool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
+            if (!node) {
+                var rndPrefb = this.selectRandomPrefab();
+                node = cc.instantiate(rndPrefb);
+                node.parent = this.rootNd;
+            }
+            node.parent = this.rootNd;
+            this.setActive(node, true);
+            return node;
+        };
         RandomNodePool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
-            this.pool.push(node);
+            this.poolLeft.push(node);
         };
         RandomNodePool.prototype.returnAllNode = function () {
             var _this = this;
-            this.rootNd.children.forEach(function (v) {
+            this.poolOut.forEach(function (v) {
                 _this.returnBackToPool(v);
             });
+            this.poolOut = [];
         };
         RandomNodePool.prototype.releasePool = function () {
-            this.rootNd.children.forEach(function (v) {
+            this.returnAllNode();
+            this.poolLeft.forEach(function (v) {
                 v.parent = undefined;
                 v.destroy();
             });
-            this.pool.forEach(function (v) {
-                v.destroy();
-            });
-            this.pool = new Array();
+            this.poolLeft = new Array();
         };
         RandomNodePool.prototype.setActive = function (node, active) {
             if (active) {
+                this.poolOut.push(node);
                 node.opacity = 255;
             }
             else {
@@ -4760,4 +4782,47 @@ var zz;
         return RandomNodePool;
     }());
     zz.RandomNodePool = RandomNodePool;
+})(zz || (zz = {}));
+var zz;
+(function (zz) {
+    function int(x) {
+        return x | 0;
+    }
+    zz.int = int;
+    function uint(x) {
+        return x >>> 0;
+    }
+    zz.uint = uint;
+    function int8(x) {
+        return (x << 24) >> 24;
+    }
+    zz.int8 = int8;
+    function int16(x) {
+        return (x << 16) >> 16;
+    }
+    zz.int16 = int16;
+    function int32(x) {
+        return x | 0;
+    }
+    zz.int32 = int32;
+    function uint8(x) {
+        return x & 255;
+    }
+    zz.uint8 = uint8;
+    function uint16(x) {
+        return x & 65535;
+    }
+    zz.uint16 = uint16;
+    function uint32(x) {
+        return x >>> 0;
+    }
+    zz.uint32 = uint32;
+    function float(x) {
+        return Math.fround(x);
+    }
+    zz.float = float;
+    function double(x) {
+        return +x;
+    }
+    zz.double = double;
 })(zz || (zz = {}));

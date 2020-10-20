@@ -192,7 +192,7 @@ namespace zz {
     }
   }
   export interface TableBase {
-    id: string;
+    id: string | number;
   }
   class TableMgr {
     private allTables: Map<string, Map<number | string, TableBase>> = null;
@@ -204,7 +204,6 @@ namespace zz {
       if (this.allTables.has(tableType)) {
         this.allTables.set(tableType, new Map<number, any>());
       }
-      log('[Table] 开始加载表格:' + tableType);
       try {
         const jsonAsset_1 = await new Promise<cc.JsonAsset>(
           (resolveFn, rejectFn) => {
@@ -216,7 +215,6 @@ namespace zz {
             );
           }
         );
-        log('[Table] ' + tableType + '加载完毕');
         let jsonObj = jsonAsset_1.json;
         let tableMap = new Map<any, any>();
         for (let k in jsonObj) {
@@ -246,7 +244,7 @@ namespace zz {
      * @param tableType 数据表类型名称
      * @param key 数据表id
      */
-    public getTableItem(tableType: string, key: string) {
+    public getTableItem(tableType: string, key: string | number) {
       if (this.allTables.has(tableType)) {
         return this.allTables.get(tableType).get(key);
       } else {
@@ -262,7 +260,7 @@ namespace zz {
      * @param tableType 数据表类型名称
      * @param key 数据表id
      */
-    public hasTableItem(tableType: string, key: any) {
+    public hasTableItem(tableType: string, key: string | number) {
       if (this.allTables.has(tableType)) {
         return this.allTables.get(tableType).has(key);
       } else {
@@ -394,7 +392,6 @@ namespace zz {
         this.dict_soundId.setValue(soundName, soundID);
         cc.audioEngine.setFinishCallback(soundID, () => {
           if (!loop || !this.dict_flag.get(soundName)) {
-            console.log('[SOUND] sound finish:' + soundID);
             this.dict_soundId.remove(soundName, soundID);
           }
         });
@@ -408,7 +405,6 @@ namespace zz {
           this.dict_soundId.setValue(soundName, soundID);
           cc.audioEngine.setFinishCallback(soundID, () => {
             if (!loop || !this.dict_flag.get(soundName)) {
-              console.log('[SOUND] sound finish:' + soundID);
               this.dict_soundId.remove(soundName, soundID);
             }
           });
@@ -418,15 +414,12 @@ namespace zz {
 
     async playMusic(musicName: string, loop: boolean = true) {
       if (!this.isAllOn) {
-        console.log('[SOUND] sound off');
         return;
       }
       if (!this.isMusicOn) {
-        console.log('[SOUND] music off');
         return;
       }
       if (this.dict_musicID.containsKey(musicName)) {
-        console.warn('[SOUND] music playing, no repeat.');
         return;
       }
       if (this.dict_clip.has(musicName)) {
@@ -435,7 +428,6 @@ namespace zz {
         this.dict_musicID.setValue(musicName, id);
         cc.audioEngine.setFinishCallback(id, () => {
           if (!loop) {
-            console.log('[SOUND] sound finish:' + id);
             this.dict_musicID.remove(musicName, id);
           }
         });
@@ -456,7 +448,6 @@ namespace zz {
               this.dict_musicID.setValue(musicName, id);
               cc.audioEngine.setFinishCallback(id, () => {
                 if (!loop) {
-                  console.log('[SOUND] sound finish:' + id);
                   this.dict_musicID.remove(musicName, id);
                 }
               });
@@ -507,12 +498,10 @@ namespace zz {
       }
     }
     stopMusic() {
-      console.log('[SOUND] StopAllMusic');
       cc.audioEngine.stopMusic();
       this.dict_musicID.clear();
     }
     stopAllSounds() {
-      console.log('[SOUND] StopAllSound');
       cc.audioEngine.stopAllEffects();
       this.dict_soundId.keys().forEach(v => {
         this.dict_flag.set(v, 0);
@@ -533,26 +522,19 @@ namespace zz {
     constructor() {}
     /**UI根节点; 从外部注入; */
     private _uiRoot: cc.Node = undefined;
-    private get uiRoot() {
+    public get uiRoot() {
       if (!this._uiRoot) {
-        log('[UIMgr] not set root ui node, find UIRoot node.');
         this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
       }
       if (!this._uiRoot) {
-        log('[UIMgr] found no UIRoot, set as Scene node.');
         this._uiRoot = cc.director.getScene();
       }
       if (!this._uiRoot.isValid) {
-        log('[UIMgr] scene node destroyed. find root again');
         this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
         if (!this._uiRoot) {
-          log(
-            '[UIMgr] found no UIRoot again, set as current Scene node again.'
-          );
           this._uiRoot = cc.director.getScene();
         }
       }
-      log('[UIRoot] get:' + this._uiRoot.name);
       return this._uiRoot;
     }
     /**进度条函数; 从外部注入; */
@@ -644,7 +626,6 @@ namespace zz {
             }
           );
         });
-        log('[openUI] ' + uiName + ' open succes');
         this.progressFn?.(false, 0, '');
         this.loadingFlagMap.delete(uiName);
         let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
@@ -703,7 +684,7 @@ namespace zz {
         ui.onClose();
         if (this.attachMapHost.has(uiName)) {
           this.attachMapHost.get(uiName).forEach((v, k) => {
-            this.closeUI(k) && log('[closeUI] 同时关闭附属:' + k);
+            this.closeUI(k);
           });
         }
         return true;
@@ -723,12 +704,11 @@ namespace zz {
       this.loadingFlagMap.set(uiName, true);
       try {
         const bundle = await this.getUIBundle(uiName);
-        const prefab_1 = await new Promise((resolveFn, rejectFn) => {
+        const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
           bundle.load(uiName, (err, prefab: cc.Prefab) => {
             err ? rejectFn(err) : resolveFn(prefab);
           });
         });
-        log('[preloadUI] ' + uiName + ' preload succes');
         this.loadingFlagMap.delete(uiName);
         let uiNode: cc.Node = cc.instantiate(prefab_1) as cc.Node;
         let ui = uiNode.getComponent(uiName) as UIBase;
@@ -748,11 +728,22 @@ namespace zz {
       }
     }
     /**关闭ui; 移除本地缓存; */
-    destroyUI(uiName: string) {
+    destroyUI(uiName: string, resRelease: boolean) {
       this.closeUI(uiName);
       let ui = this.uiMap.get(uiName);
-      if (ui) ui.destroy();
+      ui?.destroy();
       this.uiMap.delete(uiName);
+
+      if (resRelease) {
+        this.getUIBundle(uiName)
+          .then((bundle: cc.AssetManager.Bundle) => {
+            cc.assetManager.releaseAsset(bundle.get(uiName));
+            bundle.release(uiName, cc.Prefab);
+          })
+          .catch(reason => {
+            error('[UIMgr] release ' + uiName + ' fail; reason' + reason);
+          });
+      }
     }
     showUI(uiName: string) {
       if (this.uiMap.has(uiName)) {
@@ -781,7 +772,7 @@ namespace zz {
           ui.onHide();
           if (this.attachMapHost.has(uiName)) {
             this.attachMapHost.get(uiName).forEach((v, k) => {
-              this.hideUI(k) && log('[hideUI] 同时隐藏附属:' + k);
+              this.hideUI(k);
             });
           }
           return true;
@@ -803,7 +794,7 @@ namespace zz {
       return true;
     }
     reloadUI(uiName: string) {
-      this.destroyUI(uiName);
+      this.destroyUI(uiName, false);
       this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
     }
     /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
@@ -893,7 +884,6 @@ namespace zz {
       type: typeof cc.Asset,
       assetMap: Map<string, Map<string, cc.Asset>>
     ) {
-      zz.log('[Res] 开始加载,bundle:' + bundleName + ',name:' + typeName);
       try {
         let bundle = await utils.getBundle(bundleName);
         const asset_1: cc.Asset[] = await new Promise((resolveFn, rejectFn) => {
@@ -908,7 +898,6 @@ namespace zz {
         asset_1.forEach(v => {
           subMap.set(v.name, v);
         });
-        zz.log('[Res] 完成加载,bundle:' + bundleName + ',name:' + typeName);
       } catch (err_1) {
         error('[loadResDict] error:' + err_1);
       }
