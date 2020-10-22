@@ -26,6 +26,15 @@ namespace zz.utils {
     }
     return num;
   }
+  /**
+   * 字符串替换; 全体版本;
+   * @param target 目标字符串
+   * @param search 替换前
+   * @param replace 替换后
+   */
+  export function replaceAll(target: string, search: string, replace: string) {
+    return target.replace(new RegExp(search, 'g'), replace);
+  }
   export function clamp(val: number, min: number, max: number) {
     if (val > max) return max;
     if (val < min) return min;
