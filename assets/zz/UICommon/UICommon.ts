@@ -3,11 +3,12 @@ const { ccclass, property } = cc._decorator;
 
 @ccclass
 export default class UICommon extends zz.UIBase {
-  onLoad() {    
+  onLoad() {
     this.InitLabelTip();
     this.InitLoadNode();
     zz.event.register(EventType.Tip, this, this.ShowLabelTip);
     zz.event.register(EventType.LoadingPage, this, this.LoadNodeMgr);
+    this.node.zIndex = 100;
   }
   onDestroy() {
     zz.event.delAllRegister(this);

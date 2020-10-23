@@ -11,6 +11,13 @@ var __extends = (this && this.__extends) || (function () {
         d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
     };
 })();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -46,13 +53,6 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
         } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
         if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
     }
-};
-var __spreadArrays = (this && this.__spreadArrays) || function () {
-    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
-    for (var r = Array(s), k = 0, i = 0; i < il; i++)
-        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
-            r[k] = a[j];
-    return r;
 };
 var zz;
 (function (zz) {
@@ -503,6 +503,53 @@ var zz;
         };
         return Log;
     }(BTNode));
+})(zz || (zz = {}));
+var zz;
+(function (zz) {
+    /**
+     * 获取相对路径节点上的组件
+     * @param type component类型
+     * @param node 节点
+     * @param path 相对于节点的路径
+     * @returns {T}
+     */
+    function findCom(type, node) {
+        var path = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            path[_i - 2] = arguments[_i];
+        }
+        return findNode.apply(void 0, __spreadArrays([node], path)).getComponent(type);
+    }
+    zz.findCom = findCom;
+    /**
+     * 获取相对路径上的节点; 记住cc是通过遍历获取的;
+     * @param node 基准节点
+     * @param path 相对路径
+     * @returns {cc.Node}
+     */
+    function findNode(node) {
+        var path = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            path[_i - 1] = arguments[_i];
+        }
+        return path.reduce(function (node, name) { return node.getChildByName(name); }, node);
+    }
+    zz.findNode = findNode;
+    var tipFn = function (msg) {
+        zz.warn('没有注入tip方法');
+    };
+    function setTipFn(fn) {
+        tipFn = fn;
+    }
+    zz.setTipFn = setTipFn;
+    /**
+     * 弹出提示信息文字
+     * @param msg 信息文字
+     */
+    function tipMsg(msg) {
+        tipFn(msg);
+    }
+    zz.tipMsg = tipMsg;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
@@ -3336,6 +3383,17 @@ var zz;
             return num;
         }
         utils.str2Unicode2Number = str2Unicode2Number;
+        /**
+         * 字符串替换; 全体版本;
+         * @param target 目标字符串
+         * @param search 替换前
+         * @param replace 替换后
+         */
+        function replaceAll(target, search, replace) {
+            return target.replace(new RegExp(search, 'g'), replace);
+        }
+        utils.replaceAll = replaceAll;
+        /**夹子; */
         function clamp(val, min, max) {
             if (val > max)
                 return max;
@@ -3344,17 +3402,36 @@ var zz;
             return val;
         }
         utils.clamp = clamp;
+        /**
+         * 随机整数,区间[lowerValue,upperValue)
+         * @param lowerValue {number} 下区间
+         * @param upperValue {number} 上区间;不包括
+         * @returns {number} 区间内的随机整数
+         */
         function randomInt(lowerValue, upperValue) {
             return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
         }
         utils.randomInt = randomInt;
-        function randomIndex(len) {
-            return randomInt(0, len);
+        /**
+         * 获取随机索引号
+         * @param arrOrLen 数组或是数组长度
+         */
+        function randomIndex(arrOrLen) {
+            if (typeof arrOrLen == 'number') {
+                return randomInt(0, arrOrLen);
+            }
+            if (arrOrLen instanceof Array) {
+                return randomInt(0, arrOrLen.length);
+            }
         }
         utils.randomIndex = randomIndex;
+        /**
+         * 计算随机权重;
+         * @param {number[]} weightArr 权重数组
+         * @returns {number} 权重数组中所选择的索引号;
+         */
         function randomIndexFromWeight(weightArr) {
-            var tol = 0;
-            weightArr.forEach(function (v) { return (tol += v); });
+            var tol = weightArr.reduce(function (p, c) { return p + c; }, 0);
             var rnd = Math.random() * tol;
             var acc = 0;
             var len = weightArr.length;
@@ -3366,18 +3443,32 @@ var zz;
             return -1;
         }
         utils.randomIndexFromWeight = randomIndexFromWeight;
+        /**
+         * 随机数组项;
+         * @param {T[]} arr 数组
+         * @returns {T} 选择的元素; 如果是空数组,返回undefined
+         */
         function randomItem(arr) {
+            if (arr.length == 0)
+                return undefined;
             return arr[randomIndex(arr.length)];
         }
         utils.randomItem = randomItem;
+        /**
+         * 二维数组转化成一维数组
+         * @param arr {T[][]} 目标二维数组
+         * @returns {T[]} 展开成的一维数组
+         */
         function convertArrayD2toD1(arr) {
-            var res = [];
-            arr.forEach(function (v) {
-                res.push.apply(res, v);
-            });
-            return res;
+            return arr.reduce(function (p, c) { return __spreadArrays(p, c); }, []);
         }
         utils.convertArrayD2toD1 = convertArrayD2toD1;
+        /**
+         * 一维数组转化成二维数组
+         * @param arr {T[]} 一维数组
+         * @param col {number} 目标二维数组的列数
+         * @returns {T[][]} 二维数组
+         */
         function convertArrayD1toD2(arr, col) {
             var len = arr.length;
             if (len % col != 0) {
@@ -3390,22 +3481,34 @@ var zz;
             return res;
         }
         utils.convertArrayD1toD2 = convertArrayD1toD2;
-        function shuffleArray(arr) {
+        /**
+         * 数组洗牌, 打乱顺序
+         * @param arr {T[]} 目标数组
+         * @param immutable {boolean} 是否保证原数组不变
+         * @returns {T[]} 洗牌后的数组,immutable==true时,为新数组; immutable==false时,为原数组
+         */
+        function shuffleArray(arr, immutable) {
+            var _a;
+            if (immutable === void 0) { immutable = true; }
             var len = arr.length;
-            var res = Array.from(arr);
+            var res = immutable ? Array.from(arr) : arr;
             for (var i = 0; i < len; i++) {
-                var temp = res[i];
                 var tar = randomIndex(len);
-                res[i] = res[tar];
-                res[tar] = temp;
+                _a = [res[tar], res[i]], res[i] = _a[0], res[tar] = _a[1];
             }
             return res;
         }
         utils.shuffleArray = shuffleArray;
-        /**格式化秒数,例如132s->02:12 */
+        /**
+         * 将秒数格式化为XX:XX的形式
+         * @param seconds {number} 秒数
+         * @returns {string} 格式为XX:XX的字符串
+         */
         function formatSeconds(seconds) {
+            if (seconds < 0)
+                return '00:00';
             var min = zz.int(seconds / 60).toFixed(0);
-            var sec = (seconds % 60).toFixed(0);
+            var sec = zz.int(seconds % 60).toFixed(0);
             if (min.length == 1)
                 min = '0' + min;
             if (sec.length == 1)
@@ -3419,6 +3522,11 @@ var zz;
             return p_c;
         }
         utils.getPosInMainCamera = getPosInMainCamera;
+        /**
+         * 实例化一个预制体; 异步
+         * @param prefab {cc.Prefab | cc.Node} 预制体或节点
+         * @returns {Promise<cc.Node>}
+         */
         function instantiatePrefab(prefab) {
             return __awaiter(this, void 0, void 0, function () {
                 return __generator(this, function (_a) {
@@ -3439,6 +3547,11 @@ var zz;
             });
         }
         utils.instantiatePrefab = instantiatePrefab;
+        /**
+         * 根据名称获取资源bundle
+         * @param bundleName {string} bundle名称
+         * @returns {Promise<cc.AssetManager.Bundle>}
+         */
         function getBundle(bundleName) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle;
@@ -3461,7 +3574,13 @@ var zz;
             });
         }
         utils.getBundle = getBundle;
+        /**tan(pi/8)的值 */
         var TanOneEighthPi = Math.tan(Math.PI / 8);
+        /**
+         * 将二维方向向量转化成8个方向的字符串代号
+         * @param dir {cc.Vec2} 方向向量
+         * @returns {'S' | 'N' | 'E' | 'W' | 'SE' | 'NW' | 'NE' | 'SW'} 八方的字符代号
+         */
         function getDirectionOct(dir) {
             var x = dir.x;
             var y = dir.y;
@@ -3783,16 +3902,32 @@ var zz;
     var StorageMgr = /** @class */ (function () {
         function StorageMgr() {
         }
+        /**
+         * 清理本地存储
+         */
         StorageMgr.prototype.clear = function () {
             cc.sys.localStorage.clear();
         };
+        /**
+         * 移除目标key值的存储
+         * @param key {string} 存储的键值
+         */
         StorageMgr.prototype.remove = function (key) {
             cc.sys.localStorage.removeItem(key);
         };
+        /**
+         * 存储int32值
+         * @param key {string} 存储键值
+         * @param value {number} 数字,会被取整;
+         */
         StorageMgr.prototype.saveInt = function (key, value) {
-            cc.sys.localStorage.setItem(key, Math.trunc(value));
+            cc.sys.localStorage.setItem(key, zz.int(value));
         };
-        /**默认为0 */
+        /**
+         * 获取存储的int32
+         * @param key {string} 键值
+         * @returns {number} int32值;默认为0
+         */
         StorageMgr.prototype.getInt = function (key) {
             var sto = cc.sys.localStorage.getItem(key);
             // null | undefine
@@ -3804,10 +3939,19 @@ var zz;
                 return 0;
             return n;
         };
+        /**
+         * 存储数值
+         * @param key {string} 键值
+         * @param value {number} double值
+         */
         StorageMgr.prototype.saveNumber = function (key, value) {
             cc.sys.localStorage.setItem(key, value);
         };
-        /**默认为0 */
+        /**
+         * 获取存储的数值
+         * @param key {string} 键值
+         * @returns {number} 数值,默认为0
+         */
         StorageMgr.prototype.getNumber = function (key) {
             var sto = cc.sys.localStorage.getItem(key);
             // null | undefine
@@ -3819,15 +3963,53 @@ var zz;
                 return 0;
             return n;
         };
+        /**
+         * 保存字符串
+         * @param key {string} 键值
+         * @param value {string} 字符串
+         */
         StorageMgr.prototype.saveString = function (key, value) {
             cc.sys.localStorage.setItem(key, value);
         };
-        /**默认为"" */
+        /**
+         * 读取保存的字符串;
+         * @param key {string} 键值
+         * @returns {string} 字符串,默认为''
+         */
         StorageMgr.prototype.getString = function (key) {
             var sto = cc.sys.localStorage.getItem(key);
             if (!sto)
                 return '';
             return sto;
+        };
+        /**
+         * 保存对象
+         * @param key {string} 键值
+         * @param value {T} 对象,包括数组等各种带__proto__的
+         */
+        StorageMgr.prototype.saveObject = function (key, value) {
+            if (value) {
+                this.saveString(key, JSON.stringify(value));
+            }
+        };
+        /**
+         * 读取对象
+         * @param key {string} 键值
+         * @returns {T} 对象,包括数组等
+         */
+        StorageMgr.prototype.getObject = function (key) {
+            var str = this.getString(key);
+            if (str) {
+                try {
+                    return JSON.parse(str);
+                }
+                catch (e) {
+                    throw new Error(e);
+                }
+            }
+            else {
+                return undefined;
+            }
         };
         return StorageMgr;
     }());
@@ -4081,6 +4263,18 @@ var zz;
         };
         return SoundMgr;
     }());
+    /**
+     * UI管理器;
+     * @classdesc 1.以预制体的形式加载;
+     * 2.预制体要求全铺居中;
+     * 3.分层排布;
+     * 4.根节点默认在最上层;
+     * 5.需要在UIParam中注册UI枚举/名称/路径/层级;
+     * 6.预制体为ui分组
+     * 7.UI有专用UI Camera
+     * 8.默认UIRoot为所有UI的根节点,位于最上方
+     * 9.最上方UI默认为UICommon
+     */
     var UIMgr = /** @class */ (function () {
         function UIMgr() {
             /**UI根节点; 从外部注入; */
@@ -4090,7 +4284,9 @@ var zz;
             this.uiMap = new Map();
             this.pathMap = new Map();
             this.layerMap = new Map();
+            /**加载中标记 */
             this.loadingFlagMap = new Map();
+            /**打开中标记; */
             this.openingMap = new Map();
             this.attachMapClient = new Map();
             this.attachMapHost = new Map();
@@ -4456,6 +4652,159 @@ var zz;
         return UIBase;
     }(cc.Component));
     zz.UIBase = UIBase;
+    /**
+     * 场景管理器
+     * @classdesc 1.区别于cc场景;
+     * 2.只有一层,一种场景只能存在一个,但可以有多个拼接;
+     * 3.Main Camera管理
+     * 4.层级最下
+     * 5.以SceneRoot为根节点,锚点左下角(0,0),位置(0,0)
+     * 6.所有自定场景均以左下角为世界原点,具体位置自定
+     * 7.多场景以预制体管理;
+     * 8.单场景可不用此管理器
+     */
+    var SceneMgr = /** @class */ (function () {
+        function SceneMgr() {
+            /**已显示的场景节点字典; */
+            this.sceneDict = new zz.Dictionary();
+            /**预载场景节点字典;未显示 */
+            this.preloadDict = new zz.Dictionary();
+            /**加载标记;防止重复加载 */
+            this.loadingDict = new zz.Dictionary();
+            /**打开中标记;用于预载过程中打开 */
+            this.openningDict = new zz.Dictionary();
+        }
+        Object.defineProperty(SceneMgr.prototype, "sceneRoot", {
+            /**场景根节点 */
+            get: function () {
+                return this._sceneRoot;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        /**设置场景根节点;在游戏开始时执行一次 */
+        SceneMgr.prototype.setSceneRoot = function (sceneRoot) {
+            this._sceneRoot = sceneRoot;
+        };
+        /**
+         * 加载场景
+         * @param sceneName 场景预制体名
+         * @param bundleName bundle名
+         */
+        SceneMgr.prototype.loadScene = function (sceneName, bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var node, bundle_3, prefab_1, node, e_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.loadingDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 正在加载' + sceneName);
+                                this.openningDict.setValue(sceneName, 1);
+                                return [2 /*return*/];
+                            }
+                            if (this.sceneDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已加载' + sceneName);
+                                return [2 /*return*/];
+                            }
+                            if (this.preloadDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已预载' + sceneName);
+                                node = this.preloadDict.getValue(sceneName);
+                                this.sceneRoot.addChild(node);
+                                this.preloadDict.remove(sceneName);
+                                return [2 /*return*/];
+                            }
+                            this.loadingDict.setValue(sceneName, 1);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_3 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    bundle_3.load(sceneName, function (err, prefab) {
+                                        err ? reject(err) : resolve(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            this.loadingDict.remove(sceneName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 4:
+                            node = _a.sent();
+                            this.sceneRoot.addChild(node);
+                            if (this.openningDict.containsKey(sceneName)) {
+                                this.openningDict.remove(sceneName);
+                            }
+                            return [3 /*break*/, 6];
+                        case 5:
+                            e_1 = _a.sent();
+                            throw new Error(e_1);
+                        case 6: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        /**销毁场景 */
+        SceneMgr.prototype.destroyScene = function (sceneName) {
+            if (this.sceneDict.containsKey(sceneName)) {
+                this.sceneDict.getValue(sceneName).destroy();
+                this.sceneDict.remove(sceneName);
+            }
+        };
+        /**预载场景节点 */
+        SceneMgr.prototype.preloadScene = function (sceneName, bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_4, prefab_1, node, e_2;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.sceneDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已加载' + sceneName);
+                                return [2 /*return*/, undefined];
+                            }
+                            if (this.loadingDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 正在加载' + sceneName);
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingDict.setValue(sceneName, 1);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_4 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    bundle_4.load(sceneName, function (err, prefab) {
+                                        err ? reject(err) : resolve(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            this.loadingDict.remove(sceneName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 4:
+                            node = _a.sent();
+                            if (this.openningDict.containsKey(sceneName)) {
+                                //如果需要打开,则直接打开
+                                this.openningDict.remove(sceneName);
+                                this.sceneRoot.addChild(node);
+                            }
+                            else {
+                                // 否则存储在预载中;
+                                this.preloadDict.setValue(sceneName, node);
+                            }
+                            return [3 /*break*/, 6];
+                        case 5:
+                            e_2 = _a.sent();
+                            throw new Error(e_2);
+                        case 6: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        return SceneMgr;
+    }());
+    zz.SceneMgr = SceneMgr;
     var ResMgr = /** @class */ (function () {
         function ResMgr() {
             this.prefabMap = new Map();
@@ -4463,16 +4812,16 @@ var zz;
         }
         ResMgr.prototype.loadResDict = function (bundleName, typeName, type, assetMap) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_3, asset_1, subMap_1, err_1_4;
+                var bundle_5, asset_1, subMap_1, err_1_4;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 3, , 4]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
-                            bundle_3 = _a.sent();
+                            bundle_5 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_3.loadDir(typeName, type, function (err, res) {
+                                    bundle_5.loadDir(typeName, type, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
@@ -4519,6 +4868,7 @@ var zz;
         };
         return ResMgr;
     }());
+    /**流程管理;一条单通道管线 */
     var ProcedureMgr = /** @class */ (function () {
         function ProcedureMgr() {
             this.procedureMap = new Map();
@@ -4558,12 +4908,21 @@ var zz;
         return ProcBase;
     }());
     zz.ProcBase = ProcBase;
+    /**事件管理 */
     zz.event = new EventMgr();
+    /**表格管理 */
     zz.table = new TableMgr();
+    /**存储管理 */
     zz.sto = new StorageMgr();
+    /**声音管理 */
     zz.sound = new SoundMgr();
+    /**UI管理 */
     zz.ui = new UIMgr();
+    /**场景管理 */
+    zz.scene = new SceneMgr();
+    /**动态资源管理 */
     zz.res = new ResMgr();
+    /**流程管理 */
     zz.proc = new ProcedureMgr();
 })(zz || (zz = {}));
 /// <reference path="zzUtils.ts" />

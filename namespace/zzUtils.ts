@@ -35,20 +35,40 @@ namespace zz.utils {
   export function replaceAll(target: string, search: string, replace: string) {
     return target.replace(new RegExp(search, 'g'), replace);
   }
+  /**夹子; */
   export function clamp(val: number, min: number, max: number) {
     if (val > max) return max;
     if (val < min) return min;
     return val;
   }
-  export function randomInt(lowerValue: number, upperValue: number) {
+  /**
+   * 随机整数,区间[lowerValue,upperValue)
+   * @param lowerValue {number} 下区间
+   * @param upperValue {number} 上区间;不包括
+   * @returns {number} 区间内的随机整数
+   */
+  export function randomInt(lowerValue: number, upperValue: number): number {
     return Math.floor(Math.random() * (upperValue - lowerValue) + lowerValue);
   }
-  export function randomIndex(len: number) {
-    return randomInt(0, len);
+  /**
+   * 获取随机索引号
+   * @param arrOrLen 数组或是数组长度
+   */
+  export function randomIndex<T>(arrOrLen: T[] | number) {
+    if (typeof arrOrLen == 'number') {
+      return randomInt(0, arrOrLen);
+    }
+    if (arrOrLen instanceof Array) {
+      return randomInt(0, arrOrLen.length);
+    }
   }
-  export function randomIndexFromWeight(weightArr: number[]) {
-    let tol = 0;
-    weightArr.forEach(v => (tol += v));
+  /**
+   * 计算随机权重;
+   * @param {number[]} weightArr 权重数组
+   * @returns {number} 权重数组中所选择的索引号;
+   */
+  export function randomIndexFromWeight(weightArr: number[]): number {
+    let tol = weightArr.reduce((p, c) => p + c, 0);
     let rnd = Math.random() * tol;
     let acc = 0;
     let len = weightArr.length;
@@ -58,16 +78,29 @@ namespace zz.utils {
     }
     return -1;
   }
+  /**
+   * 随机数组项;
+   * @param {T[]} arr 数组
+   * @returns {T} 选择的元素; 如果是空数组,返回undefined
+   */
   export function randomItem<T>(arr: T[]): T {
+    if (arr.length == 0) return undefined;
     return arr[randomIndex(arr.length)];
   }
+  /**
+   * 二维数组转化成一维数组
+   * @param arr {T[][]} 目标二维数组
+   * @returns {T[]} 展开成的一维数组
+   */
   export function convertArrayD2toD1<T>(arr: T[][]): T[] {
-    let res: T[] = [];
-    arr.forEach(v => {
-      res.push(...v);
-    });
-    return res;
+    return arr.reduce((p, c) => [...p, ...c], []);
   }
+  /**
+   * 一维数组转化成二维数组
+   * @param arr {T[]} 一维数组
+   * @param col {number} 目标二维数组的列数
+   * @returns {T[][]} 二维数组
+   */
   export function convertArrayD1toD2<T>(arr: T[], col: number): T[][] {
     let len = arr.length;
     if (len % col != 0) {
@@ -79,21 +112,30 @@ namespace zz.utils {
     }
     return res;
   }
-  export function shuffleArray<T>(arr: T[]) {
+  /**
+   * 数组洗牌, 打乱顺序
+   * @param arr {T[]} 目标数组
+   * @param immutable {boolean} 是否保证原数组不变
+   * @returns {T[]} 洗牌后的数组,immutable==true时,为新数组; immutable==false时,为原数组
+   */
+  export function shuffleArray<T>(arr: T[], immutable: boolean = true): T[] {
     let len = arr.length;
-    let res = Array.from(arr);
+    let res = immutable ? Array.from(arr) : arr;
     for (let i = 0; i < len; i++) {
-      let temp = res[i];
       let tar = randomIndex(len);
-      res[i] = res[tar];
-      res[tar] = temp;
+      [res[i], res[tar]] = [res[tar], res[i]];
     }
     return res;
   }
-  /**格式化秒数,例如132s->02:12 */
-  export function formatSeconds(seconds: number) {
+  /**
+   * 将秒数格式化为XX:XX的形式
+   * @param seconds {number} 秒数
+   * @returns {string} 格式为XX:XX的字符串
+   */
+  export function formatSeconds(seconds: number): string {
+    if (seconds < 0) return '00:00';
     let min = int(seconds / 60).toFixed(0);
-    let sec = (seconds % 60).toFixed(0);
+    let sec = int(seconds % 60).toFixed(0);
     if (min.length == 1) min = '0' + min;
     if (sec.length == 1) sec = '0' + sec;
     return min + ':' + sec;
@@ -103,7 +145,14 @@ namespace zz.utils {
     let p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
     return p_c;
   }
-  export async function instantiatePrefab(prefab: cc.Prefab | cc.Node) {
+  /**
+   * 实例化一个预制体; 异步
+   * @param prefab {cc.Prefab | cc.Node} 预制体或节点
+   * @returns {Promise<cc.Node>}
+   */
+  export async function instantiatePrefab(
+    prefab: cc.Prefab | cc.Node
+  ): Promise<cc.Node> {
     return await new Promise<cc.Node>(resolve => {
       if (prefab instanceof cc.Prefab) {
         let node = cc.instantiate(prefab);
@@ -115,7 +164,14 @@ namespace zz.utils {
       }
     });
   }
-  export async function getBundle(bundleName: string) {
+  /**
+   * 根据名称获取资源bundle
+   * @param bundleName {string} bundle名称
+   * @returns {Promise<cc.AssetManager.Bundle>}
+   */
+  export async function getBundle(
+    bundleName: string
+  ): Promise<cc.AssetManager.Bundle> {
     let bundle = cc.assetManager.getBundle(bundleName);
     if (!bundle) {
       bundle = await new Promise<cc.AssetManager.Bundle>((resolve, reject) => {
@@ -129,7 +185,13 @@ namespace zz.utils {
     }
     return bundle;
   }
+  /**tan(pi/8)的值 */
   const TanOneEighthPi = Math.tan(Math.PI / 8);
+  /**
+   * 将二维方向向量转化成8个方向的字符串代号
+   * @param dir {cc.Vec2} 方向向量
+   * @returns {'S' | 'N' | 'E' | 'W' | 'SE' | 'NW' | 'NE' | 'SW'} 八方的字符代号
+   */
   export function getDirectionOct(dir: {
     x: number;
     y: number;

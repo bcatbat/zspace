@@ -272,17 +272,33 @@ namespace zz {
     }
   }
   class StorageMgr {
+    /**
+     * 清理本地存储
+     */
     clear() {
       cc.sys.localStorage.clear();
     }
+    /**
+     * 移除目标key值的存储
+     * @param key {string} 存储的键值
+     */
     remove(key: string): void {
       cc.sys.localStorage.removeItem(key);
     }
+    /**
+     * 存储int32值
+     * @param key {string} 存储键值
+     * @param value {number} 数字,会被取整;
+     */
     saveInt(key: string, value: number) {
-      cc.sys.localStorage.setItem(key, Math.trunc(value));
+      cc.sys.localStorage.setItem(key, int(value));
     }
-    /**默认为0 */
-    getInt(key: string) {
+    /**
+     * 获取存储的int32
+     * @param key {string} 键值
+     * @returns {number} int32值;默认为0
+     */
+    getInt(key: string): number {
       let sto = cc.sys.localStorage.getItem(key);
       // null | undefine
       if (!sto) return 0;
@@ -291,11 +307,20 @@ namespace zz {
       if (!sto) return 0;
       return n;
     }
-    saveNumber(key: string, value: number) {
+    /**
+     * 存储数值
+     * @param key {string} 键值
+     * @param value {number} double值
+     */
+    saveNumber(key: string, value: number): void {
       cc.sys.localStorage.setItem(key, value);
     }
-    /**默认为0 */
-    getNumber(key: string) {
+    /**
+     * 获取存储的数值
+     * @param key {string} 键值
+     * @returns {number} 数值,默认为0
+     */
+    getNumber(key: string): number {
       let sto = cc.sys.localStorage.getItem(key);
       // null | undefine
       if (!sto) return 0;
@@ -304,14 +329,50 @@ namespace zz {
       if (!sto) return 0;
       return n;
     }
+    /**
+     * 保存字符串
+     * @param key {string} 键值
+     * @param value {string} 字符串
+     */
     saveString(key: string, value: string) {
       cc.sys.localStorage.setItem(key, value);
     }
-    /**默认为"" */
-    getString(key: string) {
+    /**
+     * 读取保存的字符串;
+     * @param key {string} 键值
+     * @returns {string} 字符串,默认为''
+     */
+    getString(key: string): string {
       let sto = cc.sys.localStorage.getItem(key);
       if (!sto) return '';
       return sto;
+    }
+    /**
+     * 保存对象
+     * @param key {string} 键值
+     * @param value {T} 对象,包括数组等各种带__proto__的
+     */
+    saveObject<T extends {}>(key: string, value: T) {
+      if (value) {
+        this.saveString(key, JSON.stringify(value));
+      }
+    }
+    /**
+     * 读取对象
+     * @param key {string} 键值
+     * @returns {T} 对象,包括数组等
+     */
+    getObject<T extends {}>(key: string): T {
+      let str = this.getString(key);
+      if (str) {
+        try {
+          return JSON.parse(str);
+        } catch (e) {
+          throw new Error(e);
+        }
+      } else {
+        return undefined;
+      }
     }
   }
   class SoundMgr {
@@ -518,6 +579,18 @@ namespace zz {
       });
     }
   }
+  /**
+   * UI管理器;
+   * @classdesc 1.以预制体的形式加载;
+   * 2.预制体要求全铺居中;
+   * 3.分层排布;
+   * 4.根节点默认在最上层;
+   * 5.需要在UIParam中注册UI枚举/名称/路径/层级;
+   * 6.预制体为ui分组
+   * 7.UI有专用UI Camera
+   * 8.默认UIRoot为所有UI的根节点,位于最上方
+   * 9.最上方UI默认为UICommon
+   */
   class UIMgr {
     constructor() {}
     /**UI根节点; 从外部注入; */
@@ -547,7 +620,9 @@ namespace zz {
     private uiMap: Map<string, UIBase> = new Map<string, UIBase>();
     private pathMap: Map<string, string> = new Map<string, string>();
     private layerMap: Map<string, number> = new Map<string, number>();
+    /**加载中标记 */
     private loadingFlagMap: Map<string, boolean> = new Map<string, boolean>();
+    /**打开中标记; */
     private openingMap: Map<string, UIArgs> = new Map<string, UIArgs>();
 
     private attachMapClient: Map<string, Map<string, boolean>> = new Map<
@@ -841,6 +916,128 @@ namespace zz {
     /**代替onEnable使用 */
     onShow(): void {}
   }
+  /**
+   * 场景管理器
+   * @classdesc 1.区别于cc场景;
+   * 2.只有一层,一种场景只能存在一个,但可以有多个拼接;
+   * 3.Main Camera管理
+   * 4.层级最下
+   * 5.以SceneRoot为根节点,锚点左下角(0,0),位置(0,0)
+   * 6.所有自定场景均以左下角为世界原点,具体位置自定
+   * 7.多场景以预制体管理;
+   * 8.单场景可不用此管理器
+   */
+  class SceneMgr {
+    /**已显示的场景节点字典; */
+    private sceneDict: Dictionary<string, cc.Node> = new Dictionary<
+      string,
+      cc.Node
+    >();
+    /**预载场景节点字典;未显示 */
+    private preloadDict: Dictionary<string, cc.Node> = new Dictionary<
+      string,
+      cc.Node
+    >();
+    /**加载标记;防止重复加载 */
+    private loadingDict: Dictionary<string, number> = new Dictionary<
+      string,
+      number
+    >();
+    /**打开中标记;用于预载过程中打开 */
+    private openningDict: Dictionary<string, number> = new Dictionary<
+      string,
+      number
+    >();
+    private _sceneRoot: cc.Node;
+    /**场景根节点 */
+    public get sceneRoot(): cc.Node {
+      return this._sceneRoot;
+    }
+    /**设置场景根节点;在游戏开始时执行一次 */
+    public setSceneRoot(sceneRoot: cc.Node) {
+      this._sceneRoot = sceneRoot;
+    }
+
+    /**
+     * 加载场景
+     * @param sceneName 场景预制体名
+     * @param bundleName bundle名
+     */
+    public async loadScene(sceneName: string, bundleName: string) {
+      if (this.loadingDict.containsKey(sceneName)) {
+        warn('[Scene] 正在加载' + sceneName);
+        this.openningDict.setValue(sceneName, 1);
+        return;
+      }
+      if (this.sceneDict.containsKey(sceneName)) {
+        warn('[Scene] 已加载' + sceneName);
+        return;
+      }
+      if (this.preloadDict.containsKey(sceneName)) {
+        warn('[Scene] 已预载' + sceneName);
+        let node = this.preloadDict.getValue(sceneName);
+        this.sceneRoot.addChild(node);
+        this.preloadDict.remove(sceneName);
+        return;
+      }
+      this.loadingDict.setValue(sceneName, 1);
+      try {
+        let bundle = await utils.getBundle(bundleName);
+        let prefab_1 = await new Promise<cc.Prefab>((resolve, reject) => {
+          bundle.load(sceneName, (err, prefab: cc.Prefab) => {
+            err ? reject(err) : resolve(prefab);
+          });
+        });
+        this.loadingDict.remove(sceneName);
+        let node = await utils.instantiatePrefab(prefab_1);
+        this.sceneRoot.addChild(node);
+        if (this.openningDict.containsKey(sceneName)) {
+          this.openningDict.remove(sceneName);
+        }
+      } catch (e) {
+        throw new Error(e);
+      }
+    }
+    /**销毁场景 */
+    public destroyScene(sceneName: string) {
+      if (this.sceneDict.containsKey(sceneName)) {
+        this.sceneDict.getValue(sceneName).destroy();
+        this.sceneDict.remove(sceneName);
+      }
+    }
+    /**预载场景节点 */
+    public async preloadScene(sceneName: string, bundleName: string) {
+      if (this.sceneDict.containsKey(sceneName)) {
+        warn('[Scene] 已加载' + sceneName);
+        return undefined;
+      }
+      if (this.loadingDict.containsKey(sceneName)) {
+        warn('[Scene] 正在加载' + sceneName);
+        return undefined;
+      }
+      this.loadingDict.setValue(sceneName, 1);
+      try {
+        const bundle = await utils.getBundle(bundleName);
+        const prefab_1 = await new Promise<cc.Prefab>((resolve, reject) => {
+          bundle.load(sceneName, (err, prefab: cc.Prefab) => {
+            err ? reject(err) : resolve(prefab);
+          });
+        });
+        this.loadingDict.remove(sceneName);
+        let node = await utils.instantiatePrefab(prefab_1);
+        if (this.openningDict.containsKey(sceneName)) {
+          //如果需要打开,则直接打开
+          this.openningDict.remove(sceneName);
+          this.sceneRoot.addChild(node);
+        } else {
+          // 否则存储在预载中;
+          this.preloadDict.setValue(sceneName, node);
+        }
+      } catch (e) {
+        throw new Error(e);
+      }
+    }
+  }
   interface UIProgressArgs {
     /**是否显示进度条 */
     showProgressUI: boolean;
@@ -923,6 +1120,7 @@ namespace zz {
       return this.spriteMap.get(type).get(name);
     }
   }
+  /**流程管理;一条单通道管线 */
   class ProcedureMgr {
     private procedureMap: Map<string, ProcBase> = new Map<string, ProcBase>();
     private curProcedure: string = undefined;
@@ -952,11 +1150,20 @@ namespace zz {
     abstract onStart();
     abstract onLeave();
   }
+  /**事件管理 */
   export const event = new EventMgr();
+  /**表格管理 */
   export const table = new TableMgr();
+  /**存储管理 */
   export const sto = new StorageMgr();
+  /**声音管理 */
   export const sound = new SoundMgr();
+  /**UI管理 */
   export const ui = new UIMgr();
+  /**场景管理 */
+  export const scene = new SceneMgr();
+  /**动态资源管理 */
   export const res = new ResMgr();
+  /**流程管理 */
   export const proc = new ProcedureMgr();
 }
