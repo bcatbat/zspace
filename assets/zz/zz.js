@@ -3842,9 +3842,9 @@ var zz;
             this.allTables = null;
             this.allTables = new Map();
         }
-        TableMgr.prototype.loadConfig = function (tableType) {
+        TableMgr.prototype.loadConfig = function (tableType, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var jsonAsset_1, jsonObj, tableMap, k, obj, err_1_1;
+                var bundle_1, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -3853,13 +3853,16 @@ var zz;
                             }
                             _a.label = 1;
                         case 1:
-                            _a.trys.push([1, 3, , 4]);
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_1 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    cc.resources.load('configs/' + tableType, function (err, jsonAsset) {
+                                    bundle_1.load(tableType, function (err, jsonAsset) {
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
-                        case 2:
+                        case 3:
                             jsonAsset_1 = _a.sent();
                             jsonObj = jsonAsset_1.json;
                             tableMap = new Map();
@@ -3869,12 +3872,12 @@ var zz;
                             }
                             this.allTables.set(tableType, tableMap);
                             cc.resources.release('configs/' + tableType);
-                            return [3 /*break*/, 4];
-                        case 3:
+                            return [3 /*break*/, 5];
+                        case 4:
                             err_1_1 = _a.sent();
                             zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_1);
-                            return [3 /*break*/, 4];
-                        case 4: return [2 /*return*/];
+                            return [3 /*break*/, 5];
+                        case 5: return [2 /*return*/];
                     }
                 });
             });
@@ -4347,7 +4350,7 @@ var zz;
         UIMgr.prototype.openUI = function (uiArgs) {
             var _a;
             return __awaiter(this, void 0, void 0, function () {
-                var uiName, ui_1, uiNd, bundle_1, prefab_1, uiNode, ui_2, err_1_2;
+                var uiName, ui_1, uiNd, bundle_2, prefab_1, uiNode, ui_2, err_1_2;
                 var _this = this;
                 return __generator(this, function (_b) {
                     switch (_b.label) {
@@ -4377,9 +4380,9 @@ var zz;
                             _b.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_1 = _b.sent();
+                            bundle_2 = _b.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_1.load(uiName, function (completedCount, totalCount, item) {
+                                    bundle_2.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
                                             if (uiArgs.progressArgs.showProgressUI) {
                                                 _this.progressFn
@@ -4485,7 +4488,7 @@ var zz;
         };
         UIMgr.prototype.preloadUI = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_2, prefab_1, uiNode, ui_4, args, err_1_3;
+                var bundle_3, prefab_1, uiNode, ui_4, args, err_1_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4503,9 +4506,9 @@ var zz;
                             _a.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_2 = _a.sent();
+                            bundle_3 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_2.load(uiName, function (err, prefab) {
+                                    bundle_3.load(uiName, function (err, prefab) {
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
@@ -4713,7 +4716,7 @@ var zz;
          */
         SceneMgr.prototype.loadScene = function (sceneName, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var node, bundle_3, prefab_1, node, e_1;
+                var node, bundle_4, prefab_1, node, e_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4739,9 +4742,9 @@ var zz;
                             _a.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_3 = _a.sent();
+                            bundle_4 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    bundle_3.load(sceneName, function (err, prefab) {
+                                    bundle_4.load(sceneName, function (err, prefab) {
                                         err ? reject(err) : resolve(prefab);
                                     });
                                 })];
@@ -4774,7 +4777,7 @@ var zz;
         /**预载场景节点 */
         SceneMgr.prototype.preloadScene = function (sceneName, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_4, prefab_1, node, e_2;
+                var bundle_5, prefab_1, node, e_2;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4792,9 +4795,9 @@ var zz;
                             _a.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_4 = _a.sent();
+                            bundle_5 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    bundle_4.load(sceneName, function (err, prefab) {
+                                    bundle_5.load(sceneName, function (err, prefab) {
                                         err ? reject(err) : resolve(prefab);
                                     });
                                 })];
@@ -4826,32 +4829,40 @@ var zz;
     }());
     var ResMgr = /** @class */ (function () {
         function ResMgr() {
-            this.prefabMap = new Map();
-            this.spriteMap = new Map();
+            this.prefabMap = new zz.Dictionary();
+            this.spriteMap = new zz.Dictionary();
         }
-        ResMgr.prototype.loadResDict = function (bundleName, typeName, type, assetMap) {
+        /**
+         * 批量读取目录内资源
+         * @param bundleName 资源包名
+         * @param dirName 资源目录名
+         * @param type 资源类型
+         * @param assetDict 各类型对应存储
+         */
+        ResMgr.prototype.loadResDict = function (bundleName, dirName, type, assetDict) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_5, asset_1, subMap_1, err_1_4;
+                var bundle_6, asset_1, key, subDict_1, err_1_4;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 3, , 4]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
-                            bundle_5 = _a.sent();
+                            bundle_6 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_5.loadDir(typeName, type, function (err, res) {
+                                    bundle_6.loadDir(dirName, type, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
                         case 2:
                             asset_1 = _a.sent();
-                            if (!assetMap.has(typeName)) {
-                                assetMap.set(typeName, new Map());
+                            key = bundleName + '/' + dirName;
+                            if (!assetDict.containsKey(key)) {
+                                assetDict.setValue(key, new zz.Dictionary());
                             }
-                            subMap_1 = assetMap.get(typeName);
+                            subDict_1 = assetDict.getValue(key);
                             asset_1.forEach(function (v) {
-                                subMap_1.set(v.name, v);
+                                subDict_1.setValue(v.name, v);
                             });
                             return [3 /*break*/, 4];
                         case 3:
@@ -4863,27 +4874,23 @@ var zz;
                 });
             });
         };
-        ResMgr.prototype.loadPrefabs = function (type) {
-            return __awaiter(this, void 0, void 0, function () {
-                return __generator(this, function (_a) {
-                    return [2 /*return*/, this.loadResDict('prefabs', type, cc.Prefab, this.prefabMap)];
-                });
-            });
+        ResMgr.prototype.loadPrefabs = function (bundleName, dirName) {
+            this.loadResDict(bundleName, dirName, cc.Prefab, this.prefabMap);
         };
-        ResMgr.prototype.loadSprites = function (type) {
-            this.loadResDict('sprites', type, cc.SpriteFrame, this.spriteMap);
+        ResMgr.prototype.loadSprites = function (bundleName, dirName) {
+            this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
         };
-        ResMgr.prototype.getPrefab = function (type, name) {
-            if (!this.prefabMap.has(type)) {
-                this.prefabMap.set(type, new Map());
+        ResMgr.prototype.getPrefab = function (bundleName, dirName, name) {
+            if (!this.prefabMap.containsKey(bundleName + '/' + dirName)) {
+                return undefined;
             }
-            return this.prefabMap.get(type).get(name);
+            return this.prefabMap.getValue(dirName).getValue(name);
         };
-        ResMgr.prototype.getSpriteframe = function (type, name) {
-            if (!this.spriteMap.has(type)) {
-                this.spriteMap.set(type, new Map());
+        ResMgr.prototype.getSpriteframe = function (bundleName, dirName, name) {
+            if (!this.spriteMap.containsKey(bundleName + '/' + dirName)) {
+                return undefined;
             }
-            return this.spriteMap.get(type).get(name);
+            return this.spriteMap.getValue(dirName).getValue(name);
         };
         return ResMgr;
     }());

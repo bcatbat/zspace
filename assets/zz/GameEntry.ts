@@ -42,8 +42,5 @@ export default class GameEntry extends cc.Component {
     zz.proc.setProcedure(ProcEnum.Platform, new ProcPlatform());
     zz.proc.setProcedure(ProcEnum.Game, new ProcGame());
     zz.proc.init(ProcEnum.Config);
-
-    let nd = this.node.findCom(cc.Camera, 'SceneRoot', 'Main Camera');
-    zz.log(nd);
   }
 }

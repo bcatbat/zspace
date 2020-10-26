@@ -200,19 +200,20 @@ namespace zz {
     public constructor() {
       this.allTables = new Map<string, Map<number, any>>();
     }
-    public async loadConfig<T extends { id: string }>(tableType: string) {
+    public async loadConfig<T extends { id: string }>(
+      tableType: string,
+      bundleName: string
+    ) {
       if (this.allTables.has(tableType)) {
         this.allTables.set(tableType, new Map<number, any>());
       }
       try {
+        let bundle = await utils.getBundle(bundleName);
         const jsonAsset_1 = await new Promise<cc.JsonAsset>(
           (resolveFn, rejectFn) => {
-            cc.resources.load(
-              'configs/' + tableType,
-              (err, jsonAsset: cc.JsonAsset) => {
-                err ? rejectFn(err) : resolveFn(jsonAsset);
-              }
-            );
+            bundle.load(tableType, (err, jsonAsset: cc.JsonAsset) => {
+              err ? rejectFn(err) : resolveFn(jsonAsset);
+            });
           }
         );
         let jsonObj = jsonAsset_1.json;
@@ -1066,58 +1067,66 @@ namespace zz {
   }
   class ResMgr {
     constructor() {}
-    private prefabMap: Map<string, Map<string, cc.Prefab>> = new Map<
+    private prefabMap: Dictionary<
       string,
-      Map<string, cc.Prefab>
-    >();
-    private spriteMap: Map<string, Map<string, cc.SpriteFrame>> = new Map<
+      Dictionary<string, cc.Prefab>
+    > = new Dictionary<string, Dictionary<string, cc.Prefab>>();
+    private spriteMap: Dictionary<
       string,
-      Map<string, cc.SpriteFrame>
-    >();
+      Dictionary<string, cc.SpriteFrame>
+    > = new Dictionary<string, Dictionary<string, cc.SpriteFrame>>();
 
+    /**
+     * 批量读取目录内资源
+     * @param bundleName 资源包名
+     * @param dirName 资源目录名
+     * @param type 资源类型
+     * @param assetDict 各类型对应存储
+     */
     private async loadResDict(
       bundleName: string,
-      typeName: string,
+      dirName: string,
       type: typeof cc.Asset,
-      assetMap: Map<string, Map<string, cc.Asset>>
+      assetDict: Dictionary<string, Dictionary<string, cc.Asset>>
     ) {
       try {
         let bundle = await utils.getBundle(bundleName);
         const asset_1: cc.Asset[] = await new Promise((resolveFn, rejectFn) => {
-          bundle.loadDir(typeName, type, (err, res: cc.Asset[]) => {
+          bundle.loadDir(dirName, type, (err, res: cc.Asset[]) => {
             err ? rejectFn(err) : resolveFn(res);
           });
         });
-        if (!assetMap.has(typeName)) {
-          assetMap.set(typeName, new Map<string, cc.Asset>());
+        let key = bundleName + '/' + dirName;
+        if (!assetDict.containsKey(key)) {
+          assetDict.setValue(key, new Dictionary<string, cc.Asset>());
         }
-        let subMap = assetMap.get(typeName);
+        let subDict = assetDict.getValue(key);
         asset_1.forEach(v => {
-          subMap.set(v.name, v);
+          subDict.setValue(v.name, v);
         });
       } catch (err_1) {
         error('[loadResDict] error:' + err_1);
       }
     }
 
-    async loadPrefabs(type: string) {
-      return this.loadResDict('prefabs', type, cc.Prefab, this.prefabMap);
+    loadPrefabs(bundleName: string, dirName: string) {
+      this.loadResDict(bundleName, dirName, cc.Prefab, this.prefabMap);
     }
-    loadSprites(type: string) {
-      this.loadResDict('sprites', type, cc.SpriteFrame, this.spriteMap);
+    loadSprites(bundleName: string, dirName: string) {
+      this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
     }
 
-    getPrefab(type: string, name: string) {
-      if (!this.prefabMap.has(type)) {
-        this.prefabMap.set(type, new Map<string, cc.Prefab>());
+    getPrefab(bundleName: string, dirName: string, name: string) {
+      if (!this.prefabMap.containsKey(bundleName + '/' + dirName)) {
+        return undefined;
       }
-      return this.prefabMap.get(type).get(name);
+      return this.prefabMap.getValue(dirName).getValue(name);
     }
-    getSpriteframe(type: string, name: string) {
-      if (!this.spriteMap.has(type)) {
-        this.spriteMap.set(type, new Map<string, cc.SpriteFrame>());
+    getSpriteframe(bundleName: string, dirName: string, name: string) {
+      if (!this.spriteMap.containsKey(bundleName + '/' + dirName)) {
+        return undefined;
       }
-      return this.spriteMap.get(type).get(name);
+      return this.spriteMap.getValue(dirName).getValue(name);
     }
   }
   /**流程管理;一条单通道管线 */
