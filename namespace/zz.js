@@ -4881,16 +4881,18 @@ var zz;
             this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
         };
         ResMgr.prototype.getPrefab = function (bundleName, dirName, name) {
-            if (!this.prefabMap.containsKey(bundleName + '/' + dirName)) {
+            var key = bundleName + '/' + dirName;
+            if (!this.prefabMap.containsKey(key)) {
                 return undefined;
             }
-            return this.prefabMap.getValue(dirName).getValue(name);
+            return this.prefabMap.getValue(key).getValue(name);
         };
         ResMgr.prototype.getSpriteframe = function (bundleName, dirName, name) {
-            if (!this.spriteMap.containsKey(bundleName + '/' + dirName)) {
+            var key = bundleName + '/' + dirName;
+            if (!this.spriteMap.containsKey(key)) {
                 return undefined;
             }
-            return this.spriteMap.getValue(dirName).getValue(name);
+            return this.spriteMap.getValue(key).getValue(name);
         };
         return ResMgr;
     }());

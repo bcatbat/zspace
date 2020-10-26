@@ -1117,16 +1117,18 @@ namespace zz {
     }
 
     getPrefab(bundleName: string, dirName: string, name: string) {
-      if (!this.prefabMap.containsKey(bundleName + '/' + dirName)) {
+      let key = bundleName + '/' + dirName;
+      if (!this.prefabMap.containsKey(key)) {
         return undefined;
       }
-      return this.prefabMap.getValue(dirName).getValue(name);
+      return this.prefabMap.getValue(key).getValue(name);
     }
     getSpriteframe(bundleName: string, dirName: string, name: string) {
-      if (!this.spriteMap.containsKey(bundleName + '/' + dirName)) {
+      const key = bundleName + '/' + dirName;
+      if (!this.spriteMap.containsKey(key)) {
         return undefined;
       }
-      return this.spriteMap.getValue(dirName).getValue(name);
+      return this.spriteMap.getValue(key).getValue(name);
     }
   }
   /**流程管理;一条单通道管线 */
