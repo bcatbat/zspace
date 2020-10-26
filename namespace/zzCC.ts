@@ -41,4 +41,22 @@ namespace zz {
   export function tipMsg(msg: string) {
     tipFn(msg);
   }
+  String.prototype.replaceAll = function (
+    search: string,
+    replace: string
+  ): string {
+    let str: string = this;
+    return str.replace(new RegExp(search, 'g'), replace);
+  };
+  cc.Node.prototype.findCom = function <T extends cc.Component>(
+    type: { prototype: T },
+    ...path: string[]
+  ) {
+    let node = this;
+    return findCom(type, node, ...path);
+  };
+  cc.Node.prototype.findNode = function (...path: string[]) {
+    let node = this;
+    return findNode(node, ...path);
+  };
 }

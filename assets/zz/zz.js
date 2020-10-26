@@ -550,6 +550,26 @@ var zz;
         tipFn(msg);
     }
     zz.tipMsg = tipMsg;
+    String.prototype.replaceAll = function (search, replace) {
+        var str = this;
+        return str.replace(new RegExp(search, 'g'), replace);
+    };
+    cc.Node.prototype.findCom = function (type) {
+        var path = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            path[_i - 1] = arguments[_i];
+        }
+        var node = this;
+        return findCom.apply(void 0, __spreadArrays([type, node], path));
+    };
+    cc.Node.prototype.findNode = function () {
+        var path = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            path[_i] = arguments[_i];
+        }
+        var node = this;
+        return findNode.apply(void 0, __spreadArrays([node], path));
+    };
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
@@ -4804,7 +4824,6 @@ var zz;
         };
         return SceneMgr;
     }());
-    zz.SceneMgr = SceneMgr;
     var ResMgr = /** @class */ (function () {
         function ResMgr() {
             this.prefabMap = new Map();

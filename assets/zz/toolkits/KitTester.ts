@@ -7,6 +7,7 @@ export default class KitTester extends cc.Component {
     zz.sto.saveObject(key, [1213, 231]);
     let res = zz.sto.getObject<number[]>(key);
     zz.log(res);
+    zz.log(key.replaceAll('fe', '121'));
   }
 }
 
