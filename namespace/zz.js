@@ -4162,7 +4162,7 @@ var zz;
                                 tableMap.set(obj.id, obj);
                             }
                             this.allTables.set(tableType, tableMap);
-                            cc.resources.release('configs/' + tableType);
+                            bundle_1.release(tableType);
                             return [3 /*break*/, 5];
                         case 4:
                             err_1_1 = _a.sent();

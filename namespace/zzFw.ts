@@ -225,7 +225,7 @@ namespace zz {
           tableMap.set(obj.id, obj);
         }
         this.allTables.set(tableType, tableMap);
-        cc.resources.release('configs/' + tableType);
+        bundle.release(tableType);
       } catch (err_1) {
         error('[Table] loading error! table:' + tableType + '; err:' + err_1);
       }
