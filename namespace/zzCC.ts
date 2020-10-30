@@ -1,3 +1,5 @@
+/// <reference path="zzLog.ts" />
+/// <reference path="zzTs.ts" />
 namespace zz {
   /**
    * 获取相对路径节点上的组件
@@ -29,7 +31,7 @@ namespace zz {
   }
 
   let tipFn = (msg: string) => {
-    warn('没有注入tip方法');
+    warn('没有注入tip方法', msg);
   };
   export function setTipFn(fn: (msg: string) => void) {
     tipFn = fn;
@@ -41,22 +43,20 @@ namespace zz {
   export function tipMsg(msg: string) {
     tipFn(msg);
   }
-  String.prototype.replaceAll = function (
-    search: string,
-    replace: string
-  ): string {
-    let str: string = this;
-    return str.replace(new RegExp(search, 'g'), replace);
+  /**读条页面的参数; Tuple真牛逼! */
+  type LoadingPageParam = [isShow: boolean, prog: number, des: string];
+  /**读条页帮助函数 */
+  let loadingFn = (...loadingPageParam: LoadingPageParam) => {
+    warn('没有注入loadingPage方法', loadingPageParam);
   };
-  cc.Node.prototype.findCom = function <T extends cc.Component>(
-    type: { prototype: T },
-    ...path: string[]
-  ) {
-    let node = this;
-    return findCom(type, node, ...path);
-  };
-  cc.Node.prototype.findNode = function (...path: string[]) {
-    let node = this;
-    return findNode(node, ...path);
-  };
+  /**
+   * 开关载入页;
+   * @param parm 载入页参数
+   */
+  export function loadingPage(...parm: LoadingPageParam) {
+    loadingFn(...parm);
+  }
+  export function setLoadingPageFn(func: (...param: LoadingPageParam) => void) {
+    loadingFn = func;
+  }
 }

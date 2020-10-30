@@ -1,6 +1,8 @@
 /// <reference path="zzStructure.ts" />
 /// <reference path="zzLog.ts" />
 /// <reference path="zzUtils.ts" />
+/// <reference path="zzCC.ts" />
+
 namespace zz {
   class Delegate {
     private callback: Function;
@@ -611,13 +613,6 @@ namespace zz {
       }
       return this._uiRoot;
     }
-    /**进度条函数; 从外部注入; */
-    private progressFn: (
-      isShow: boolean,
-      progress: number,
-      desTxt: string
-    ) => void = undefined;
-
     private uiMap: Map<string, UIBase> = new Map<string, UIBase>();
     private pathMap: Map<string, string> = new Map<string, string>();
     private layerMap: Map<string, number> = new Map<string, number>();
@@ -650,11 +645,6 @@ namespace zz {
         this.layerMap.set(v.uiName, v.zIndex);
       });
     }
-    setProgressFn(
-      fn: (isShow: boolean, progress: number, desTxt: string) => void
-    ) {
-      this.progressFn = fn;
-    }
 
     async openUI(uiArgs: UIArgs) {
       let uiName = uiArgs.uiName;
@@ -673,7 +663,7 @@ namespace zz {
       if (this.loadingFlagMap.get(uiName)) {
         warn('[openUI] 正在加载' + uiName);
         this.openingMap.set(uiName, uiArgs);
-        this.progressFn(true, Math.random(), '');
+        loadingPage(true, Math.random(), '');
         return undefined;
       }
 
@@ -687,13 +677,11 @@ namespace zz {
             (completedCount: number, totalCount: number, item: any) => {
               if (uiArgs.progressArgs) {
                 if (uiArgs.progressArgs.showProgressUI) {
-                  this.progressFn
-                    ? this.progressFn(
-                        true,
-                        completedCount / totalCount,
-                        uiArgs.progressArgs.desTxt
-                      )
-                    : error('[UI] 没有注入进度条函数');
+                  loadingPage(
+                    true,
+                    completedCount / totalCount,
+                    uiArgs.progressArgs.desTxt
+                  );
                 }
               }
             },
@@ -702,7 +690,7 @@ namespace zz {
             }
           );
         });
-        this.progressFn?.(false, 0, '');
+        loadingPage(false, 0, '');
         this.loadingFlagMap.delete(uiName);
         let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
         uiNode.parent = this.uiRoot;
@@ -793,7 +781,7 @@ namespace zz {
           let args = this.openingMap.get(uiName);
           this.openingMap.delete(uiName);
           warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-          this.progressFn(false, 0, '');
+          loadingPage(false, 0, '');
           this.openUINode(uiNode, args);
           this.openUIClass(ui, args);
         }

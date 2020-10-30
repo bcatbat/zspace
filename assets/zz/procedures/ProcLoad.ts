@@ -1,30 +1,24 @@
 import { ProcEnum } from './ProcEnum';
-import { EventType } from '../constValue/EventType';
-import { zMdl } from '../GameEntry';
+import { zMdl } from '../helper/zMdl';
 import { ConstText } from '../constValue/ConstText';
-import { TableEnum } from '../tables/TableEnum';
 
 export default class ProcLoad extends zz.ProcBase {
   onStart() {
     zz.log('[Procedure] Load, onStart');
-    //TODO 此处增加公用资源bundle的加载;
+    this.loadBundles();
     this.LoadTables();
   }
   onLeave() {
     zz.log('[Procedure] Load, onLeave');
   }
+  async loadBundles() {}
 
   async LoadTables() {
     let tableArr = ['LevelScene'];
-    zz.event.fire(EventType.LoadingPage, true, 0, ConstText.loading_table);
+    zz.loadingPage(true, 0, ConstText.loading_table);
     for (let i = 0, len = tableArr.length; i < len; i++) {
-      await zz.table.loadConfig(tableArr[i],'configs');
-      zz.event.fire(
-        EventType.LoadingPage,
-        true,
-        (i + 1) / len,
-        ConstText.loading_table
-      );
+      await zz.table.loadConfig(tableArr[i], 'configs');
+      zz.loadingPage(true, (i + 1) / len, ConstText.loading_table);
     }
     this.LoadTableComplete();
   }

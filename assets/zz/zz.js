@@ -506,6 +506,231 @@ var zz;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
+    var LogLevel;
+    (function (LogLevel) {
+        LogLevel[LogLevel["Log"] = 0] = "Log";
+        LogLevel[LogLevel["Warn"] = 1] = "Warn";
+        LogLevel[LogLevel["Error"] = 2] = "Error";
+        LogLevel[LogLevel["No"] = 3] = "No";
+    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
+    /**0 */
+    zz.logLevel = LogLevel.Log;
+    function log() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Log)
+            console.log.apply(console, data);
+    }
+    zz.log = log;
+    function warn() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Warn)
+            console.warn.apply(console, data);
+    }
+    zz.warn = warn;
+    function error() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
+        if (zz.logLevel <= LogLevel.Error)
+            console.error.apply(console, data);
+    }
+    zz.error = error;
+    function assertEqual(a, b, msg) {
+        console.assert(a == b, msg);
+    }
+    zz.assertEqual = assertEqual;
+})(zz || (zz = {}));
+var zz;
+(function (zz) {
+    var ts;
+    (function (ts) {
+        /**
+         * Iterates through 'array' by index and performs the callback on each element of array until the callback
+         * returns a truthy value, then returns that value.
+         * If no such value is found, the callback is applied to each element of array and undefined is returned.
+         */
+        function forEach(array, callback) {
+            if (array) {
+                for (var i = 0; i < array.length; i++) {
+                    var result = callback(array[i], i);
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
+            return undefined;
+        }
+        ts.forEach = forEach;
+        /**
+         * Like `forEach`, but iterates in reverse order.
+         */
+        function forEachRight(array, callback) {
+            if (array) {
+                for (var i = array.length - 1; i >= 0; i--) {
+                    var result = callback(array[i], i);
+                    if (result) {
+                        return result;
+                    }
+                }
+            }
+            return undefined;
+        }
+        ts.forEachRight = forEachRight;
+        function zipWith(arrayA, arrayB, callback) {
+            var result = [];
+            for (var i = 0; i < arrayA.length; i++) {
+                result.push(callback(arrayA[i], arrayB[i], i));
+            }
+            return result;
+        }
+        ts.zipWith = zipWith;
+        function zipToMap(keys, values) {
+            var map = new Map();
+            for (var i = 0; i < keys.length; ++i) {
+                map.set(keys[i], values[i]);
+            }
+            return map;
+        }
+        ts.zipToMap = zipToMap;
+        /**
+         * Creates a new array with `element` interspersed in between each element of `input`
+         * if there is more than 1 value in `input`. Otherwise, returns the existing array.
+         */
+        function intersperse(input, element) {
+            if (input.length <= 1) {
+                return input;
+            }
+            var result = [];
+            for (var i = 0, n = input.length; i < n; i++) {
+                if (i)
+                    result.push(element);
+                result.push(input[i]);
+            }
+            return result;
+        }
+        ts.intersperse = intersperse;
+        function countWhere(array, predicate) {
+            var count = 0;
+            if (array) {
+                for (var i = 0; i < array.length; i++) {
+                    var v = array[i];
+                    if (predicate(v, i)) {
+                        count++;
+                    }
+                }
+            }
+            return count;
+        }
+        ts.countWhere = countWhere;
+        /**
+         * Tests whether a value is an array.
+         */
+        function isArray(value) {
+            return Array.isArray ? Array.isArray(value) : value instanceof Array;
+        }
+        ts.isArray = isArray;
+        /**
+         * Gets the actual offset into an array for a relative offset. Negative offsets indicate a
+         * position offset from the end of the array.
+         */
+        function toOffset(array, offset) {
+            return offset < 0 ? array.length + offset : offset;
+        }
+        function addRange(to, from, start, end) {
+            if (from === undefined || from.length === 0)
+                return to;
+            if (to === undefined)
+                return from.slice(start, end);
+            start = start === undefined ? 0 : toOffset(from, start);
+            end = end === undefined ? from.length : toOffset(from, end);
+            for (var i = start; i < end && i < from.length; i++) {
+                if (from[i] !== undefined) {
+                    to.push(from[i]);
+                }
+            }
+            return to;
+        }
+        ts.addRange = addRange;
+        /**
+         * Flattens an array containing a mix of array or non-array elements.
+         *
+         * @param array The array to flatten.
+         */
+        function flatten(array) {
+            var result = [];
+            for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
+                var v = array_1[_i];
+                if (v) {
+                    if (isArray(v)) {
+                        addRange(result, v);
+                    }
+                    else {
+                        result.push(v);
+                    }
+                }
+            }
+            return result;
+        }
+        ts.flatten = flatten;
+        function compact(array) {
+            var result;
+            if (array) {
+                for (var i = 0; i < array.length; i++) {
+                    var v = array[i];
+                    if (result || !v) {
+                        if (!result) {
+                            result = array.slice(0, i);
+                        }
+                        if (v) {
+                            result.push(v);
+                        }
+                    }
+                }
+            }
+            return result || array;
+        }
+        ts.compact = compact;
+        /**
+         * Returns the first element of an array if non-empty, `undefined` otherwise.
+         */
+        function firstOrUndefined(array) {
+            return array.length === 0 ? undefined : array[0];
+        }
+        ts.firstOrUndefined = firstOrUndefined;
+        /**
+         * Returns the last element of an array if non-empty, `undefined` otherwise.
+         */
+        function lastOrUndefined(array) {
+            return array.length === 0 ? undefined : array[array.length - 1];
+        }
+        ts.lastOrUndefined = lastOrUndefined;
+        /**
+         * Returns the element at a specific offset in an array if non-empty, `undefined` otherwise.
+         * A negative offset indicates the element should be retrieved from the end of the array.
+         */
+        function elementAt(array, offset) {
+            if (array) {
+                offset = toOffset(array, offset);
+                if (offset < array.length) {
+                    return array[offset];
+                }
+            }
+            return undefined;
+        }
+        ts.elementAt = elementAt;
+    })(ts = zz.ts || (zz.ts = {}));
+})(zz || (zz = {}));
+/// <reference path="zzLog.ts" />
+/// <reference path="zzTs.ts" />
+var zz;
+(function (zz) {
     /**
      * 获取相对路径节点上的组件
      * @param type component类型
@@ -536,7 +761,7 @@ var zz;
     }
     zz.findNode = findNode;
     var tipFn = function (msg) {
-        zz.warn('没有注入tip方法');
+        zz.warn('没有注入tip方法', msg);
     };
     function setTipFn(fn) {
         tipFn = fn;
@@ -550,26 +775,134 @@ var zz;
         tipFn(msg);
     }
     zz.tipMsg = tipMsg;
-    String.prototype.replaceAll = function (search, replace) {
-        var str = this;
-        return str.replace(new RegExp(search, 'g'), replace);
-    };
-    cc.Node.prototype.findCom = function (type) {
-        var path = [];
-        for (var _i = 1; _i < arguments.length; _i++) {
-            path[_i - 1] = arguments[_i];
-        }
-        var node = this;
-        return findCom.apply(void 0, __spreadArrays([type, node], path));
-    };
-    cc.Node.prototype.findNode = function () {
-        var path = [];
+    /**读条页帮助函数 */
+    var loadingFn = function () {
+        var loadingPageParam = [];
         for (var _i = 0; _i < arguments.length; _i++) {
-            path[_i] = arguments[_i];
+            loadingPageParam[_i] = arguments[_i];
         }
-        var node = this;
-        return findNode.apply(void 0, __spreadArrays([node], path));
+        zz.warn('没有注入loadingPage方法', loadingPageParam);
     };
+    /**
+     * 开关载入页;
+     * @param parm 载入页参数
+     */
+    function loadingPage() {
+        var parm = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            parm[_i] = arguments[_i];
+        }
+        loadingFn.apply(void 0, parm);
+    }
+    zz.loadingPage = loadingPage;
+    function setLoadingPageFn(func) {
+        loadingFn = func;
+    }
+    zz.setLoadingPageFn = setLoadingPageFn;
+})(zz || (zz = {}));
+/// <reference path="zzTs.ts" />
+/// <reference path="zzCC.ts" />
+var zz;
+(function (zz) {
+    var extension;
+    (function (extension) {
+        //#region CCC
+        cc.Node.prototype.findCom = function (type) {
+            var path = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                path[_i - 1] = arguments[_i];
+            }
+            var node = this;
+            if (!node)
+                return undefined;
+            return zz.findCom.apply(void 0, __spreadArrays([type, node], path));
+        };
+        cc.Node.prototype.findNode = function () {
+            var path = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                path[_i] = arguments[_i];
+            }
+            var node = this;
+            if (!node)
+                return undefined;
+            return zz.findNode.apply(void 0, __spreadArrays([node], path));
+        };
+        //#endregion
+        Object.defineProperty(String.prototype, 'replaceAll', {
+            enumerable: false,
+            value: function (search, replace) {
+                var str = this;
+                if (str == null)
+                    return;
+                return str.replace(new RegExp(search, 'g'), replace);
+            },
+        });
+        Object.defineProperty(Array.prototype, 'forEachLeft', {
+            enumerable: false,
+            value: function (callback) {
+                var array = this;
+                if (array) {
+                    return zz.ts.forEach(array, callback);
+                }
+                return undefined;
+            },
+        });
+        Object.defineProperty(Array.prototype, 'forEachRight', {
+            enumerable: false,
+            value: function (callback) {
+                var array = this;
+                if (array) {
+                    return zz.ts.forEachRight(array, callback);
+                }
+                return undefined;
+            },
+        });
+        Object.defineProperty(Array.prototype, 'intersperse', {
+            enumerable: false,
+            value: function (element) {
+                var array = this;
+                if (array) {
+                    return zz.ts.intersperse(array, element);
+                }
+                else {
+                    return array;
+                }
+            },
+        });
+        Object.defineProperty(Array.prototype, 'countWhere', {
+            enumerable: false,
+            value: function (predicate) {
+                var array = this;
+                if (array) {
+                    return zz.ts.countWhere(array, predicate);
+                }
+                else {
+                    return 0;
+                }
+            },
+        });
+        Object.defineProperty(Array.prototype, 'eleAt', {
+            enumerable: false,
+            value: function (offset) {
+                var array = this;
+                return zz.ts.elementAt(array, offset);
+            },
+        });
+        Object.defineProperty(Array.prototype, 'compact', {
+            enumerable: false,
+            value: function () {
+                var array = this;
+                return zz.ts.compact(array);
+            },
+        });
+        Object.defineProperty(Array.prototype, 'addRange', {
+            enumerable: false,
+            value: function (from, start, end) {
+                var to = this;
+                return zz.ts.addRange(to, from, start, end);
+            },
+        });
+    })(extension = zz.extension || (zz.extension = {}));
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
@@ -873,8 +1206,8 @@ var zz;
          * optionally return false.
          */
         function forEach(array, callback) {
-            for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
-                var ele = array_1[_i];
+            for (var _i = 0, array_2 = array; _i < array_2.length; _i++) {
+                var ele = array_2[_i];
                 if (callback(ele) === false) {
                     return;
                 }
@@ -3328,49 +3661,6 @@ var zz;
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
-    var LogLevel;
-    (function (LogLevel) {
-        LogLevel[LogLevel["Log"] = 0] = "Log";
-        LogLevel[LogLevel["Warn"] = 1] = "Warn";
-        LogLevel[LogLevel["Error"] = 2] = "Error";
-        LogLevel[LogLevel["No"] = 3] = "No";
-    })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
-    /**0 */
-    zz.logLevel = LogLevel.Log;
-    function log() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Log)
-            console.log.apply(console, data);
-    }
-    zz.log = log;
-    function warn() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Warn)
-            console.warn.apply(console, data);
-    }
-    zz.warn = warn;
-    function error() {
-        var data = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            data[_i] = arguments[_i];
-        }
-        if (zz.logLevel <= LogLevel.Error)
-            console.error.apply(console, data);
-    }
-    zz.error = error;
-    function assertEqual(a, b, msg) {
-        console.assert(a == b, msg);
-    }
-    zz.assertEqual = assertEqual;
-})(zz || (zz = {}));
-var zz;
-(function (zz) {
     var utils;
     (function (utils) {
         /**打乱字符串 */
@@ -3638,6 +3928,7 @@ window.zz = zz;
 /// <reference path="zzStructure.ts" />
 /// <reference path="zzLog.ts" />
 /// <reference path="zzUtils.ts" />
+/// <reference path="zzCC.ts" />
 var zz;
 (function (zz) {
     var Delegate = /** @class */ (function () {
@@ -4302,8 +4593,6 @@ var zz;
         function UIMgr() {
             /**UI根节点; 从外部注入; */
             this._uiRoot = undefined;
-            /**进度条函数; 从外部注入; */
-            this.progressFn = undefined;
             this.uiMap = new Map();
             this.pathMap = new Map();
             this.layerMap = new Map();
@@ -4344,16 +4633,11 @@ var zz;
                 _this.layerMap.set(v.uiName, v.zIndex);
             });
         };
-        UIMgr.prototype.setProgressFn = function (fn) {
-            this.progressFn = fn;
-        };
         UIMgr.prototype.openUI = function (uiArgs) {
-            var _a;
             return __awaiter(this, void 0, void 0, function () {
                 var uiName, ui_1, uiNd, bundle_2, prefab_1, uiNode, ui_2, err_1_2;
-                var _this = this;
-                return __generator(this, function (_b) {
-                    switch (_b.label) {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
                         case 0:
                             uiName = uiArgs.uiName;
                             if (this.uiMap.has(uiName)) {
@@ -4371,23 +4655,21 @@ var zz;
                             if (this.loadingFlagMap.get(uiName)) {
                                 zz.warn('[openUI] 正在加载' + uiName);
                                 this.openingMap.set(uiName, uiArgs);
-                                this.progressFn(true, Math.random(), '');
+                                zz.loadingPage(true, Math.random(), '');
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            _b.label = 1;
+                            _a.label = 1;
                         case 1:
-                            _b.trys.push([1, 5, , 6]);
+                            _a.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_2 = _b.sent();
+                            bundle_2 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_2.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
                                             if (uiArgs.progressArgs.showProgressUI) {
-                                                _this.progressFn
-                                                    ? _this.progressFn(true, completedCount / totalCount, uiArgs.progressArgs.desTxt)
-                                                    : zz.error('[UI] 没有注入进度条函数');
+                                                zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
                                             }
                                         }
                                     }, function (err, prefab) {
@@ -4395,12 +4677,12 @@ var zz;
                                     });
                                 })];
                         case 3:
-                            prefab_1 = _b.sent();
-                            (_a = this.progressFn) === null || _a === void 0 ? void 0 : _a.call(this, false, 0, '');
+                            prefab_1 = _a.sent();
+                            zz.loadingPage(false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
                         case 4:
-                            uiNode = _b.sent();
+                            uiNode = _a.sent();
                             uiNode.parent = this.uiRoot;
                             ui_2 = uiNode.getComponent(uiName);
                             this.uiMap.set(uiName, ui_2);
@@ -4410,7 +4692,7 @@ var zz;
                                 this.openingMap.delete(uiName);
                             return [3 /*break*/, 6];
                         case 5:
-                            err_1_2 = _b.sent();
+                            err_1_2 = _a.sent();
                             zz.error('[openUI] error:' + err_1_2);
                             return [2 /*return*/, undefined];
                         case 6: return [2 /*return*/];
@@ -4522,7 +4804,7 @@ var zz;
                                 args = this.openingMap.get(uiName);
                                 this.openingMap.delete(uiName);
                                 zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-                                this.progressFn(false, 0, '');
+                                zz.loadingPage(false, 0, '');
                                 this.openUINode(uiNode, args);
                                 this.openUIClass(ui_4, args);
                             }
@@ -4881,16 +5163,18 @@ var zz;
             this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
         };
         ResMgr.prototype.getPrefab = function (bundleName, dirName, name) {
-            if (!this.prefabMap.containsKey(bundleName + '/' + dirName)) {
+            var key = bundleName + '/' + dirName;
+            if (!this.prefabMap.containsKey(key)) {
                 return undefined;
             }
-            return this.prefabMap.getValue(dirName).getValue(name);
+            return this.prefabMap.getValue(key).getValue(name);
         };
         ResMgr.prototype.getSpriteframe = function (bundleName, dirName, name) {
-            if (!this.spriteMap.containsKey(bundleName + '/' + dirName)) {
+            var key = bundleName + '/' + dirName;
+            if (!this.spriteMap.containsKey(key)) {
                 return undefined;
             }
-            return this.spriteMap.getValue(dirName).getValue(name);
+            return this.spriteMap.getValue(key).getValue(name);
         };
         return ResMgr;
     }());
