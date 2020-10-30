@@ -1,3 +1,23 @@
+var __extends = (this && this.__extends) || (function () {
+    var extendStatics = function (d, b) {
+        extendStatics = Object.setPrototypeOf ||
+            ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+        return extendStatics(d, b);
+    };
+    return function (d, b) {
+        extendStatics(d, b);
+        function __() { this.constructor = d; }
+        d.prototype = b === null ? Object.create(b) : (__.prototype = b.prototype, new __());
+    };
+})();
+var __spreadArrays = (this && this.__spreadArrays) || function () {
+    for (var s = 0, i = 0, il = arguments.length; i < il; i++) s += arguments[i].length;
+    for (var r = Array(s), k = 0, i = 0; i < il; i++)
+        for (var a = arguments[i], j = 0, jl = a.length; j < jl; j++, k++)
+            r[k] = a[j];
+    return r;
+};
 var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, generator) {
     function adopt(value) { return value instanceof P ? value : new P(function (resolve) { resolve(value); }); }
     return new (P || (P = Promise))(function (resolve, reject) {
@@ -6,6 +26,33 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
         function step(result) { result.done ? resolve(result.value) : adopt(result.value).then(fulfilled, rejected); }
         step((generator = generator.apply(thisArg, _arguments || [])).next());
     });
+};
+var __generator = (this && this.__generator) || function (thisArg, body) {
+    var _ = { label: 0, sent: function() { if (t[0] & 1) throw t[1]; return t[1]; }, trys: [], ops: [] }, f, y, t, g;
+    return g = { next: verb(0), "throw": verb(1), "return": verb(2) }, typeof Symbol === "function" && (g[Symbol.iterator] = function() { return this; }), g;
+    function verb(n) { return function (v) { return step([n, v]); }; }
+    function step(op) {
+        if (f) throw new TypeError("Generator is already executing.");
+        while (_) try {
+            if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
+            if (y = 0, t) op = [op[0] & 2, t.value];
+            switch (op[0]) {
+                case 0: case 1: t = op; break;
+                case 4: _.label++; return { value: op[1], done: false };
+                case 5: _.label++; y = op[1]; op = [0]; continue;
+                case 7: op = _.ops.pop(); _.trys.pop(); continue;
+                default:
+                    if (!(t = _.trys, t = t.length > 0 && t[t.length - 1]) && (op[0] === 6 || op[0] === 2)) { _ = 0; continue; }
+                    if (op[0] === 3 && (!t || (op[1] > t[0] && op[1] < t[3]))) { _.label = op[1]; break; }
+                    if (op[0] === 6 && _.label < t[1]) { _.label = t[1]; t = op; break; }
+                    if (t && _.label < t[2]) { _.label = t[2]; _.ops.push(op); break; }
+                    if (t[2]) _.ops.pop();
+                    _.trys.pop(); continue;
+            }
+            op = body.call(thisArg, _);
+        } catch (e) { op = [6, e]; y = 0; } finally { f = t = 0; }
+        if (op[0] & 5) throw op[1]; return { value: op[0] ? op[1] : void 0, done: true };
+    }
 };
 var zz;
 (function (zz) {
@@ -54,7 +101,7 @@ window.zz = zz;
 /// <reference path="zzType.ts" />
 var zz;
 (function (zz) {
-    let BTState;
+    var BTState;
     (function (BTState) {
         BTState[BTState["Failure"] = 0] = "Failure";
         BTState[BTState["Success"] = 1] = "Success";
@@ -62,81 +109,106 @@ var zz;
         BTState[BTState["Abort"] = 3] = "Abort";
     })(BTState || (BTState = {}));
     /**Behavior Tree */
-    class BT {
-        static Root() {
+    var BT = /** @class */ (function () {
+        function BT() {
+        }
+        BT.Root = function () {
             return new Root();
-        }
-        static Sequence() {
+        };
+        BT.Sequence = function () {
             return new Sequence();
-        }
-        static Selector(shuffle = false) {
+        };
+        BT.Selector = function (shuffle) {
+            if (shuffle === void 0) { shuffle = false; }
             return new Selector(shuffle);
-        }
-        static Call(fn) {
+        };
+        BT.Call = function (fn) {
             return new Action(fn);
-        }
-        static If(fn) {
+        };
+        BT.If = function (fn) {
             return new ConditionalBranch(fn);
-        }
-        static While(fn) {
+        };
+        BT.While = function (fn) {
             return new While(fn);
-        }
-        static Condition(fn) {
+        };
+        BT.Condition = function (fn) {
             return new Condition(fn);
-        }
-        static Repeat(count) {
+        };
+        BT.Repeat = function (count) {
             return new Repeat(count);
-        }
-        static Wait(seconds) {
+        };
+        BT.Wait = function (seconds) {
             return new Wait(seconds);
-        }
-        static Terminate() {
+        };
+        BT.Terminate = function () {
             return new Terminate();
-        }
-        static Log(msg) {
+        };
+        BT.Log = function (msg) {
             return new Log(msg);
-        }
-        static RandomSequence(weights = null) {
+        };
+        BT.RandomSequence = function (weights) {
+            if (weights === void 0) { weights = null; }
             return new RandomSequence(weights);
-        }
-    }
+        };
+        return BT;
+    }());
     zz.BT = BT;
-    class BTNode {
-    }
-    class Branch extends BTNode {
-        constructor() {
-            super(...arguments);
-            this.activeChild = 0;
-            this.children = [];
+    var BTNode = /** @class */ (function () {
+        function BTNode() {
         }
-        OpenBranch(...children) {
-            this.children.push(...children);
+        return BTNode;
+    }());
+    var Branch = /** @class */ (function (_super) {
+        __extends(Branch, _super);
+        function Branch() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.activeChild = 0;
+            _this.children = [];
+            return _this;
+        }
+        Branch.prototype.OpenBranch = function () {
+            var _a;
+            var children = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                children[_i] = arguments[_i];
+            }
+            (_a = this.children).push.apply(_a, children);
             return this;
-        }
-        Children() {
+        };
+        Branch.prototype.Children = function () {
             return this.children;
-        }
-        ActiveChild() {
+        };
+        Branch.prototype.ActiveChild = function () {
             return this.activeChild;
-        }
-        ResetChildren() {
+        };
+        Branch.prototype.ResetChildren = function () {
             this.activeChild = 0;
-            this.children.forEach(v => {
+            this.children.forEach(function (v) {
                 if (v instanceof Branch) {
                     v.ResetChildren();
                 }
             });
+        };
+        return Branch;
+    }(BTNode));
+    var Decorator = /** @class */ (function (_super) {
+        __extends(Decorator, _super);
+        function Decorator() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-    }
-    class Decorator extends BTNode {
-        Do(child) {
+        Decorator.prototype.Do = function (child) {
             this.child = child;
             return this;
+        };
+        return Decorator;
+    }(BTNode));
+    var Sequence = /** @class */ (function (_super) {
+        __extends(Sequence, _super);
+        function Sequence() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-    }
-    class Sequence extends Branch {
-        Tick() {
-            let childState = this.children[this.activeChild].Tick();
+        Sequence.prototype.Tick = function () {
+            var childState = this.children[this.activeChild].Tick();
             switch (childState) {
                 case BTState.Success:
                     this.activeChild++;
@@ -156,24 +228,27 @@ var zz;
                     this.activeChild = 0;
                     return BTState.Abort;
             }
-        }
-    }
-    class Selector extends Branch {
-        constructor(shuffle) {
-            super();
+        };
+        return Sequence;
+    }(Branch));
+    var Selector = /** @class */ (function (_super) {
+        __extends(Selector, _super);
+        function Selector(shuffle) {
+            var _this = _super.call(this) || this;
             if (shuffle) {
-                let n = this.children.length;
+                var n = _this.children.length;
                 while (n > 1) {
                     n--;
-                    let k = zz.int(Math.random() * (n + 1));
-                    let val = this.children[k];
-                    this.children[k] = this.children[n];
-                    this.children[n] = val;
+                    var k = zz.int(Math.random() * (n + 1));
+                    var val = _this.children[k];
+                    _this.children[k] = _this.children[n];
+                    _this.children[n] = val;
                 }
             }
+            return _this;
         }
-        Tick() {
-            let childState = this.children[this.activeChild].Tick();
+        Selector.prototype.Tick = function () {
+            var childState = this.children[this.activeChild].Tick();
             switch (childState) {
                 case BTState.Success:
                     this.activeChild = 0;
@@ -192,10 +267,15 @@ var zz;
                 case BTState.Abort:
                     return BTState.Abort;
             }
+        };
+        return Selector;
+    }(Branch));
+    var Block = /** @class */ (function (_super) {
+        __extends(Block, _super);
+        function Block() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-    }
-    class Block extends Branch {
-        Tick() {
+        Block.prototype.Tick = function () {
             switch (this.children[this.activeChild].Tick()) {
                 case BTState.Continue:
                     return BTState.Continue;
@@ -207,43 +287,52 @@ var zz;
                     }
                     return BTState.Continue;
             }
+        };
+        return Block;
+    }(Branch));
+    var Action = /** @class */ (function (_super) {
+        __extends(Action, _super);
+        function Action(fn) {
+            var _this = _super.call(this) || this;
+            _this.fn = fn;
+            return _this;
         }
-    }
-    class Action extends BTNode {
-        constructor(fn) {
-            super();
-            this.fn = fn;
-        }
-        Tick() {
+        Action.prototype.Tick = function () {
             if (this.fn) {
                 this.fn();
                 return BTState.Success;
             }
-        }
-        ToString() {
+        };
+        Action.prototype.ToString = function () {
             return 'Action : ' + this.fn.name;
+        };
+        return Action;
+    }(BTNode));
+    var Condition = /** @class */ (function (_super) {
+        __extends(Condition, _super);
+        function Condition(fn) {
+            var _this = _super.call(this) || this;
+            _this.fn = fn;
+            return _this;
         }
-    }
-    class Condition extends BTNode {
-        constructor(fn) {
-            super();
-            this.fn = fn;
-        }
-        Tick() {
+        Condition.prototype.Tick = function () {
             return this.fn() ? BTState.Success : BTState.Failure;
-        }
-        ToString() {
+        };
+        Condition.prototype.ToString = function () {
             return 'Conditon : ' + this.fn.name;
+        };
+        return Condition;
+    }(BTNode));
+    var Wait = /** @class */ (function (_super) {
+        __extends(Wait, _super);
+        function Wait(seconds) {
+            var _this = _super.call(this) || this;
+            _this.seconds = 0;
+            _this.future = -1;
+            _this.seconds = seconds;
+            return _this;
         }
-    }
-    class Wait extends BTNode {
-        constructor(seconds) {
-            super();
-            this.seconds = 0;
-            this.future = -1;
-            this.seconds = seconds;
-        }
-        Tick() {
+        Wait.prototype.Tick = function () {
             if (this.future < 0) {
                 this.future = Date.now() / 1000 + this.seconds;
             }
@@ -254,20 +343,23 @@ var zz;
             else {
                 return BTState.Continue;
             }
+        };
+        return Wait;
+    }(BTNode));
+    var ConditionalBranch = /** @class */ (function (_super) {
+        __extends(ConditionalBranch, _super);
+        function ConditionalBranch(fn) {
+            var _this = _super.call(this) || this;
+            _this.tested = false;
+            _this.fn = fn;
+            return _this;
         }
-    }
-    class ConditionalBranch extends Block {
-        constructor(fn) {
-            super();
-            this.tested = false;
-            this.fn = fn;
-        }
-        Tick() {
+        ConditionalBranch.prototype.Tick = function () {
             if (!this.tested) {
                 this.tested = this.fn();
             }
             if (this.tested) {
-                let result = super.Tick();
+                var result = _super.prototype.Tick.call(this);
                 if (result == BTState.Continue) {
                     return BTState.Continue;
                 }
@@ -279,19 +371,22 @@ var zz;
             else {
                 return BTState.Failure;
             }
-        }
-        ToString() {
+        };
+        ConditionalBranch.prototype.ToString = function () {
             return 'ConditionalBranch : ' + this.fn.name;
+        };
+        return ConditionalBranch;
+    }(Block));
+    var While = /** @class */ (function (_super) {
+        __extends(While, _super);
+        function While(fn) {
+            var _this = _super.call(this) || this;
+            _this.fn = fn;
+            return _this;
         }
-    }
-    class While extends Block {
-        constructor(fn) {
-            super();
-            this.fn = fn;
-        }
-        Tick() {
+        While.prototype.Tick = function () {
             if (this.fn()) {
-                super.Tick();
+                _super.prototype.Tick.call(this);
             }
             else {
                 // exit the loop
@@ -299,17 +394,20 @@ var zz;
                 return BTState.Failure;
             }
             return BTState.Continue;
-        }
-        ToString() {
+        };
+        While.prototype.ToString = function () {
             return 'While : ' + this.fn.name;
+        };
+        return While;
+    }(Block));
+    var Root = /** @class */ (function (_super) {
+        __extends(Root, _super);
+        function Root() {
+            var _this = _super !== null && _super.apply(this, arguments) || this;
+            _this.isTerminated = false;
+            return _this;
         }
-    }
-    class Root extends Block {
-        constructor() {
-            super(...arguments);
-            this.isTerminated = false;
-        }
-        Tick() {
+        Root.prototype.Tick = function () {
             if (this.isTerminated)
                 return BTState.Abort;
             while (true) {
@@ -328,19 +426,22 @@ var zz;
                         continue;
                 }
             }
-        }
-    }
+        };
+        return Root;
+    }(Block));
     zz.Root = Root;
-    class Repeat extends Block {
-        constructor(count) {
-            super();
-            this.count = 1;
-            this.currentCount = 0;
-            this.count = count;
+    var Repeat = /** @class */ (function (_super) {
+        __extends(Repeat, _super);
+        function Repeat(count) {
+            var _this = _super.call(this) || this;
+            _this.count = 1;
+            _this.currentCount = 0;
+            _this.count = count;
+            return _this;
         }
-        Tick() {
+        Repeat.prototype.Tick = function () {
             if (this.count > 0 && this.currentCount < this.count) {
-                let result = super.Tick();
+                var result = _super.prototype.Tick.call(this);
                 switch (result) {
                     case BTState.Continue:
                         return BTState.Continue;
@@ -353,29 +454,37 @@ var zz;
                         return BTState.Continue;
                 }
             }
-        }
-        ToString() {
+        };
+        Repeat.prototype.ToString = function () {
             return 'Repeat Until : ' + this.currentCount + ' / ' + this.count;
-        }
-    }
-    class RandomSequence extends Block {
+        };
+        return Repeat;
+    }(Block));
+    var RandomSequence = /** @class */ (function (_super) {
+        __extends(RandomSequence, _super);
         /**
          *
          * @param weight Leave null so that all child node have the same weight
          */
-        constructor(weight = null) {
-            super();
-            this.m_Weight = null;
-            this.m_AddedWeight = null;
-            this.activeChild = -1;
-            this.m_Weight = weight;
+        function RandomSequence(weight) {
+            if (weight === void 0) { weight = null; }
+            var _this = _super.call(this) || this;
+            _this.m_Weight = null;
+            _this.m_AddedWeight = null;
+            _this.activeChild = -1;
+            _this.m_Weight = weight;
+            return _this;
         }
-        OpenBranch(...children) {
-            let len = children.length;
+        RandomSequence.prototype.OpenBranch = function () {
+            var children = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                children[_i] = arguments[_i];
+            }
+            var len = children.length;
             this.m_AddedWeight = new Array(len);
-            for (let i = 0; i < len; i++) {
-                let weight = 0;
-                let prevWeight = 0;
+            for (var i = 0; i < len; i++) {
+                var weight = 0;
+                var prevWeight = 0;
                 if (this.m_Weight == null || this.m_Weight.length <= i) {
                     weight = 1;
                 }
@@ -387,22 +496,22 @@ var zz;
                 }
                 this.m_AddedWeight[i] = weight + prevWeight;
             }
-            return super.OpenBranch(...children);
-        }
-        PickNewChild() {
-            let choice = Math.random() * this.m_AddedWeight[this.m_AddedWeight.length - 1];
-            for (let i = 0, len = this.m_AddedWeight.length; i < len; i++) {
+            return _super.prototype.OpenBranch.apply(this, children);
+        };
+        RandomSequence.prototype.PickNewChild = function () {
+            var choice = Math.random() * this.m_AddedWeight[this.m_AddedWeight.length - 1];
+            for (var i = 0, len = this.m_AddedWeight.length; i < len; i++) {
                 if (choice <= this.m_AddedWeight[i]) {
                     this.activeChild = i;
                     break;
                 }
             }
-        }
-        Tick() {
+        };
+        RandomSequence.prototype.Tick = function () {
             if (this.activeChild == -1) {
                 this.PickNewChild();
             }
-            let res = this.children[this.activeChild].Tick();
+            var res = this.children[this.activeChild].Tick();
             switch (res) {
                 case BTState.Continue:
                     return BTState.Continue;
@@ -410,72 +519,101 @@ var zz;
                     this.PickNewChild();
                     return res;
             }
-        }
-        ToString() {
+        };
+        RandomSequence.prototype.ToString = function () {
             return ('Random Sequence : ' + this.activeChild + ' / ' + this.children.length);
+        };
+        return RandomSequence;
+    }(Block));
+    var Terminate = /** @class */ (function (_super) {
+        __extends(Terminate, _super);
+        function Terminate() {
+            return _super !== null && _super.apply(this, arguments) || this;
         }
-    }
-    class Terminate extends BTNode {
-        Tick() {
+        Terminate.prototype.Tick = function () {
             return BTState.Abort;
+        };
+        return Terminate;
+    }(BTNode));
+    var Log = /** @class */ (function (_super) {
+        __extends(Log, _super);
+        function Log(msg) {
+            var _this = _super.call(this) || this;
+            _this.msg = msg;
+            return _this;
         }
-    }
-    class Log extends BTNode {
-        constructor(msg) {
-            super();
-            this.msg = msg;
-        }
-        Tick() {
+        Log.prototype.Tick = function () {
             console.log(this.msg);
             return BTState.Success;
-        }
-    }
+        };
+        return Log;
+    }(BTNode));
 })(zz || (zz = {}));
 window.zz = zz;
 var zz;
 (function (zz) {
-    class Delegate {
-        constructor(callback, argArray, isOnce = false) {
+    var Delegate = /** @class */ (function () {
+        function Delegate(callback, argArray, isOnce) {
+            if (isOnce === void 0) { isOnce = false; }
             this.isOnce = false;
             this.callback = callback;
             this.argArray = argArray;
             this.isOnce = isOnce;
         }
-        get Callback() {
-            return this.callback;
-        }
-        get ArgArray() {
-            return this.argArray;
-        }
-        get IsOnce() {
-            return this.isOnce;
-        }
-        set IsOnce(v) {
-            this.isOnce = v;
-        }
-    }
-    class EventMgr {
-        constructor() {
+        Object.defineProperty(Delegate.prototype, "Callback", {
+            get: function () {
+                return this.callback;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Delegate.prototype, "ArgArray", {
+            get: function () {
+                return this.argArray;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(Delegate.prototype, "IsOnce", {
+            get: function () {
+                return this.isOnce;
+            },
+            set: function (v) {
+                this.isOnce = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        return Delegate;
+    }());
+    var EventMgr = /** @class */ (function () {
+        function EventMgr() {
             this.mEventMap = new Map();
         }
-        has(eventType, caller, callback) {
+        EventMgr.prototype.has = function (eventType, caller, callback) {
             return !!this.find(eventType, caller, callback);
-        }
-        fire(eventType, ...argArray) {
+        };
+        EventMgr.prototype.fire = function (eventType) {
+            var _a;
+            var argArray = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                argArray[_i - 1] = arguments[_i];
+            }
             if (!eventType) {
                 console.error('Event eventType is null!');
                 return false;
             }
-            let delegateList = [];
-            let callerList = [];
-            let eventMap = this.mEventMap.get(eventType);
+            var delegateList = [];
+            var callerList = [];
+            var eventMap = this.mEventMap.get(eventType);
             if (eventMap) {
-                eventMap.forEach((eventList, caller) => {
-                    for (let delegate of eventList) {
+                eventMap.forEach(function (eventList, caller) {
+                    for (var _i = 0, eventList_1 = eventList; _i < eventList_1.length; _i++) {
+                        var delegate = eventList_1[_i];
                         delegateList.push(delegate);
                         callerList.push(caller);
                     }
-                    for (let index = eventList.length - 1; index >= 0; --index) {
+                    for (var index = eventList.length - 1; index >= 0; --index) {
                         if (eventList[index].IsOnce) {
                             eventList.splice(index, 1);
                         }
@@ -488,21 +626,29 @@ var zz;
                     this.mEventMap.delete(eventType);
                 }
             }
-            let length = delegateList.length;
-            for (let index = 0; index < length; index++) {
-                let delegate = delegateList[index];
-                delegate.Callback.call(callerList[index], ...delegate.ArgArray, ...argArray);
+            var length = delegateList.length;
+            for (var index = 0; index < length; index++) {
+                var delegate = delegateList[index];
+                (_a = delegate.Callback).call.apply(_a, __spreadArrays([callerList[index]], delegate.ArgArray, argArray));
             }
             return length > 0;
-        }
-        register(eventType, caller, callback, ...argArray) {
-            this.addListener(eventType, caller, callback, false, ...argArray);
-        }
-        registerOnce(eventType, caller, callback, ...argArray) {
-            this.addListener(eventType, caller, callback, true, ...argArray);
-        }
-        delRegister(type, caller, callback, onceOnly) {
-            this.removeBy((eventType, listenerCaller, delegate) => {
+        };
+        EventMgr.prototype.register = function (eventType, caller, callback) {
+            var argArray = [];
+            for (var _i = 3; _i < arguments.length; _i++) {
+                argArray[_i - 3] = arguments[_i];
+            }
+            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, false], argArray));
+        };
+        EventMgr.prototype.registerOnce = function (eventType, caller, callback) {
+            var argArray = [];
+            for (var _i = 3; _i < arguments.length; _i++) {
+                argArray[_i - 3] = arguments[_i];
+            }
+            this.addListener.apply(this, __spreadArrays([eventType, caller, callback, true], argArray));
+        };
+        EventMgr.prototype.delRegister = function (type, caller, callback, onceOnly) {
+            this.removeBy(function (eventType, listenerCaller, delegate) {
                 if (type && type !== eventType) {
                     return false;
                 }
@@ -517,16 +663,17 @@ var zz;
                 }
                 return true;
             });
-        }
-        delAllRegister(caller) {
-            this.mEventMap.forEach((eventMap, type) => {
+        };
+        EventMgr.prototype.delAllRegister = function (caller) {
+            var _this = this;
+            this.mEventMap.forEach(function (eventMap, type) {
                 eventMap.delete(caller);
                 if (eventMap.size <= 0) {
-                    this.mEventMap.delete(type);
+                    _this.mEventMap.delete(type);
                 }
             });
-        }
-        find(eventType, caller, callback) {
+        };
+        EventMgr.prototype.find = function (eventType, caller, callback) {
             if (!eventType) {
                 console.error('Event eventType is null!');
                 return null;
@@ -539,7 +686,7 @@ var zz;
                 console.error('Listener is null!');
                 return null;
             }
-            let eventMap;
+            var eventMap;
             if (this.mEventMap.has(eventType)) {
                 eventMap = this.mEventMap.get(eventType);
             }
@@ -547,7 +694,7 @@ var zz;
                 eventMap = new Map();
                 this.mEventMap.set(eventType, eventMap);
             }
-            let eventList;
+            var eventList;
             if (eventMap.has(caller)) {
                 eventList = eventMap.get(caller);
             }
@@ -555,32 +702,38 @@ var zz;
                 eventList = [];
                 eventMap.set(caller, eventList);
             }
-            for (let delegate of eventList) {
+            for (var _i = 0, eventList_2 = eventList; _i < eventList_2.length; _i++) {
+                var delegate = eventList_2[_i];
                 if (delegate.Callback === callback) {
                     return delegate;
                 }
             }
             return null;
-        }
-        addListener(eventType, caller, callback, isOnce, ...argArray) {
-            let delegate = this.find(eventType, caller, callback);
+        };
+        EventMgr.prototype.addListener = function (eventType, caller, callback, isOnce) {
+            var argArray = [];
+            for (var _i = 4; _i < arguments.length; _i++) {
+                argArray[_i - 4] = arguments[_i];
+            }
+            var delegate = this.find(eventType, caller, callback);
             if (delegate) {
                 delegate.IsOnce = isOnce;
                 console.error('Listener is already exist!');
             }
             else {
-                let delegate = new Delegate(callback, argArray, isOnce);
-                this.mEventMap.get(eventType).get(caller).push(delegate);
+                var delegate_1 = new Delegate(callback, argArray, isOnce);
+                this.mEventMap.get(eventType).get(caller).push(delegate_1);
             }
-        }
-        removeBy(predicate) {
+        };
+        EventMgr.prototype.removeBy = function (predicate) {
+            var _this = this;
             if (!predicate) {
                 return;
             }
-            this.mEventMap.forEach((eventMap, eventType) => {
-                eventMap.forEach((eventList, caller) => {
-                    for (let index = eventList.length - 1; index >= 0; --index) {
-                        let delegate = eventList[index];
+            this.mEventMap.forEach(function (eventMap, eventType) {
+                eventMap.forEach(function (eventList, caller) {
+                    for (var index = eventList.length - 1; index >= 0; --index) {
+                        var delegate = eventList[index];
                         if (predicate(eventType, caller, delegate)) {
                             eventList.splice(index, 1);
                         }
@@ -590,18 +743,19 @@ var zz;
                     }
                 });
                 if (eventMap.size <= 0) {
-                    this.mEventMap.delete(eventType);
+                    _this.mEventMap.delete(eventType);
                 }
             });
-        }
-    }
+        };
+        return EventMgr;
+    }());
     /**事件管理 */
     zz.event = new EventMgr();
 })(zz || (zz = {}));
 window.zz = zz;
 var zz;
 (function (zz) {
-    let LogLevel;
+    var LogLevel;
     (function (LogLevel) {
         LogLevel[LogLevel["Log"] = 0] = "Log";
         LogLevel[LogLevel["Warn"] = 1] = "Warn";
@@ -610,19 +764,31 @@ var zz;
     })(LogLevel = zz.LogLevel || (zz.LogLevel = {}));
     /**0 */
     zz.logLevel = LogLevel.Log;
-    function log(...data) {
+    function log() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
         if (zz.logLevel <= LogLevel.Log)
-            console.log(...data);
+            console.log.apply(console, data);
     }
     zz.log = log;
-    function warn(...data) {
+    function warn() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
         if (zz.logLevel <= LogLevel.Warn)
-            console.warn(...data);
+            console.warn.apply(console, data);
     }
     zz.warn = warn;
-    function error(...data) {
+    function error() {
+        var data = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            data[_i] = arguments[_i];
+        }
         if (zz.logLevel <= LogLevel.Error)
-            console.error(...data);
+            console.error.apply(console, data);
     }
     zz.error = error;
     function assertEqual(a, b, msg) {
@@ -641,8 +807,12 @@ var zz;
      * @param path 相对于节点的路径
      * @returns {T}
      */
-    function findCom(type, node, ...path) {
-        return findNode(node, ...path).getComponent(type);
+    function findCom(type, node) {
+        var path = [];
+        for (var _i = 2; _i < arguments.length; _i++) {
+            path[_i - 2] = arguments[_i];
+        }
+        return findNode.apply(void 0, __spreadArrays([node], path)).getComponent(type);
     }
     zz.findCom = findCom;
     /**
@@ -651,11 +821,15 @@ var zz;
      * @param path 相对路径
      * @returns {cc.Node}
      */
-    function findNode(node, ...path) {
-        return path.reduce((node, name) => node.getChildByName(name), node);
+    function findNode(node) {
+        var path = [];
+        for (var _i = 1; _i < arguments.length; _i++) {
+            path[_i - 1] = arguments[_i];
+        }
+        return path.reduce(function (node, name) { return node.getChildByName(name); }, node);
     }
     zz.findNode = findNode;
-    let tipFn = (msg) => {
+    var tipFn = function (msg) {
         zz.warn('没有注入tip方法', msg);
     };
     function setTipFn(fn) {
@@ -671,15 +845,23 @@ var zz;
     }
     zz.tipMsg = tipMsg;
     /**读条页帮助函数 */
-    let loadingFn = (...loadingPageParam) => {
+    var loadingFn = function () {
+        var loadingPageParam = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            loadingPageParam[_i] = arguments[_i];
+        }
         zz.warn('没有注入loadingPage方法', loadingPageParam);
     };
     /**
      * 开关载入页;
      * @param parm 载入页参数
      */
-    function loadingPage(...parm) {
-        loadingFn(...parm);
+    function loadingPage() {
+        var parm = [];
+        for (var _i = 0; _i < arguments.length; _i++) {
+            parm[_i] = arguments[_i];
+        }
+        loadingFn.apply(void 0, parm);
     }
     zz.loadingPage = loadingPage;
     function setLoadingPageFn(func) {
@@ -699,8 +881,8 @@ var zz;
          */
         function forEach(array, callback) {
             if (array) {
-                for (let i = 0; i < array.length; i++) {
-                    const result = callback(array[i], i);
+                for (var i = 0; i < array.length; i++) {
+                    var result = callback(array[i], i);
                     if (result) {
                         return result;
                     }
@@ -714,8 +896,8 @@ var zz;
          */
         function forEachRight(array, callback) {
             if (array) {
-                for (let i = array.length - 1; i >= 0; i--) {
-                    const result = callback(array[i], i);
+                for (var i = array.length - 1; i >= 0; i--) {
+                    var result = callback(array[i], i);
                     if (result) {
                         return result;
                     }
@@ -725,16 +907,16 @@ var zz;
         }
         ts.forEachRight = forEachRight;
         function zipWith(arrayA, arrayB, callback) {
-            const result = [];
-            for (let i = 0; i < arrayA.length; i++) {
+            var result = [];
+            for (var i = 0; i < arrayA.length; i++) {
                 result.push(callback(arrayA[i], arrayB[i], i));
             }
             return result;
         }
         ts.zipWith = zipWith;
         function zipToMap(keys, values) {
-            const map = new Map();
-            for (let i = 0; i < keys.length; ++i) {
+            var map = new Map();
+            for (var i = 0; i < keys.length; ++i) {
                 map.set(keys[i], values[i]);
             }
             return map;
@@ -748,8 +930,8 @@ var zz;
             if (input.length <= 1) {
                 return input;
             }
-            const result = [];
-            for (let i = 0, n = input.length; i < n; i++) {
+            var result = [];
+            for (var i = 0, n = input.length; i < n; i++) {
                 if (i)
                     result.push(element);
                 result.push(input[i]);
@@ -758,10 +940,10 @@ var zz;
         }
         ts.intersperse = intersperse;
         function countWhere(array, predicate) {
-            let count = 0;
+            var count = 0;
             if (array) {
-                for (let i = 0; i < array.length; i++) {
-                    const v = array[i];
+                for (var i = 0; i < array.length; i++) {
+                    var v = array[i];
                     if (predicate(v, i)) {
                         count++;
                     }
@@ -791,7 +973,7 @@ var zz;
                 return from.slice(start, end);
             start = start === undefined ? 0 : toOffset(from, start);
             end = end === undefined ? from.length : toOffset(from, end);
-            for (let i = start; i < end && i < from.length; i++) {
+            for (var i = start; i < end && i < from.length; i++) {
                 if (from[i] !== undefined) {
                     to.push(from[i]);
                 }
@@ -805,8 +987,9 @@ var zz;
          * @param array The array to flatten.
          */
         function flatten(array) {
-            const result = [];
-            for (const v of array) {
+            var result = [];
+            for (var _i = 0, array_1 = array; _i < array_1.length; _i++) {
+                var v = array_1[_i];
                 if (v) {
                     if (isArray(v)) {
                         addRange(result, v);
@@ -820,10 +1003,10 @@ var zz;
         }
         ts.flatten = flatten;
         function compact(array) {
-            let result;
+            var result;
             if (array) {
-                for (let i = 0; i < array.length; i++) {
-                    const v = array[i];
+                for (var i = 0; i < array.length; i++) {
+                    var v = array[i];
                     if (result || !v) {
                         if (!result) {
                             result = array.slice(0, i);
@@ -875,23 +1058,32 @@ var zz;
     var extension;
     (function (extension) {
         //#region CCC
-        cc.Node.prototype.findCom = function (type, ...path) {
-            let node = this;
+        cc.Node.prototype.findCom = function (type) {
+            var path = [];
+            for (var _i = 1; _i < arguments.length; _i++) {
+                path[_i - 1] = arguments[_i];
+            }
+            var node = this;
             if (!node)
                 return undefined;
-            return zz.findCom(type, node, ...path);
+            return zz.findCom.apply(void 0, __spreadArrays([type, node], path));
         };
-        cc.Node.prototype.findNode = function (...path) {
-            let node = this;
+        cc.Node.prototype.findNode = function () {
+            var path = [];
+            for (var _i = 0; _i < arguments.length; _i++) {
+                path[_i] = arguments[_i];
+            }
+            var node = this;
             if (!node)
                 return undefined;
-            return zz.findNode(node, ...path);
+            return zz.findNode.apply(void 0, __spreadArrays([node], path));
         };
         //#endregion
         Object.defineProperty(String.prototype, 'replaceAll', {
             enumerable: false,
+            configurable: true,
             value: function (search, replace) {
-                let str = this;
+                var str = this;
                 if (str == null)
                     return;
                 return str.replace(new RegExp(search, 'g'), replace);
@@ -899,8 +1091,9 @@ var zz;
         });
         Object.defineProperty(Array.prototype, 'forEachLeft', {
             enumerable: false,
+            configurable: true,
             value: function (callback) {
-                let array = this;
+                var array = this;
                 if (array) {
                     return zz.ts.forEach(array, callback);
                 }
@@ -909,8 +1102,9 @@ var zz;
         });
         Object.defineProperty(Array.prototype, 'forEachRight', {
             enumerable: false,
+            configurable: true,
             value: function (callback) {
-                let array = this;
+                var array = this;
                 if (array) {
                     return zz.ts.forEachRight(array, callback);
                 }
@@ -919,8 +1113,9 @@ var zz;
         });
         Object.defineProperty(Array.prototype, 'intersperse', {
             enumerable: false,
+            configurable: true,
             value: function (element) {
-                let array = this;
+                var array = this;
                 if (array) {
                     return zz.ts.intersperse(array, element);
                 }
@@ -931,8 +1126,9 @@ var zz;
         });
         Object.defineProperty(Array.prototype, 'countWhere', {
             enumerable: false,
+            configurable: true,
             value: function (predicate) {
-                let array = this;
+                var array = this;
                 if (array) {
                     return zz.ts.countWhere(array, predicate);
                 }
@@ -943,22 +1139,25 @@ var zz;
         });
         Object.defineProperty(Array.prototype, 'eleAt', {
             enumerable: false,
+            configurable: true,
             value: function (offset) {
-                let array = this;
+                var array = this;
                 return zz.ts.elementAt(array, offset);
             },
         });
         Object.defineProperty(Array.prototype, 'compact', {
             enumerable: false,
+            configurable: true,
             value: function () {
-                let array = this;
+                var array = this;
                 return zz.ts.compact(array);
             },
         });
         Object.defineProperty(Array.prototype, 'addRange', {
             enumerable: false,
+            configurable: true,
             value: function (from, start, end) {
-                let to = this;
+                var to = this;
                 return zz.ts.addRange(to, from, start, end);
             },
         });
@@ -972,18 +1171,19 @@ var zz;
     (function (utils) {
         /**打乱字符串 */
         function upsetString(oStr) {
-            let orginStr = oStr.split('');
-            let len = orginStr.length;
-            let result = '';
-            let tmp;
-            for (let i = len - 1; i > 0; i--) {
-                let index = zz.int(len * Math.random()); //随机数的产生范围不变
+            var orginStr = oStr.split('');
+            var len = orginStr.length;
+            var result = '';
+            var tmp;
+            for (var i = len - 1; i > 0; i--) {
+                var index = zz.int(len * Math.random()); //随机数的产生范围不变
                 //每次与最后一位交换顺序
                 tmp = orginStr[index];
                 orginStr[index] = orginStr[i];
                 orginStr[i] = tmp;
             }
-            for (let node of orginStr) {
+            for (var _i = 0, orginStr_1 = orginStr; _i < orginStr_1.length; _i++) {
+                var node = orginStr_1[_i];
                 result += node;
             }
             return result;
@@ -991,9 +1191,9 @@ var zz;
         utils.upsetString = upsetString;
         /**字符串转unicode数字的累加和 */
         function str2Unicode2Number(str) {
-            let num = 0;
-            for (let i = 0, len = str.length; i < len; i++) {
-                let strH = str.charCodeAt(i);
+            var num = 0;
+            for (var i = 0, len = str.length; i < len; i++) {
+                var strH = str.charCodeAt(i);
                 num += +strH;
             }
             return num;
@@ -1047,11 +1247,11 @@ var zz;
          * @returns {number} 权重数组中所选择的索引号;
          */
         function randomIndexFromWeight(weightArr) {
-            let tol = weightArr.reduce((p, c) => p + c, 0);
-            let rnd = Math.random() * tol;
-            let acc = 0;
-            let len = weightArr.length;
-            for (let i = 0; i < len; i++) {
+            var tol = weightArr.reduce(function (p, c) { return p + c; }, 0);
+            var rnd = Math.random() * tol;
+            var acc = 0;
+            var len = weightArr.length;
+            for (var i = 0; i < len; i++) {
                 acc += weightArr[i];
                 if (rnd < acc)
                     return i;
@@ -1076,7 +1276,7 @@ var zz;
          * @returns {T[]} 展开成的一维数组
          */
         function convertArrayD2toD1(arr) {
-            return arr.reduce((p, c) => [...p, ...c], []);
+            return arr.reduce(function (p, c) { return __spreadArrays(p, c); }, []);
         }
         utils.convertArrayD2toD1 = convertArrayD2toD1;
         /**
@@ -1086,12 +1286,12 @@ var zz;
          * @returns {T[][]} 二维数组
          */
         function convertArrayD1toD2(arr, col) {
-            let len = arr.length;
+            var len = arr.length;
             if (len % col != 0) {
                 throw new Error('传入的二维数组不合格');
             }
-            let res = [];
-            for (let i = 0; i < len; i++) {
+            var res = [];
+            for (var i = 0; i < len; i++) {
                 res.push(arr.slice(i, i + col));
             }
             return res;
@@ -1103,12 +1303,14 @@ var zz;
          * @param immutable {boolean} 是否保证原数组不变
          * @returns {T[]} 洗牌后的数组,immutable==true时,为新数组; immutable==false时,为原数组
          */
-        function shuffleArray(arr, immutable = true) {
-            let len = arr.length;
-            let res = immutable ? Array.from(arr) : arr;
-            for (let i = 0; i < len; i++) {
-                let tar = randomIndex(len);
-                [res[i], res[tar]] = [res[tar], res[i]];
+        function shuffleArray(arr, immutable) {
+            var _a;
+            if (immutable === void 0) { immutable = true; }
+            var len = arr.length;
+            var res = immutable ? Array.from(arr) : arr;
+            for (var i = 0; i < len; i++) {
+                var tar = randomIndex(len);
+                _a = [res[tar], res[i]], res[i] = _a[0], res[tar] = _a[1];
             }
             return res;
         }
@@ -1121,8 +1323,8 @@ var zz;
         function formatSeconds(seconds) {
             if (seconds < 0)
                 return '00:00';
-            let min = zz.int(seconds / 60).toFixed(0);
-            let sec = zz.int(seconds % 60).toFixed(0);
+            var min = zz.int(seconds / 60).toFixed(0);
+            var sec = zz.int(seconds % 60).toFixed(0);
             if (min.length == 1)
                 min = '0' + min;
             if (sec.length == 1)
@@ -1131,8 +1333,8 @@ var zz;
         }
         utils.formatSeconds = formatSeconds;
         function getPosInMainCamera(node) {
-            let p_w = node.convertToWorldSpaceAR(cc.v2());
-            let p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
+            var p_w = node.convertToWorldSpaceAR(cc.v2());
+            var p_c = cc.Camera.main.node.convertToNodeSpaceAR(p_w);
             return p_c;
         }
         utils.getPosInMainCamera = getPosInMainCamera;
@@ -1142,15 +1344,20 @@ var zz;
          * @returns {Promise<cc.Node>}
          */
         function instantiatePrefab(prefab) {
-            return __awaiter(this, void 0, void 0, function* () {
-                return yield new Promise(resolve => {
-                    if (prefab instanceof cc.Prefab) {
-                        let node = cc.instantiate(prefab);
-                        resolve(node);
-                    }
-                    if (prefab instanceof cc.Node) {
-                        let node = cc.instantiate(prefab);
-                        resolve(node);
+            return __awaiter(this, void 0, void 0, function () {
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0: return [4 /*yield*/, new Promise(function (resolve) {
+                                if (prefab instanceof cc.Prefab) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                                if (prefab instanceof cc.Node) {
+                                    var node = cc.instantiate(prefab);
+                                    resolve(node);
+                                }
+                            })];
+                        case 1: return [2 /*return*/, _a.sent()];
                     }
                 });
             });
@@ -1162,50 +1369,58 @@ var zz;
          * @returns {Promise<cc.AssetManager.Bundle>}
          */
         function getBundle(bundleName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let bundle = cc.assetManager.getBundle(bundleName);
-                if (!bundle) {
-                    bundle = yield new Promise((resolve, reject) => {
-                        cc.assetManager.loadBundle(bundleName, (err, bundle) => {
-                            err ? reject(err) : resolve(bundle);
-                        });
-                    });
-                }
-                return bundle;
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            bundle = cc.assetManager.getBundle(bundleName);
+                            if (!!bundle) return [3 /*break*/, 2];
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    cc.assetManager.loadBundle(bundleName, function (err, bundle) {
+                                        err ? reject(err) : resolve(bundle);
+                                    });
+                                })];
+                        case 1:
+                            bundle = _a.sent();
+                            _a.label = 2;
+                        case 2: return [2 /*return*/, bundle];
+                    }
+                });
             });
         }
         utils.getBundle = getBundle;
         /**tan(pi/8)的值 */
-        const TanOneEighthPi = Math.tan(Math.PI / 8);
+        var TanOneEighthPi = Math.tan(Math.PI / 8);
         /**
          * 将二维方向向量转化成8个方向的字符串代号
          * @param dir {cc.Vec2} 方向向量
          * @returns {'S' | 'N' | 'E' | 'W' | 'SE' | 'NW' | 'NE' | 'SW'} 八方的字符代号
          */
         function getDirectionOct(dir) {
-            let x = dir.x;
-            let y = dir.y;
-            let t = TanOneEighthPi;
-            let r1 = x + y * t;
-            let r2 = x - y * t;
+            var x = dir.x;
+            var y = dir.y;
+            var t = TanOneEighthPi;
+            var r1 = x + y * t;
+            var r2 = x - y * t;
             if (r1 < 0 && r2 >= 0)
                 return 'S';
             if (r1 >= 0 && r2 < 0)
                 return 'N';
-            let r3 = t * x + y;
-            let r4 = t * x - y;
+            var r3 = t * x + y;
+            var r4 = t * x - y;
             if (r3 >= 0 && r4 >= 0)
                 return 'E';
             if (r3 < 0 && r4 < 0)
                 return 'W';
-            let r5 = x + t * y;
-            let r6 = x * t + y;
+            var r5 = x + t * y;
+            var r6 = x * t + y;
             if (r5 >= 0 && r6 < 0)
                 return 'SE';
             if (r5 < 0 && r6 >= 0)
                 return 'NW';
-            let r7 = x - y * t;
-            let r8 = x * t - y;
+            var r7 = x - y * t;
+            var r8 = x * t - y;
             if (r7 >= 0 && r8 < 0)
                 return 'NE';
             if (r7 < 0 && r8 >= 0)
@@ -1219,9 +1434,10 @@ window.zz = zz;
 /// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
-    const farPos = cc.v3(10000, 10000, 0);
-    class NdPool {
-        constructor(rootNd, prefab, defaultNum = 10) {
+    var farPos = cc.v3(10000, 10000, 0);
+    var NdPool = /** @class */ (function () {
+        function NdPool(rootNd, prefab, defaultNum) {
+            if (defaultNum === void 0) { defaultNum = 10; }
             this.rootNd = undefined;
             this.prefab = undefined;
             this.defaultNum = 10;
@@ -1234,37 +1450,56 @@ var zz;
             this.defaultNum = defaultNum;
             this.initPool();
         }
-        initPool() {
-            return __awaiter(this, void 0, void 0, function* () {
-                for (let i = 0; i < this.defaultNum; i++) {
-                    let node = yield zz.utils.instantiatePrefab(this.prefab);
-                    node.parent = this.rootNd;
-                    this.poolLeft.push(node);
-                    this.setActive(node, false);
-                }
-                // zz.log('[Pool] init complete!');
+        NdPool.prototype.initPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var i, node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.poolLeft.push(node);
+                            this.setActive(node, false);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
             });
-        }
+        };
         /**异步方法 */
-        borrowFromPoolAsync() {
-            return __awaiter(this, void 0, void 0, function* () {
-                let node = this.poolLeft.pop();
-                if (node) {
-                    node.parent = this.rootNd;
-                    this.setActive(node, true);
-                    return node;
-                }
-                else {
-                    node = yield zz.utils.instantiatePrefab(this.prefab);
-                    node.parent = this.rootNd;
-                    this.setActive(node, true);
-                    return node;
-                }
+        NdPool.prototype.borrowFromPoolAsync = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            node = this.poolLeft.pop();
+                            if (!node) return [3 /*break*/, 1];
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                        case 1: return [4 /*yield*/, zz.utils.instantiatePrefab(this.prefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                    }
+                });
             });
-        }
+        };
         /**同步方法 */
-        borrowFromPoolSync() {
-            let node = this.poolLeft.pop();
+        NdPool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
             if (!node) {
                 node = cc.instantiate(this.prefab);
                 node.parent = this.rootNd;
@@ -1272,26 +1507,27 @@ var zz;
             node.parent = this.rootNd;
             this.setActive(node, true);
             return node;
-        }
-        returnBackToPool(node) {
+        };
+        NdPool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
             this.poolLeft.push(node);
-        }
-        returnAllNode() {
-            this.poolOut.forEach(v => {
-                this.returnBackToPool(v);
+        };
+        NdPool.prototype.returnAllNode = function () {
+            var _this = this;
+            this.poolOut.forEach(function (v) {
+                _this.returnBackToPool(v);
             });
             this.poolOut = [];
-        }
-        releasePool() {
+        };
+        NdPool.prototype.releasePool = function () {
             this.returnAllNode();
-            this.poolLeft.forEach(v => {
+            this.poolLeft.forEach(function (v) {
                 v.parent = null;
                 v.destroy();
             });
             this.poolLeft = new Array();
-        }
-        setActive(node, active) {
+        };
+        NdPool.prototype.setActive = function (node, active) {
             if (active) {
                 this.poolOut.push(node);
                 node.opacity = 255;
@@ -1300,11 +1536,13 @@ var zz;
                 node.opacity = 0;
                 node.position = cc.v3(farPos);
             }
-        }
-    }
+        };
+        return NdPool;
+    }());
     zz.NdPool = NdPool;
-    class RandomNodePool {
-        constructor(rootNd, prefabs, defaultNum = 2) {
+    var RandomNodePool = /** @class */ (function () {
+        function RandomNodePool(rootNd, prefabs, defaultNum) {
+            if (defaultNum === void 0) { defaultNum = 2; }
             this.rootNd = undefined;
             this.defaultNum = 2;
             this.prefabs = [];
@@ -1315,67 +1553,89 @@ var zz;
             this.defaultNum = defaultNum;
             this.initPool();
         }
-        initPool() {
-            return __awaiter(this, void 0, void 0, function* () {
-                for (let i = 0; i < this.defaultNum; i++) {
-                    let rndPrefab = this.selectRandomPrefab();
-                    let node = yield zz.utils.instantiatePrefab(rndPrefab);
-                    node.parent = this.rootNd;
-                    this.poolLeft.push(node);
-                    this.setActive(node, false);
-                }
+        RandomNodePool.prototype.initPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var i, rndPrefab, node;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            i = 0;
+                            _a.label = 1;
+                        case 1:
+                            if (!(i < this.defaultNum)) return [3 /*break*/, 4];
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.poolLeft.push(node);
+                            this.setActive(node, false);
+                            _a.label = 3;
+                        case 3:
+                            i++;
+                            return [3 /*break*/, 1];
+                        case 4: return [2 /*return*/];
+                    }
+                });
             });
-        }
-        selectRandomPrefab() {
+        };
+        RandomNodePool.prototype.selectRandomPrefab = function () {
             return zz.utils.randomItem(this.prefabs);
-        }
-        borrowFromPool() {
-            return __awaiter(this, void 0, void 0, function* () {
-                let node = this.poolLeft.pop();
-                if (node) {
-                    this.setActive(node, true);
-                    return node;
-                }
-                else {
-                    let rndPrefab = this.selectRandomPrefab();
-                    node = yield zz.utils.instantiatePrefab(rndPrefab);
-                    node.parent = this.rootNd;
-                    this.setActive(node, true);
-                    return node;
-                }
+        };
+        RandomNodePool.prototype.borrowFromPool = function () {
+            return __awaiter(this, void 0, void 0, function () {
+                var node, rndPrefab;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            node = this.poolLeft.pop();
+                            if (!node) return [3 /*break*/, 1];
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                        case 1:
+                            rndPrefab = this.selectRandomPrefab();
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(rndPrefab)];
+                        case 2:
+                            node = _a.sent();
+                            node.parent = this.rootNd;
+                            this.setActive(node, true);
+                            return [2 /*return*/, node];
+                    }
+                });
             });
-        }
+        };
         /**同步方法 */
-        borrowFromPoolSync() {
-            let node = this.poolLeft.pop();
+        RandomNodePool.prototype.borrowFromPoolSync = function () {
+            var node = this.poolLeft.pop();
             if (!node) {
-                let rndPrefb = this.selectRandomPrefab();
+                var rndPrefb = this.selectRandomPrefab();
                 node = cc.instantiate(rndPrefb);
                 node.parent = this.rootNd;
             }
             node.parent = this.rootNd;
             this.setActive(node, true);
             return node;
-        }
-        returnBackToPool(node) {
+        };
+        RandomNodePool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
             this.poolLeft.push(node);
-        }
-        returnAllNode() {
-            this.poolOut.forEach(v => {
-                this.returnBackToPool(v);
+        };
+        RandomNodePool.prototype.returnAllNode = function () {
+            var _this = this;
+            this.poolOut.forEach(function (v) {
+                _this.returnBackToPool(v);
             });
             this.poolOut = [];
-        }
-        releasePool() {
+        };
+        RandomNodePool.prototype.releasePool = function () {
             this.returnAllNode();
-            this.poolLeft.forEach(v => {
+            this.poolLeft.forEach(function (v) {
                 v.parent = undefined;
                 v.destroy();
             });
             this.poolLeft = new Array();
-        }
-        setActive(node, active) {
+        };
+        RandomNodePool.prototype.setActive = function (node, active) {
             if (active) {
                 this.poolOut.push(node);
                 node.opacity = 255;
@@ -1384,8 +1644,9 @@ var zz;
                 node.opacity = 0;
                 node.position = cc.v3(farPos);
             }
-        }
-    }
+        };
+        return RandomNodePool;
+    }());
     zz.RandomNodePool = RandomNodePool;
 })(zz || (zz = {}));
 window.zz = zz;
@@ -1393,24 +1654,28 @@ window.zz = zz;
 var zz;
 (function (zz) {
     /**流程管理;一条单通道管线 */
-    class ProcedureMgr {
-        constructor() {
+    var ProcedureMgr = /** @class */ (function () {
+        function ProcedureMgr() {
             this.procedureMap = new Map();
             this.curProcedure = undefined;
         }
-        get currentProcedure() {
-            return this.curProcedure;
-        }
-        setProcedure(procName, procedure) {
+        Object.defineProperty(ProcedureMgr.prototype, "currentProcedure", {
+            get: function () {
+                return this.curProcedure;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        ProcedureMgr.prototype.setProcedure = function (procName, procedure) {
             this.procedureMap.set(procName, procedure);
-        }
-        init(firstProc) {
+        };
+        ProcedureMgr.prototype.init = function (firstProc) {
             if (this.procedureMap.has(firstProc)) {
                 this.curProcedure = firstProc;
                 this.procedureMap.get(firstProc).onStart();
             }
-        }
-        changeProcedure(procName) {
+        };
+        ProcedureMgr.prototype.changeProcedure = function (procName) {
             if (this.procedureMap.has(procName)) {
                 this.procedureMap.get(this.curProcedure).onLeave();
                 this.curProcedure = procName;
@@ -1419,19 +1684,23 @@ var zz;
             else {
                 zz.error('[changeProcedure] 不存在' + procName);
             }
+        };
+        return ProcedureMgr;
+    }());
+    var ProcBase = /** @class */ (function () {
+        function ProcBase() {
         }
-    }
-    class ProcBase {
-    }
+        return ProcBase;
+    }());
     zz.ProcBase = ProcBase;
     /**流程管理 */
     zz.proc = new ProcedureMgr();
 })(zz || (zz = {}));
 var zz;
 (function (zz) {
-    let util;
+    var util;
     (function (util) {
-        const _hasOwnProperty = Object.prototype.hasOwnProperty;
+        var _hasOwnProperty = Object.prototype.hasOwnProperty;
         util.has = function (obj, prop) {
             return _hasOwnProperty.call(obj, prop);
         };
@@ -1481,7 +1750,8 @@ var zz;
         /**
          * Joins all the properies of the object using the provided join string
          */
-        function makeString(item, join = ',') {
+        function makeString(item, join) {
+            if (join === void 0) { join = ','; }
             if (item === null) {
                 return 'COLLECTION_NULL';
             }
@@ -1492,9 +1762,9 @@ var zz;
                 return item.toString();
             }
             else {
-                let toret = '{';
-                let first = true;
-                for (const prop in item) {
+                var toret = '{';
+                var first = true;
+                for (var prop in item) {
                     if (util.has(item, prop)) {
                         if (first) {
                             first = false;
@@ -1569,7 +1839,7 @@ var zz;
         }
         util.compareToEquals = compareToEquals;
     })(util || (util = {}));
-    let arrays;
+    var arrays;
     (function (arrays) {
         /**
          * Returns the position of the first occurrence of the specified item
@@ -1582,9 +1852,9 @@ var zz;
          * within the specified array, or -1 if not found.
          */
         function indexOf(array, item, equalsFunction) {
-            const equals = equalsFunction || util.defaultEquals;
-            const length = array.length;
-            for (let i = 0; i < length; i++) {
+            var equals = equalsFunction || util.defaultEquals;
+            var length = array.length;
+            for (var i = 0; i < length; i++) {
                 if (equals(array[i], item)) {
                     return i;
                 }
@@ -1603,9 +1873,9 @@ var zz;
          * within the specified array or -1 if not found.
          */
         function lastIndexOf(array, item, equalsFunction) {
-            const equals = equalsFunction || util.defaultEquals;
-            const length = array.length;
-            for (let i = length - 1; i >= 0; i--) {
+            var equals = equalsFunction || util.defaultEquals;
+            var length = array.length;
+            for (var i = length - 1; i >= 0; i--) {
                 if (equals(array[i], item)) {
                     return i;
                 }
@@ -1634,7 +1904,7 @@ var zz;
          * @return {boolean} true if the array changed after this call.
          */
         function remove(array, item, equalsFunction) {
-            const index = indexOf(array, item, equalsFunction);
+            var index = indexOf(array, item, equalsFunction);
             if (index < 0) {
                 return false;
             }
@@ -1653,10 +1923,10 @@ var zz;
          * equal to the specified object.
          */
         function frequency(array, item, equalsFunction) {
-            const equals = equalsFunction || util.defaultEquals;
-            const length = array.length;
-            let freq = 0;
-            for (let i = 0; i < length; i++) {
+            var equals = equalsFunction || util.defaultEquals;
+            var length = array.length;
+            var freq = 0;
+            for (var i = 0; i < length; i++) {
                 if (equals(array[i], item)) {
                     freq++;
                 }
@@ -1676,12 +1946,12 @@ var zz;
          * @return {boolean} true if the two arrays are equal
          */
         function equals(array1, array2, equalsFunction) {
-            const equals = equalsFunction || util.defaultEquals;
+            var equals = equalsFunction || util.defaultEquals;
             if (array1.length !== array2.length) {
                 return false;
             }
-            const length = array1.length;
-            for (let i = 0; i < length; i++) {
+            var length = array1.length;
+            for (var i = 0; i < length; i++) {
                 if (!equals(array1[i], array2[i])) {
                     return false;
                 }
@@ -1709,7 +1979,7 @@ var zz;
             if (i < 0 || i >= array.length || j < 0 || j >= array.length) {
                 return false;
             }
-            const temp = array[i];
+            var temp = array[i];
             array[i] = array[j];
             array[j] = temp;
             return true;
@@ -1728,7 +1998,8 @@ var zz;
          * optionally return false.
          */
         function forEach(array, callback) {
-            for (const ele of array) {
+            for (var _i = 0, array_2 = array; _i < array_2.length; _i++) {
+                var ele = array_2[_i];
                 if (callback(ele) === false) {
                     return;
                 }
@@ -1736,7 +2007,7 @@ var zz;
         }
         arrays.forEach = forEach;
     })(arrays = zz.arrays || (zz.arrays = {}));
-    class Dictionary {
+    var Dictionary = /** @class */ (function () {
         /**
          * Creates an empty dictionary.
          * @class <p>Dictionaries map keys to values; each key can map to at most one value.
@@ -1755,7 +2026,7 @@ var zz;
          * is not appropriate, a custom function which receives a key and returns a
          * unique string must be provided.
          */
-        constructor(toStrFunction) {
+        function Dictionary(toStrFunction) {
             this.table = {};
             this.nElements = 0;
             this.toStr = toStrFunction || util.defaultToString;
@@ -1767,13 +2038,13 @@ var zz;
          * @return {*} the value to which this dictionary maps the specified key or
          * undefined if the map contains no mapping for this key.
          */
-        getValue(key) {
-            const pair = this.table['$' + this.toStr(key)];
+        Dictionary.prototype.getValue = function (key) {
+            var pair = this.table['$' + this.toStr(key)];
             if (util.isUndefined(pair)) {
                 return undefined;
             }
             return pair.value;
-        }
+        };
         /**
          * Associates the specified value with the specified key in this dictionary.
          * If the dictionary previously contained a mapping for this key, the old
@@ -1784,13 +2055,13 @@ var zz;
          * @return {*} previous value associated with the specified key, or undefined if
          * there was no mapping for the key or if the key/value are undefined.
          */
-        setValue(key, value) {
+        Dictionary.prototype.setValue = function (key, value) {
             if (util.isUndefined(key) || util.isUndefined(value)) {
                 return undefined;
             }
-            let ret;
-            const k = '$' + this.toStr(key);
-            const previousElement = this.table[k];
+            var ret;
+            var k = '$' + this.toStr(key);
+            var previousElement = this.table[k];
             if (util.isUndefined(previousElement)) {
                 this.nElements++;
                 ret = undefined;
@@ -1803,7 +2074,7 @@ var zz;
                 value: value,
             };
             return ret;
-        }
+        };
         /**
          * Removes the mapping for this key from this dictionary if it is present.
          * @param {Object} key key whose mapping is to be removed from the
@@ -1811,44 +2082,44 @@ var zz;
          * @return {*} previous value associated with specified key, or undefined if
          * there was no mapping for key.
          */
-        remove(key) {
-            const k = '$' + this.toStr(key);
-            const previousElement = this.table[k];
+        Dictionary.prototype.remove = function (key) {
+            var k = '$' + this.toStr(key);
+            var previousElement = this.table[k];
             if (!util.isUndefined(previousElement)) {
                 delete this.table[k];
                 this.nElements--;
                 return previousElement.value;
             }
             return undefined;
-        }
+        };
         /**
          * Returns an array containing all of the keys in this dictionary.
          * @return {Array} an array containing all of the keys in this dictionary.
          */
-        keys() {
-            const array = [];
-            for (const name in this.table) {
-                if (util.has(this.table, name)) {
-                    const pair = this.table[name];
+        Dictionary.prototype.keys = function () {
+            var array = [];
+            for (var name_1 in this.table) {
+                if (util.has(this.table, name_1)) {
+                    var pair = this.table[name_1];
                     array.push(pair.key);
                 }
             }
             return array;
-        }
+        };
         /**
          * Returns an array containing all of the values in this dictionary.
          * @return {Array} an array containing all of the values in this dictionary.
          */
-        values() {
-            const array = [];
-            for (const name in this.table) {
-                if (util.has(this.table, name)) {
-                    const pair = this.table[name];
+        Dictionary.prototype.values = function () {
+            var array = [];
+            for (var name_2 in this.table) {
+                if (util.has(this.table, name_2)) {
+                    var pair = this.table[name_2];
                     array.push(pair.value);
                 }
             }
             return array;
-        }
+        };
         /**
          * Executes the provided function once for each key-value pair
          * present in this dictionary.
@@ -1856,17 +2127,17 @@ var zz;
          * invoked with two arguments: key and value. To break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
-            for (const name in this.table) {
-                if (util.has(this.table, name)) {
-                    const pair = this.table[name];
-                    const ret = callback(pair.key, pair.value);
+        Dictionary.prototype.forEach = function (callback) {
+            for (var name_3 in this.table) {
+                if (util.has(this.table, name_3)) {
+                    var pair = this.table[name_3];
+                    var ret = callback(pair.key, pair.value);
                     if (ret === false) {
                         return;
                     }
                 }
             }
-        }
+        };
         /**
          * Returns true if this dictionary contains a mapping for the specified key.
          * @param {Object} key key whose presence in this dictionary is to be
@@ -1874,49 +2145,50 @@ var zz;
          * @return {boolean} true if this dictionary contains a mapping for the
          * specified key.
          */
-        containsKey(key) {
-            let a = this.getValue(key);
+        Dictionary.prototype.containsKey = function (key) {
+            var a = this.getValue(key);
             return !util.isUndefined(this.getValue(key));
-        }
+        };
         /**
          * Removes all mappings from this dictionary.
          * @this {util.Dictionary}
          */
-        clear() {
+        Dictionary.prototype.clear = function () {
             this.table = {};
             this.nElements = 0;
-        }
+        };
         /**
          * Returns the number of keys in this dictionary.
          * @return {number} the number of key-value mappings in this dictionary.
          */
-        size() {
+        Dictionary.prototype.size = function () {
             return this.nElements;
-        }
+        };
         /**
          * Returns true if this dictionary contains no mappings.
          * @return {boolean} true if this dictionary contains no mappings.
          */
-        isEmpty() {
+        Dictionary.prototype.isEmpty = function () {
             return this.nElements <= 0;
-        }
-        toString() {
-            let toret = '{';
-            this.forEach((k, v) => {
-                toret += `\n\t${k} : ${v}`;
+        };
+        Dictionary.prototype.toString = function () {
+            var toret = '{';
+            this.forEach(function (k, v) {
+                toret += "\n\t" + k + " : " + v;
             });
             return toret + '\n}';
-        }
-    }
+        };
+        return Dictionary;
+    }());
     zz.Dictionary = Dictionary;
-    class LinkedList {
+    var LinkedList = /** @class */ (function () {
         /**
          * Creates an empty Linked List.
          * @class A linked list is a data structure consisting of a group of nodes
          * which together represent a sequence.
          * @constructor
          */
-        constructor() {
+        function LinkedList() {
             /**
              * First node in the list
              * @type {Object}
@@ -1944,14 +2216,14 @@ var zz;
          * @return {boolean} true if the element was added or false if the index is invalid
          * or if the element is undefined.
          */
-        add(item, index) {
+        LinkedList.prototype.add = function (item, index) {
             if (util.isUndefined(index)) {
                 index = this.nElements;
             }
             if (index < 0 || index > this.nElements || util.isUndefined(item)) {
                 return false;
             }
-            const newNode = this.createNode(item);
+            var newNode = this.createNode(item);
             if (this.nElements === 0) {
                 // First node in the list.
                 this.firstNode = newNode;
@@ -1968,48 +2240,48 @@ var zz;
                 this.firstNode = newNode;
             }
             else {
-                const prev = this.nodeAtIndex(index - 1);
+                var prev = this.nodeAtIndex(index - 1);
                 newNode.next = prev.next;
                 prev.next = newNode;
             }
             this.nElements++;
             return true;
-        }
+        };
         /**
          * Returns the first element in this list.
          * @return {*} the first element of the list or undefined if the list is
          * empty.
          */
-        first() {
+        LinkedList.prototype.first = function () {
             if (this.firstNode !== null) {
                 return this.firstNode.element;
             }
             return undefined;
-        }
+        };
         /**
          * Returns the last element in this list.
          * @return {*} the last element in the list or undefined if the list is
          * empty.
          */
-        last() {
+        LinkedList.prototype.last = function () {
             if (this.lastNode !== null) {
                 return this.lastNode.element;
             }
             return undefined;
-        }
+        };
         /**
          * Returns the element at the specified position in this list.
          * @param {number} index desired index.
          * @return {*} the element at the given index or undefined if the index is
          * out of bounds.
          */
-        elementAtIndex(index) {
-            const node = this.nodeAtIndex(index);
+        LinkedList.prototype.elementAtIndex = function (index) {
+            var node = this.nodeAtIndex(index);
             if (node === null) {
                 return undefined;
             }
             return node.element;
-        }
+        };
         /**
          * Returns the index in this list of the first occurrence of the
          * specified element, or -1 if the List does not contain this element.
@@ -2030,13 +2302,13 @@ var zz;
          * of the specified element, or -1 if this list does not contain the
          * element.
          */
-        indexOf(item, equalsFunction) {
-            const equalsF = equalsFunction || util.defaultEquals;
+        LinkedList.prototype.indexOf = function (item, equalsFunction) {
+            var equalsF = equalsFunction || util.defaultEquals;
             if (util.isUndefined(item)) {
                 return -1;
             }
-            let currentNode = this.firstNode;
-            let index = 0;
+            var currentNode = this.firstNode;
+            var index = 0;
             while (currentNode !== null) {
                 if (equalsF(currentNode.element, item)) {
                     return index;
@@ -2045,7 +2317,7 @@ var zz;
                 currentNode = currentNode.next;
             }
             return -1;
-        }
+        };
         /**
          * Returns true if this list contains the specified element.
          * <p>If the elements inside the list are
@@ -2064,9 +2336,9 @@ var zz;
          * @return {boolean} true if this list contains the specified element, false
          * otherwise.
          */
-        contains(item, equalsFunction) {
+        LinkedList.prototype.contains = function (item, equalsFunction) {
             return this.indexOf(item, equalsFunction) >= 0;
-        }
+        };
         /**
          * Removes the first occurrence of the specified element in this list.
          * <p>If the elements inside the list are
@@ -2082,13 +2354,13 @@ var zz;
          * @param {Object} item element to be removed from this list, if present.
          * @return {boolean} true if the list contained the specified element.
          */
-        remove(item, equalsFunction) {
-            const equalsF = equalsFunction || util.defaultEquals;
+        LinkedList.prototype.remove = function (item, equalsFunction) {
+            var equalsF = equalsFunction || util.defaultEquals;
             if (this.nElements < 1 || util.isUndefined(item)) {
                 return false;
             }
-            let previous = null;
-            let currentNode = this.firstNode;
+            var previous = null;
+            var currentNode = this.firstNode;
             while (currentNode !== null) {
                 if (equalsF(currentNode.element, item)) {
                     if (currentNode === this.firstNode) {
@@ -2113,15 +2385,15 @@ var zz;
                 currentNode = currentNode.next;
             }
             return false;
-        }
+        };
         /**
          * Removes all of the elements from this list.
          */
-        clear() {
+        LinkedList.prototype.clear = function () {
             this.firstNode = null;
             this.lastNode = null;
             this.nElements = 0;
-        }
+        };
         /**
          * Returns true if this list is equal to the given list.
          * Two lists are equal if they have the same elements in the same order.
@@ -2132,8 +2404,8 @@ var zz;
          * the === operator is used to check equality between elements.
          * @return {boolean} true if this list is equal to the given list.
          */
-        equals(other, equalsFunction) {
-            const eqF = equalsFunction || util.defaultEquals;
+        LinkedList.prototype.equals = function (other, equalsFunction) {
+            var eqF = equalsFunction || util.defaultEquals;
             if (!(other instanceof LinkedList)) {
                 return false;
             }
@@ -2141,11 +2413,11 @@ var zz;
                 return false;
             }
             return this.equalsAux(this.firstNode, other.firstNode, eqF);
-        }
+        };
         /**
          * @private
          */
-        equalsAux(n1, n2, eqF) {
+        LinkedList.prototype.equalsAux = function (n1, n2, eqF) {
             while (n1 !== null) {
                 if (!eqF(n1.element, n2.element)) {
                     return false;
@@ -2154,17 +2426,17 @@ var zz;
                 n2 = n2.next;
             }
             return true;
-        }
+        };
         /**
          * Removes the element at the specified position in this list.
          * @param {number} index given index.
          * @return {*} removed element or undefined if the index is out of bounds.
          */
-        removeElementAtIndex(index) {
+        LinkedList.prototype.removeElementAtIndex = function (index) {
             if (index < 0 || index >= this.nElements) {
                 return undefined;
             }
-            let element;
+            var element;
             if (this.nElements === 1) {
                 //First node in the list.
                 element = this.firstNode.element;
@@ -2172,7 +2444,7 @@ var zz;
                 this.lastNode = null;
             }
             else {
-                const previous = this.nodeAtIndex(index - 1);
+                var previous = this.nodeAtIndex(index - 1);
                 if (previous === null) {
                     element = this.firstNode.element;
                     this.firstNode = this.firstNode.next;
@@ -2188,30 +2460,30 @@ var zz;
             }
             this.nElements--;
             return element;
-        }
+        };
         /**
          * Executes the provided function once for each element present in this list in order.
          * @param {function(Object):*} callback function to execute, it is
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
-            let currentNode = this.firstNode;
+        LinkedList.prototype.forEach = function (callback) {
+            var currentNode = this.firstNode;
             while (currentNode !== null) {
                 if (callback(currentNode.element) === false) {
                     break;
                 }
                 currentNode = currentNode.next;
             }
-        }
+        };
         /**
          * Reverses the order of the elements in this linked list (makes the last
          * element first, and the first element last).
          */
-        reverse() {
-            let previous = null;
-            let current = this.firstNode;
-            let temp = null;
+        LinkedList.prototype.reverse = function () {
+            var previous = null;
+            var current = this.firstNode;
+            var temp = null;
             while (current !== null) {
                 temp = current.next;
                 current.next = previous;
@@ -2221,68 +2493,69 @@ var zz;
             temp = this.firstNode;
             this.firstNode = this.lastNode;
             this.lastNode = temp;
-        }
+        };
         /**
          * Returns an array containing all of the elements in this list in proper
          * sequence.
          * @return {Array.<*>} an array containing all of the elements in this list,
          * in proper sequence.
          */
-        toArray() {
-            const array = [];
-            let currentNode = this.firstNode;
+        LinkedList.prototype.toArray = function () {
+            var array = [];
+            var currentNode = this.firstNode;
             while (currentNode !== null) {
                 array.push(currentNode.element);
                 currentNode = currentNode.next;
             }
             return array;
-        }
+        };
         /**
          * Returns the number of elements in this list.
          * @return {number} the number of elements in this list.
          */
-        size() {
+        LinkedList.prototype.size = function () {
             return this.nElements;
-        }
+        };
         /**
          * Returns true if this list contains no elements.
          * @return {boolean} true if this list contains no elements.
          */
-        isEmpty() {
+        LinkedList.prototype.isEmpty = function () {
             return this.nElements <= 0;
-        }
-        toString() {
+        };
+        LinkedList.prototype.toString = function () {
             return arrays.toString(this.toArray());
-        }
+        };
         /**
          * @private
          */
-        nodeAtIndex(index) {
+        LinkedList.prototype.nodeAtIndex = function (index) {
             if (index < 0 || index >= this.nElements) {
                 return null;
             }
             if (index === this.nElements - 1) {
                 return this.lastNode;
             }
-            let node = this.firstNode;
-            for (let i = 0; i < index; i++) {
+            var node = this.firstNode;
+            for (var i = 0; i < index; i++) {
                 node = node.next;
             }
             return node;
-        }
+        };
         /**
          * @private
          */
-        createNode(item) {
+        LinkedList.prototype.createNode = function (item) {
             return {
                 element: item,
                 next: null,
             };
-        }
-    }
+        };
+        return LinkedList;
+    }());
     zz.LinkedList = LinkedList;
     /**MinHeap default; MaxHeap for reverseComparison */
-    class Heap {
+    var Heap = /** @class */ (function () {
         /**
          * Creates an empty Heap.
          * @class
@@ -2326,7 +2599,7 @@ var zz;
          * zero, or a positive integer as the first argument is less than, equal to,
          * or greater than the second.
          */
-        constructor(compareFunction) {
+        function Heap(compareFunction) {
             /**
              * Array used to store the elements od the heap.
              * @type {Array.<Object>}
@@ -2342,9 +2615,9 @@ var zz;
          * @return {number} The index of the left child.
          * @private
          */
-        leftChildIndex(nodeIndex) {
+        Heap.prototype.leftChildIndex = function (nodeIndex) {
             return 2 * nodeIndex + 1;
-        }
+        };
         /**
          * Returns the index of the right child of the node at the given index.
          * @param {number} nodeIndex The index of the node to get the right child
@@ -2352,18 +2625,18 @@ var zz;
          * @return {number} The index of the right child.
          * @private
          */
-        rightChildIndex(nodeIndex) {
+        Heap.prototype.rightChildIndex = function (nodeIndex) {
             return 2 * nodeIndex + 2;
-        }
+        };
         /**
          * Returns the index of the parent of the node at the given index.
          * @param {number} nodeIndex The index of the node to get the parent for.
          * @return {number} The index of the parent.
          * @private
          */
-        parentIndex(nodeIndex) {
+        Heap.prototype.parentIndex = function (nodeIndex) {
             return Math.floor((nodeIndex - 1) / 2);
-        }
+        };
         /**
          * Returns the index of the smaller child node (if it exists).
          * @param {number} leftChild left child index.
@@ -2372,7 +2645,7 @@ var zz;
          * exists.
          * @private
          */
-        minIndex(leftChild, rightChild) {
+        Heap.prototype.minIndex = function (leftChild, rightChild) {
             if (rightChild >= this.data.length) {
                 if (leftChild >= this.data.length) {
                     return -1;
@@ -2389,70 +2662,70 @@ var zz;
                     return rightChild;
                 }
             }
-        }
+        };
         /**
          * Moves the node at the given index up to its proper place in the heap.
          * @param {number} index The index of the node to move up.
          * @private
          */
-        siftUp(index) {
-            let parent = this.parentIndex(index);
+        Heap.prototype.siftUp = function (index) {
+            var parent = this.parentIndex(index);
             while (index > 0 &&
                 this.compare(this.data[parent], this.data[index]) > 0) {
                 arrays.swap(this.data, parent, index);
                 index = parent;
                 parent = this.parentIndex(index);
             }
-        }
+        };
         /**
          * Moves the node at the given index down to its proper place in the heap.
          * @param {number} nodeIndex The index of the node to move down.
          * @private
          */
-        siftDown(nodeIndex) {
+        Heap.prototype.siftDown = function (nodeIndex) {
             //smaller child index
-            let min = this.minIndex(this.leftChildIndex(nodeIndex), this.rightChildIndex(nodeIndex));
+            var min = this.minIndex(this.leftChildIndex(nodeIndex), this.rightChildIndex(nodeIndex));
             while (min >= 0 &&
                 this.compare(this.data[nodeIndex], this.data[min]) > 0) {
                 arrays.swap(this.data, min, nodeIndex);
                 nodeIndex = min;
                 min = this.minIndex(this.leftChildIndex(nodeIndex), this.rightChildIndex(nodeIndex));
             }
-        }
+        };
         /**
          * Retrieves but does not remove the root element of this heap.
          * @return {*} The value at the root of the heap. Returns undefined if the
          * heap is empty.
          */
-        peek() {
+        Heap.prototype.peek = function () {
             if (this.data.length > 0) {
                 return this.data[0];
             }
             else {
                 return undefined;
             }
-        }
+        };
         /**
          * Adds the given element into the heap.
          * @param {*} element the element.
          * @return true if the element was added or fals if it is undefined.
          */
-        add(element) {
+        Heap.prototype.add = function (element) {
             if (util.isUndefined(element)) {
                 return undefined;
             }
             this.data.push(element);
             this.siftUp(this.data.length - 1);
             return true;
-        }
+        };
         /**
          * Retrieves and removes the root element of this heap.
          * @return {*} The value removed from the root of the heap. Returns
          * undefined if the heap is empty.
          */
-        removeRoot() {
+        Heap.prototype.removeRoot = function () {
             if (this.data.length > 0) {
-                const obj = this.data[0];
+                var obj = this.data[0];
                 this.data[0] = this.data[this.data.length - 1];
                 this.data.splice(this.data.length - 1, 1);
                 if (this.data.length > 0) {
@@ -2461,38 +2734,38 @@ var zz;
                 return obj;
             }
             return undefined;
-        }
+        };
         /**
          * Returns true if this heap contains the specified element.
          * @param {Object} element element to search for.
          * @return {boolean} true if this Heap contains the specified element, false
          * otherwise.
          */
-        contains(element) {
-            const equF = util.compareToEquals(this.compare);
+        Heap.prototype.contains = function (element) {
+            var equF = util.compareToEquals(this.compare);
             return arrays.contains(this.data, element, equF);
-        }
+        };
         /**
          * Returns the number of elements in this heap.
          * @return {number} the number of elements in this heap.
          */
-        size() {
+        Heap.prototype.size = function () {
             return this.data.length;
-        }
+        };
         /**
          * Checks if this heap is empty.
          * @return {boolean} true if and only if this heap contains no items; false
          * otherwise.
          */
-        isEmpty() {
+        Heap.prototype.isEmpty = function () {
             return this.data.length <= 0;
-        }
+        };
         /**
          * Removes all of the elements from this heap.
          */
-        clear() {
+        Heap.prototype.clear = function () {
             this.data.length = 0;
-        }
+        };
         /**
          * Executes the provided function once for each element present in this heap in
          * no particular order.
@@ -2500,12 +2773,13 @@ var zz;
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        Heap.prototype.forEach = function (callback) {
             arrays.forEach(this.data, callback);
-        }
-    }
+        };
+        return Heap;
+    }());
     zz.Heap = Heap;
-    class Set {
+    var Set = /** @class */ (function () {
         /**
          * Creates an empty set.
          * @class <p>A set is a data structure that contains no duplicate items.</p>
@@ -2524,7 +2798,7 @@ var zz;
          * is not appropriate, a custom function which receives a onject and returns a
          * unique string must be provided.
          */
-        constructor(toStringFunction) {
+        function Set(toStringFunction) {
             this.dictionary = new Dictionary(toStringFunction);
         }
         /**
@@ -2533,15 +2807,15 @@ var zz;
          * @return {boolean} true if this set contains the specified element,
          * false otherwise.
          */
-        contains(element) {
+        Set.prototype.contains = function (element) {
             return this.dictionary.containsKey(element);
-        }
+        };
         /**
          * Adds the specified element to this set if it is not already present.
          * @param {Object} element the element to insert.
          * @return {boolean} true if this set did not already contain the specified element.
          */
-        add(element) {
+        Set.prototype.add = function (element) {
             if (this.contains(element) || util.isUndefined(element)) {
                 return false;
             }
@@ -2549,55 +2823,55 @@ var zz;
                 this.dictionary.setValue(element, element);
                 return true;
             }
-        }
+        };
         /**
          * Performs an intersecion between this an another set.
          * Removes all values that are not present this set and the given set.
          * @param {collections.Set} otherSet other set.
          */
-        intersection(otherSet) {
-            const set = this;
+        Set.prototype.intersection = function (otherSet) {
+            var set = this;
             this.forEach(function (element) {
                 if (!otherSet.contains(element)) {
                     set.remove(element);
                 }
                 return true;
             });
-        }
+        };
         /**
          * Performs a union between this an another set.
          * Adds all values from the given set to this set.
          * @param {collections.Set} otherSet other set.
          */
-        union(otherSet) {
-            const set = this;
+        Set.prototype.union = function (otherSet) {
+            var set = this;
             otherSet.forEach(function (element) {
                 set.add(element);
                 return true;
             });
-        }
+        };
         /**
          * Performs a difference between this an another set.
          * Removes from this set all the values that are present in the given set.
          * @param {collections.Set} otherSet other set.
          */
-        difference(otherSet) {
-            const set = this;
+        Set.prototype.difference = function (otherSet) {
+            var set = this;
             otherSet.forEach(function (element) {
                 set.remove(element);
                 return true;
             });
-        }
+        };
         /**
          * Checks whether the given set contains all the elements in this set.
          * @param {collections.Set} otherSet other set.
          * @return {boolean} true if this set is a subset of the given set.
          */
-        isSubsetOf(otherSet) {
+        Set.prototype.isSubsetOf = function (otherSet) {
             if (this.size() > otherSet.size()) {
                 return false;
             }
-            let isSub = true;
+            var isSub = true;
             this.forEach(function (element) {
                 if (!otherSet.contains(element)) {
                     isSub = false;
@@ -2606,12 +2880,12 @@ var zz;
                 return true;
             });
             return isSub;
-        }
+        };
         /**
          * Removes the specified element from this set if it is present.
          * @return {boolean} true if this set contained the specified element.
          */
-        remove(element) {
+        Set.prototype.remove = function (element) {
             if (!this.contains(element)) {
                 return false;
             }
@@ -2619,7 +2893,7 @@ var zz;
                 this.dictionary.remove(element);
                 return true;
             }
-        }
+        };
         /**
          * Executes the provided function once for each element
          * present in this set.
@@ -2627,47 +2901,48 @@ var zz;
          * invoked with one arguments: the element. To break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        Set.prototype.forEach = function (callback) {
             this.dictionary.forEach(function (k, v) {
                 return callback(v);
             });
-        }
+        };
         /**
          * Returns an array containing all of the elements in this set in arbitrary order.
          * @return {Array} an array containing all of the elements in this set.
          */
-        toArray() {
+        Set.prototype.toArray = function () {
             return this.dictionary.values();
-        }
+        };
         /**
          * Returns true if this set contains no elements.
          * @return {boolean} true if this set contains no elements.
          */
-        isEmpty() {
+        Set.prototype.isEmpty = function () {
             return this.dictionary.isEmpty();
-        }
+        };
         /**
          * Returns the number of elements in this set.
          * @return {number} the number of elements in this set.
          */
-        size() {
+        Set.prototype.size = function () {
             return this.dictionary.size();
-        }
+        };
         /**
          * Removes all of the elements from this set.
          */
-        clear() {
+        Set.prototype.clear = function () {
             this.dictionary.clear();
-        }
+        };
         /*
          * Provides a string representation for display
          */
-        toString() {
+        Set.prototype.toString = function () {
             return arrays.toString(this.toArray());
-        }
-    }
+        };
+        return Set;
+    }());
     zz.Set = Set;
-    class Queue {
+    var Queue = /** @class */ (function () {
         /**
          * Creates an empty queue.
          * @class A queue is a First-In-First-Out (FIFO) data structure, the first
@@ -2675,7 +2950,7 @@ var zz;
          * implementation uses a linked list as a container.
          * @constructor
          */
-        constructor() {
+        function Queue() {
             this.list = new LinkedList();
         }
         /**
@@ -2683,46 +2958,46 @@ var zz;
          * @param {Object} elem the element to insert.
          * @return {boolean} true if the element was inserted, or false if it is undefined.
          */
-        enqueue(elem) {
+        Queue.prototype.enqueue = function (elem) {
             return this.list.add(elem);
-        }
+        };
         /**
          * Inserts the specified element into the end of this queue.
          * @param {Object} elem the element to insert.
          * @return {boolean} true if the element was inserted, or false if it is undefined.
          */
-        add(elem) {
+        Queue.prototype.add = function (elem) {
             return this.list.add(elem);
-        }
+        };
         /**
          * Retrieves and removes the head of this queue.
          * @return {*} the head of this queue, or undefined if this queue is empty.
          */
-        dequeue() {
+        Queue.prototype.dequeue = function () {
             if (this.list.size() !== 0) {
-                const el = this.list.first();
+                var el = this.list.first();
                 this.list.removeElementAtIndex(0);
                 return el;
             }
             return undefined;
-        }
+        };
         /**
          * Retrieves, but does not remove, the head of this queue.
          * @return {*} the head of this queue, or undefined if this queue is empty.
          */
-        peek() {
+        Queue.prototype.peek = function () {
             if (this.list.size() !== 0) {
                 return this.list.first();
             }
             return undefined;
-        }
+        };
         /**
          * Returns the number of elements in this queue.
          * @return {number} the number of elements in this queue.
          */
-        size() {
+        Queue.prototype.size = function () {
             return this.list.size();
-        }
+        };
         /**
          * Returns true if this queue contains the specified element.
          * <p>If the elements inside this stack are
@@ -2741,23 +3016,23 @@ var zz;
          * @return {boolean} true if this queue contains the specified element,
          * false otherwise.
          */
-        contains(elem, equalsFunction) {
+        Queue.prototype.contains = function (elem, equalsFunction) {
             return this.list.contains(elem, equalsFunction);
-        }
+        };
         /**
          * Checks if this queue is empty.
          * @return {boolean} true if and only if this queue contains no items; false
          * otherwise.
          */
-        isEmpty() {
+        Queue.prototype.isEmpty = function () {
             return this.list.size() <= 0;
-        }
+        };
         /**
          * Removes all of the elements from this queue.
          */
-        clear() {
+        Queue.prototype.clear = function () {
             this.list.clear();
-        }
+        };
         /**
          * Executes the provided function once for each element present in this queue in
          * FIFO order.
@@ -2765,12 +3040,13 @@ var zz;
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        Queue.prototype.forEach = function (callback) {
             this.list.forEach(callback);
-        }
-    }
+        };
+        return Queue;
+    }());
     zz.Queue = Queue;
-    class PriorityQueue {
+    var PriorityQueue = /** @class */ (function () {
         /**
          * Creates an empty priority queue.
          * @class <p>In a priority queue each element is associated with a "priority",
@@ -2795,7 +3071,7 @@ var zz;
          * zero, or a positive integer as the first argument is less than, equal to,
          * or greater than the second.
          */
-        constructor(compareFunction) {
+        function PriorityQueue(compareFunction) {
             this.heap = new Heap(util.reverseCompareFunction(compareFunction));
         }
         /**
@@ -2803,67 +3079,67 @@ var zz;
          * @param {Object} element the element to insert.
          * @return {boolean} true if the element was inserted, or false if it is undefined.
          */
-        enqueue(element) {
+        PriorityQueue.prototype.enqueue = function (element) {
             return this.heap.add(element);
-        }
+        };
         /**
          * Inserts the specified element into this priority queue.
          * @param {Object} element the element to insert.
          * @return {boolean} true if the element was inserted, or false if it is undefined.
          */
-        add(element) {
+        PriorityQueue.prototype.add = function (element) {
             return this.heap.add(element);
-        }
+        };
         /**
          * Retrieves and removes the highest priority element of this queue.
          * @return {*} the the highest priority element of this queue,
          *  or undefined if this queue is empty.
          */
-        dequeue() {
+        PriorityQueue.prototype.dequeue = function () {
             if (this.heap.size() !== 0) {
-                const el = this.heap.peek();
+                var el = this.heap.peek();
                 this.heap.removeRoot();
                 return el;
             }
             return undefined;
-        }
+        };
         /**
          * Retrieves, but does not remove, the highest priority element of this queue.
          * @return {*} the highest priority element of this queue, or undefined if this queue is empty.
          */
-        peek() {
+        PriorityQueue.prototype.peek = function () {
             return this.heap.peek();
-        }
+        };
         /**
          * Returns true if this priority queue contains the specified element.
          * @param {Object} element element to search for.
          * @return {boolean} true if this priority queue contains the specified element,
          * false otherwise.
          */
-        contains(element) {
+        PriorityQueue.prototype.contains = function (element) {
             return this.heap.contains(element);
-        }
+        };
         /**
          * Checks if this priority queue is empty.
          * @return {boolean} true if and only if this priority queue contains no items; false
          * otherwise.
          */
-        isEmpty() {
+        PriorityQueue.prototype.isEmpty = function () {
             return this.heap.isEmpty();
-        }
+        };
         /**
          * Returns the number of elements in this priority queue.
          * @return {number} the number of elements in this priority queue.
          */
-        size() {
+        PriorityQueue.prototype.size = function () {
             return this.heap.size();
-        }
+        };
         /**
          * Removes all of the elements from this priority queue.
          */
-        clear() {
+        PriorityQueue.prototype.clear = function () {
             this.heap.clear();
-        }
+        };
         /**
          * Executes the provided function once for each element present in this queue in
          * no particular order.
@@ -2871,12 +3147,13 @@ var zz;
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        PriorityQueue.prototype.forEach = function (callback) {
             this.heap.forEach(callback);
-        }
-    }
+        };
+        return PriorityQueue;
+    }());
     zz.PriorityQueue = PriorityQueue;
-    class Stack {
+    var Stack = /** @class */ (function () {
         /**
          * Creates an empty Stack.
          * @class A Stack is a Last-In-First-Out (LIFO) data structure, the last
@@ -2884,7 +3161,7 @@ var zz;
          * implementation uses a linked list as a container.
          * @constructor
          */
-        constructor() {
+        function Stack() {
             this.list = new LinkedList();
         }
         /**
@@ -2892,41 +3169,41 @@ var zz;
          * @param {Object} elem the element to be pushed onto this stack.
          * @return {boolean} true if the element was pushed or false if it is undefined.
          */
-        push(elem) {
+        Stack.prototype.push = function (elem) {
             return this.list.add(elem, 0);
-        }
+        };
         /**
          * Pushes an item onto the top of this stack.
          * @param {Object} elem the element to be pushed onto this stack.
          * @return {boolean} true if the element was pushed or false if it is undefined.
          */
-        add(elem) {
+        Stack.prototype.add = function (elem) {
             return this.list.add(elem, 0);
-        }
+        };
         /**
          * Removes the object at the top of this stack and returns that object.
          * @return {*} the object at the top of this stack or undefined if the
          * stack is empty.
          */
-        pop() {
+        Stack.prototype.pop = function () {
             return this.list.removeElementAtIndex(0);
-        }
+        };
         /**
          * Looks at the object at the top of this stack without removing it from the
          * stack.
          * @return {*} the object at the top of this stack or undefined if the
          * stack is empty.
          */
-        peek() {
+        Stack.prototype.peek = function () {
             return this.list.first();
-        }
+        };
         /**
          * Returns the number of elements in this stack.
          * @return {number} the number of elements in this stack.
          */
-        size() {
+        Stack.prototype.size = function () {
             return this.list.size();
-        }
+        };
         /**
          * Returns true if this stack contains the specified element.
          * <p>If the elements inside this stack are
@@ -2945,23 +3222,23 @@ var zz;
          * @return {boolean} true if this stack contains the specified element,
          * false otherwise.
          */
-        contains(elem, equalsFunction) {
+        Stack.prototype.contains = function (elem, equalsFunction) {
             return this.list.contains(elem, equalsFunction);
-        }
+        };
         /**
          * Checks if this stack is empty.
          * @return {boolean} true if and only if this stack contains no items; false
          * otherwise.
          */
-        isEmpty() {
+        Stack.prototype.isEmpty = function () {
             return this.list.isEmpty();
-        }
+        };
         /**
          * Removes all of the elements from this stack.
          */
-        clear() {
+        Stack.prototype.clear = function () {
             this.list.clear();
-        }
+        };
         /**
          * Executes the provided function once for each element present in this stack in
          * LIFO order.
@@ -2969,12 +3246,13 @@ var zz;
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        Stack.prototype.forEach = function (callback) {
             this.list.forEach(callback);
-        }
-    }
+        };
+        return Stack;
+    }());
     zz.Stack = Stack;
-    class Bag {
+    var Bag = /** @class */ (function () {
         /**
          * Creates an empty bag.
          * @class <p>A bag is a special kind of set in which members are
@@ -2994,7 +3272,7 @@ var zz;
          * is not appropriate, a custom function which receives an object and returns a
          * unique string must be provided.
          */
-        constructor(toStrFunction) {
+        function Bag(toStrFunction) {
             this.toStrF = toStrFunction || util.defaultToString;
             this.dictionary = new Dictionary(this.toStrF);
             this.nElements = 0;
@@ -3006,12 +3284,13 @@ var zz;
          * undefined 1 copy is added.
          * @return {boolean} true unless element is undefined.
          */
-        add(element, nCopies = 1) {
+        Bag.prototype.add = function (element, nCopies) {
+            if (nCopies === void 0) { nCopies = 1; }
             if (util.isUndefined(element) || nCopies <= 0) {
                 return false;
             }
             if (!this.contains(element)) {
-                const node = {
+                var node = {
                     value: element,
                     copies: nCopies,
                 };
@@ -3022,29 +3301,29 @@ var zz;
             }
             this.nElements += nCopies;
             return true;
-        }
+        };
         /**
          * Counts the number of copies of the specified object in this bag.
          * @param {Object} element the object to search for..
          * @return {number} the number of copies of the object, 0 if not found
          */
-        count(element) {
+        Bag.prototype.count = function (element) {
             if (!this.contains(element)) {
                 return 0;
             }
             else {
                 return this.dictionary.getValue(element).copies;
             }
-        }
+        };
         /**
          * Returns true if this bag contains the specified element.
          * @param {Object} element element to search for.
          * @return {boolean} true if this bag contains the specified element,
          * false otherwise.
          */
-        contains(element) {
+        Bag.prototype.contains = function (element) {
             return this.dictionary.containsKey(element);
-        }
+        };
         /**
          * Removes nCopies of the specified object to this bag.
          * If the number of copies to remove is greater than the actual number
@@ -3054,7 +3333,8 @@ var zz;
          * undefined 1 copy is removed.
          * @return {boolean} true if at least 1 element was removed.
          */
-        remove(element, nCopies = 1) {
+        Bag.prototype.remove = function (element, nCopies) {
+            if (nCopies === void 0) { nCopies = 1; }
             if (util.isUndefined(element) || nCopies <= 0) {
                 return false;
             }
@@ -3062,7 +3342,7 @@ var zz;
                 return false;
             }
             else {
-                const node = this.dictionary.getValue(element);
+                var node = this.dictionary.getValue(element);
                 if (nCopies > node.copies) {
                     this.nElements -= node.copies;
                 }
@@ -3075,37 +3355,39 @@ var zz;
                 }
                 return true;
             }
-        }
+        };
         /**
          * Returns an array containing all of the elements in this big in arbitrary order,
          * including multiple copies.
          * @return {Array} an array containing all of the elements in this bag.
          */
-        toArray() {
-            const a = [];
-            const values = this.dictionary.values();
-            for (const node of values) {
-                const element = node.value;
-                const copies = node.copies;
-                for (let j = 0; j < copies; j++) {
+        Bag.prototype.toArray = function () {
+            var a = [];
+            var values = this.dictionary.values();
+            for (var _i = 0, values_1 = values; _i < values_1.length; _i++) {
+                var node = values_1[_i];
+                var element = node.value;
+                var copies = node.copies;
+                for (var j = 0; j < copies; j++) {
                     a.push(element);
                 }
             }
             return a;
-        }
+        };
         /**
          * Returns a set of unique elements in this bag.
          * @return {collections.Set<T>} a set of unique elements in this bag.
          */
-        toSet() {
-            const toret = new Set(this.toStrF);
-            const elements = this.dictionary.values();
-            for (const ele of elements) {
-                const value = ele.value;
+        Bag.prototype.toSet = function () {
+            var toret = new Set(this.toStrF);
+            var elements = this.dictionary.values();
+            for (var _i = 0, elements_1 = elements; _i < elements_1.length; _i++) {
+                var ele = elements_1[_i];
+                var value = ele.value;
                 toret.add(value);
             }
             return toret;
-        }
+        };
         /**
          * Executes the provided function once for each element
          * present in this bag, including multiple copies.
@@ -3113,42 +3395,43 @@ var zz;
          * invoked with one argument: the element. To break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        Bag.prototype.forEach = function (callback) {
             this.dictionary.forEach(function (k, v) {
-                const value = v.value;
-                const copies = v.copies;
-                for (let i = 0; i < copies; i++) {
+                var value = v.value;
+                var copies = v.copies;
+                for (var i = 0; i < copies; i++) {
                     if (callback(value) === false) {
                         return false;
                     }
                 }
                 return true;
             });
-        }
+        };
         /**
          * Returns the number of elements in this bag.
          * @return {number} the number of elements in this bag.
          */
-        size() {
+        Bag.prototype.size = function () {
             return this.nElements;
-        }
+        };
         /**
          * Returns true if this bag contains no elements.
          * @return {boolean} true if this bag contains no elements.
          */
-        isEmpty() {
+        Bag.prototype.isEmpty = function () {
             return this.nElements === 0;
-        }
+        };
         /**
          * Removes all of the elements from this bag.
          */
-        clear() {
+        Bag.prototype.clear = function () {
             this.nElements = 0;
             this.dictionary.clear();
-        }
-    }
+        };
+        return Bag;
+    }());
     zz.Bag = Bag;
-    class BSTree {
+    var BSTree = /** @class */ (function () {
         /**
          * Creates an empty binary search tree.
          * @class <p>A binary search tree is a binary tree in which each
@@ -3184,7 +3467,7 @@ var zz;
          * zero, or a positive integer as the first argument is less than, equal to,
          * or greater than the second.
          */
-        constructor(compareFunction) {
+        function BSTree(compareFunction) {
             this.root = null;
             this.compare = compareFunction || util.defaultCompare;
             this.nElements = 0;
@@ -3194,7 +3477,7 @@ var zz;
          * @param {Object} element the element to insert.
          * @return {boolean} true if this tree did not already contain the specified element.
          */
-        add(element) {
+        BSTree.prototype.add = function (element) {
             if (util.isUndefined(element)) {
                 return false;
             }
@@ -3203,115 +3486,115 @@ var zz;
                 return true;
             }
             return false;
-        }
+        };
         /**
          * Removes all of the elements from this tree.
          */
-        clear() {
+        BSTree.prototype.clear = function () {
             this.root = null;
             this.nElements = 0;
-        }
+        };
         /**
          * Returns true if this tree contains no elements.
          * @return {boolean} true if this tree contains no elements.
          */
-        isEmpty() {
+        BSTree.prototype.isEmpty = function () {
             return this.nElements === 0;
-        }
+        };
         /**
          * Returns the number of elements in this tree.
          * @return {number} the number of elements in this tree.
          */
-        size() {
+        BSTree.prototype.size = function () {
             return this.nElements;
-        }
+        };
         /**
          * Returns true if this tree contains the specified element.
          * @param {Object} element element to search for.
          * @return {boolean} true if this tree contains the specified element,
          * false otherwise.
          */
-        contains(element) {
+        BSTree.prototype.contains = function (element) {
             if (util.isUndefined(element)) {
                 return false;
             }
             return this.searchNode(this.root, element) !== null;
-        }
+        };
         /**
          * Removes the specified element from this tree if it is present.
          * @return {boolean} true if this tree contained the specified element.
          */
-        remove(element) {
-            const node = this.searchNode(this.root, element);
+        BSTree.prototype.remove = function (element) {
+            var node = this.searchNode(this.root, element);
             if (node === null) {
                 return false;
             }
             this.removeNode(node);
             this.nElements--;
             return true;
-        }
+        };
         /**
          * Executes the provided function once for each element present in this tree in
          * in-order.
          * @param {function(Object):*} callback function to execute, it is invoked with one
          * argument: the element value, to break the iteration you can optionally return false.
          */
-        inorderTraversal(callback) {
+        BSTree.prototype.inorderTraversal = function (callback) {
             this.inorderTraversalAux(this.root, callback, {
                 stop: false,
             });
-        }
+        };
         /**
          * Executes the provided function once for each element present in this tree in pre-order.
          * @param {function(Object):*} callback function to execute, it is invoked with one
          * argument: the element value, to break the iteration you can optionally return false.
          */
-        preorderTraversal(callback) {
+        BSTree.prototype.preorderTraversal = function (callback) {
             this.preorderTraversalAux(this.root, callback, {
                 stop: false,
             });
-        }
+        };
         /**
          * Executes the provided function once for each element present in this tree in post-order.
          * @param {function(Object):*} callback function to execute, it is invoked with one
          * argument: the element value, to break the iteration you can optionally return false.
          */
-        postorderTraversal(callback) {
+        BSTree.prototype.postorderTraversal = function (callback) {
             this.postorderTraversalAux(this.root, callback, {
                 stop: false,
             });
-        }
+        };
         /**
          * Executes the provided function once for each element present in this tree in
          * level-order.
          * @param {function(Object):*} callback function to execute, it is invoked with one
          * argument: the element value, to break the iteration you can optionally return false.
          */
-        levelTraversal(callback) {
+        BSTree.prototype.levelTraversal = function (callback) {
             this.levelTraversalAux(this.root, callback);
-        }
+        };
         /**
          * Returns the minimum element of this tree.
          * @return {*} the minimum element of this tree or undefined if this tree is
          * is empty.
          */
-        minimum() {
+        BSTree.prototype.minimum = function () {
             if (this.isEmpty()) {
                 return undefined;
             }
             return this.minimumAux(this.root).element;
-        }
+        };
         /**
          * Returns the maximum element of this tree.
          * @return {*} the maximum element of this tree or undefined if this tree is
          * is empty.
          */
-        maximum() {
+        BSTree.prototype.maximum = function () {
             if (this.isEmpty()) {
                 return undefined;
             }
             return this.maximumAux(this.root).element;
-        }
+        };
         /**
          * Executes the provided function once for each element present in this tree in inorder.
          * Equivalent to inorderTraversal.
@@ -3319,33 +3602,33 @@ var zz;
          * invoked with one argument: the element value, to break the iteration you can
          * optionally return false.
          */
-        forEach(callback) {
+        BSTree.prototype.forEach = function (callback) {
             this.inorderTraversal(callback);
-        }
+        };
         /**
          * Returns an array containing all of the elements in this tree in in-order.
          * @return {Array} an array containing all of the elements in this tree in in-order.
          */
-        toArray() {
-            const array = [];
+        BSTree.prototype.toArray = function () {
+            var array = [];
             this.inorderTraversal(function (element) {
                 array.push(element);
                 return true;
             });
             return array;
-        }
+        };
         /**
          * Returns the height of this tree.
          * @return {number} the height of this tree or -1 if is empty.
          */
-        height() {
+        BSTree.prototype.height = function () {
             return this.heightAux(this.root);
-        }
+        };
         /**
          * @private
          */
-        searchNode(node, element) {
-            let cmp = null;
+        BSTree.prototype.searchNode = function (node, element) {
+            var cmp = null;
             while (node !== null && cmp !== 0) {
                 cmp = this.compare(element, node.element);
                 if (cmp < 0) {
@@ -3356,11 +3639,11 @@ var zz;
                 }
             }
             return node;
-        }
+        };
         /**
          * @private
          */
-        transplant(n1, n2) {
+        BSTree.prototype.transplant = function (n1, n2) {
             if (n1.parent === null) {
                 this.root = n2;
             }
@@ -3373,11 +3656,11 @@ var zz;
             if (n2 !== null) {
                 n2.parent = n1.parent;
             }
-        }
+        };
         /**
          * @private
          */
-        removeNode(node) {
+        BSTree.prototype.removeNode = function (node) {
             if (node.leftCh === null) {
                 this.transplant(node, node.rightCh);
             }
@@ -3385,7 +3668,7 @@ var zz;
                 this.transplant(node, node.leftCh);
             }
             else {
-                const y = this.minimumAux(node.rightCh);
+                var y = this.minimumAux(node.rightCh);
                 if (y.parent !== node) {
                     this.transplant(y, y.rightCh);
                     y.rightCh = node.rightCh;
@@ -3395,11 +3678,11 @@ var zz;
                 y.leftCh = node.leftCh;
                 y.leftCh.parent = y;
             }
-        }
+        };
         /**
          * @private
          */
-        inorderTraversalAux(node, callback, signal) {
+        BSTree.prototype.inorderTraversalAux = function (node, callback, signal) {
             if (node === null || signal.stop) {
                 return;
             }
@@ -3412,12 +3695,12 @@ var zz;
                 return;
             }
             this.inorderTraversalAux(node.rightCh, callback, signal);
-        }
+        };
         /**
          * @private
          */
-        levelTraversalAux(node, callback) {
-            const queue = new Queue();
+        BSTree.prototype.levelTraversalAux = function (node, callback) {
+            var queue = new Queue();
             if (node !== null) {
                 queue.enqueue(node);
             }
@@ -3433,11 +3716,11 @@ var zz;
                     queue.enqueue(node.rightCh);
                 }
             }
-        }
+        };
         /**
          * @private
          */
-        preorderTraversalAux(node, callback, signal) {
+        BSTree.prototype.preorderTraversalAux = function (node, callback, signal) {
             if (node === null || signal.stop) {
                 return;
             }
@@ -3450,11 +3733,11 @@ var zz;
                 return;
             }
             this.preorderTraversalAux(node.rightCh, callback, signal);
-        }
+        };
         /**
          * @private
          */
-        postorderTraversalAux(node, callback, signal) {
+        BSTree.prototype.postorderTraversalAux = function (node, callback, signal) {
             if (node === null || signal.stop) {
                 return;
             }
@@ -3467,41 +3750,41 @@ var zz;
                 return;
             }
             signal.stop = callback(node.element) === false;
-        }
+        };
         /**
          * @private
          */
-        minimumAux(node) {
+        BSTree.prototype.minimumAux = function (node) {
             while (node.leftCh !== null) {
                 node = node.leftCh;
             }
             return node;
-        }
+        };
         /**
          * @private
          */
-        maximumAux(node) {
+        BSTree.prototype.maximumAux = function (node) {
             while (node.rightCh !== null) {
                 node = node.rightCh;
             }
             return node;
-        }
+        };
         /**
          * @private
          */
-        heightAux(node) {
+        BSTree.prototype.heightAux = function (node) {
             if (node === null) {
                 return -1;
             }
             return (Math.max(this.heightAux(node.leftCh), this.heightAux(node.rightCh)) + 1);
-        }
+        };
         /*
          * @private
          */
-        insertNode(node) {
-            let parent = null;
-            let position = this.root;
-            let cmp = null;
+        BSTree.prototype.insertNode = function (node) {
+            var parent = null;
+            var position = this.root;
+            var cmp = null;
             while (position !== null) {
                 cmp = this.compare(node.element, position.element);
                 if (cmp === 0) {
@@ -3528,21 +3811,23 @@ var zz;
                 parent.rightCh = node;
             }
             return node;
-        }
+        };
         /**
          * @private
          */
-        createNode(element) {
+        BSTree.prototype.createNode = function (element) {
             return {
                 element: element,
                 leftCh: null,
                 rightCh: null,
                 parent: null,
             };
-        }
-    }
+        };
+        return BSTree;
+    }());
     zz.BSTree = BSTree;
-    class FactoryDictionary extends Dictionary {
+    var FactoryDictionary = /** @class */ (function (_super) {
+        __extends(FactoryDictionary, _super);
         /**
          * Creates an empty dictionary.
          * @class <p>Dictionaries map keys to values; each key can map to at most one value.
@@ -3571,9 +3856,10 @@ var zz;
          * is not appropriate, a custom function which receives a key and returns a
          * unique string must be provided.
          */
-        constructor(defaultFactoryFunction, toStrFunction) {
-            super(toStrFunction);
-            this.defaultFactoryFunction = defaultFactoryFunction;
+        function FactoryDictionary(defaultFactoryFunction, toStrFunction) {
+            var _this_1 = _super.call(this, toStrFunction) || this;
+            _this_1.defaultFactoryFunction = defaultFactoryFunction;
+            return _this_1;
         }
         /**
          * Associates the specified default value with the specified key in this dictionary,
@@ -3584,14 +3870,14 @@ var zz;
          * @return {*} previous value associated with the specified key, or the default value,
          * if the key didn't exist yet.
          */
-        setDefault(key, defaultValue) {
-            const currentValue = super.getValue(key);
+        FactoryDictionary.prototype.setDefault = function (key, defaultValue) {
+            var currentValue = _super.prototype.getValue.call(this, key);
             if (util.isUndefined(currentValue)) {
                 this.setValue(key, defaultValue);
                 return defaultValue;
             }
             return currentValue;
-        }
+        };
         /**
          * Returns the value to which this dictionary maps the specified key.
          * Returns a default value created by the factory passed in the constructor,
@@ -3601,12 +3887,13 @@ var zz;
          * @return {*} the value to which this dictionary maps the specified key or
          * a default value if the map contains no mapping for this key.
          */
-        getValue(key) {
+        FactoryDictionary.prototype.getValue = function (key) {
             return this.setDefault(key, this.defaultFactoryFunction());
-        }
-    }
+        };
+        return FactoryDictionary;
+    }(Dictionary));
     zz.FactoryDictionary = FactoryDictionary;
-    class MultiDictionary {
+    var MultiDictionary = /** @class */ (function () {
         /**
          * Creates an empty multi dictionary.
          * @class <p>A multi dictionary is a special kind of dictionary that holds
@@ -3642,7 +3929,8 @@ var zz;
          *
          * @param allowDuplicateValues
          */
-        constructor(toStrFunction, valuesEqualsFunction, allowDuplicateValues = false) {
+        function MultiDictionary(toStrFunction, valuesEqualsFunction, allowDuplicateValues) {
+            if (allowDuplicateValues === void 0) { allowDuplicateValues = false; }
             this.dict = new Dictionary(toStrFunction);
             this.equalsF = valuesEqualsFunction || util.defaultEquals;
             this.allowDuplicate = allowDuplicateValues;
@@ -3655,13 +3943,13 @@ var zz;
          * @return {Array} an array holding the values to which this dictionary maps
          * the specified key.
          */
-        getValue(key) {
-            const values = this.dict.getValue(key);
+        MultiDictionary.prototype.getValue = function (key) {
+            var values = this.dict.getValue(key);
             if (util.isUndefined(values)) {
                 return [];
             }
             return arrays.copy(values);
-        }
+        };
         /**
          * Adds the value to the array associated with the specified key, if
          * it is not already present.
@@ -3670,7 +3958,7 @@ var zz;
          * @param {Object} value the value to add to the array at the key
          * @return {boolean} true if the value was not already associated with that key.
          */
-        setValue(key, value) {
+        MultiDictionary.prototype.setValue = function (key, value) {
             if (util.isUndefined(key) || util.isUndefined(value)) {
                 return false;
             }
@@ -3678,7 +3966,7 @@ var zz;
                 this.dict.setValue(key, [value]);
                 return true;
             }
-            const array = this.dict.getValue(key);
+            var array = this.dict.getValue(key);
             if (!this.allowDuplicate) {
                 if (arrays.contains(array, value, this.equalsF)) {
                     return false;
@@ -3686,7 +3974,7 @@ var zz;
             }
             array.push(value);
             return true;
-        }
+        };
         /**
          * Removes the specified values from the array of values associated with the
          * specified key. If a value isn't given, all values associated with the specified
@@ -3698,12 +3986,12 @@ var zz;
          * @return {*} true if the dictionary changed, false if the key doesn't exist or
          * if the specified value isn't associated with the specified key.
          */
-        remove(key, value) {
+        MultiDictionary.prototype.remove = function (key, value) {
             if (util.isUndefined(value)) {
-                const v = this.dict.remove(key);
+                var v = this.dict.remove(key);
                 return !util.isUndefined(v);
             }
-            const array = this.dict.getValue(key);
+            var array = this.dict.getValue(key);
             if (arrays.remove(array, value, this.equalsF)) {
                 if (array.length === 0) {
                     this.dict.remove(key);
@@ -3711,28 +3999,30 @@ var zz;
                 return true;
             }
             return false;
-        }
+        };
         /**
          * Returns an array containing all of the keys in this dictionary.
          * @return {Array} an array containing all of the keys in this dictionary.
          */
-        keys() {
+        MultiDictionary.prototype.keys = function () {
             return this.dict.keys();
-        }
+        };
         /**
          * Returns an array containing all of the values in this dictionary.
          * @return {Array} an array containing all of the values in this dictionary.
          */
-        values() {
-            const values = this.dict.values();
-            const array = [];
-            for (const v of values) {
-                for (const w of v) {
+        MultiDictionary.prototype.values = function () {
+            var values = this.dict.values();
+            var array = [];
+            for (var _i = 0, values_2 = values; _i < values_2.length; _i++) {
+                var v = values_2[_i];
+                for (var _a = 0, v_1 = v; _a < v_1.length; _a++) {
+                    var w = v_1[_a];
                     array.push(w);
                 }
             }
             return array;
-        }
+        };
         /**
          * Returns true if this dictionary at least one value associatted the specified key.
          * @param {Object} key key whose presence in this dictionary is to be
@@ -3740,91 +4030,96 @@ var zz;
          * @return {boolean} true if this dictionary at least one value associatted
          * the specified key.
          */
-        containsKey(key) {
+        MultiDictionary.prototype.containsKey = function (key) {
             return this.dict.containsKey(key);
-        }
+        };
         /**
          * Removes all mappings from this dictionary.
          */
-        clear() {
+        MultiDictionary.prototype.clear = function () {
             this.dict.clear();
-        }
+        };
         /**
          * Returns the number of keys in this dictionary.
          * @return {number} the number of key-value mappings in this dictionary.
          */
-        size() {
+        MultiDictionary.prototype.size = function () {
             return this.dict.size();
-        }
+        };
         /**
          * Returns true if this dictionary contains no mappings.
          * @return {boolean} true if this dictionary contains no mappings.
          */
-        isEmpty() {
+        MultiDictionary.prototype.isEmpty = function () {
             return this.dict.isEmpty();
-        }
-    }
+        };
+        return MultiDictionary;
+    }());
     zz.MultiDictionary = MultiDictionary;
-    let Direction;
+    var Direction;
     (function (Direction) {
         Direction[Direction["BEFORE"] = 0] = "BEFORE";
         Direction[Direction["AFTER"] = 1] = "AFTER";
         Direction[Direction["INSIDE_AT_END"] = 2] = "INSIDE_AT_END";
         Direction[Direction["INSIDE_AT_START"] = 3] = "INSIDE_AT_START";
     })(Direction || (Direction = {}));
-    class MultiRootTree {
-        constructor(rootIds = [], nodes = {}) {
+    var MultiRootTree = /** @class */ (function () {
+        function MultiRootTree(rootIds, nodes) {
+            if (rootIds === void 0) { rootIds = []; }
+            if (nodes === void 0) { nodes = {}; }
             this.rootIds = rootIds;
             this.nodes = nodes;
             this.initRootIds();
             this.initNodes();
         }
-        initRootIds() {
-            for (let rootId of this.rootIds) {
+        MultiRootTree.prototype.initRootIds = function () {
+            for (var _i = 0, _a = this.rootIds; _i < _a.length; _i++) {
+                var rootId = _a[_i];
                 this.createEmptyNodeIfNotExist(rootId);
             }
-        }
-        initNodes() {
-            for (let nodeKey in this.nodes) {
+        };
+        MultiRootTree.prototype.initNodes = function () {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
-                    for (let nodeListItem of this.nodes[nodeKey]) {
+                    for (var _i = 0, _a = this.nodes[nodeKey]; _i < _a.length; _i++) {
+                        var nodeListItem = _a[_i];
                         this.createEmptyNodeIfNotExist(nodeListItem);
                     }
                 }
             }
-        }
-        createEmptyNodeIfNotExist(nodeKey) {
+        };
+        MultiRootTree.prototype.createEmptyNodeIfNotExist = function (nodeKey) {
             if (!this.nodes[nodeKey]) {
                 this.nodes[nodeKey] = [];
             }
-        }
-        getRootIds() {
-            let clone = this.rootIds.slice();
+        };
+        MultiRootTree.prototype.getRootIds = function () {
+            var clone = this.rootIds.slice();
             return clone;
-        }
-        getNodes() {
-            let clone = {};
-            for (let nodeKey in this.nodes) {
+        };
+        MultiRootTree.prototype.getNodes = function () {
+            var clone = {};
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
                     clone[nodeKey] = this.nodes[nodeKey].slice();
                 }
             }
             return clone;
-        }
-        getObject() {
+        };
+        MultiRootTree.prototype.getObject = function () {
             return {
                 rootIds: this.getRootIds(),
                 nodes: this.getNodes(),
             };
-        }
-        toObject() {
+        };
+        MultiRootTree.prototype.toObject = function () {
             return this.getObject();
-        }
-        flatten() {
-            const _this = this;
-            let extraPropsObject = [];
-            for (let i = 0; i < this.rootIds.length; i++) {
-                const rootId = this.rootIds[i];
+        };
+        MultiRootTree.prototype.flatten = function () {
+            var _this = this;
+            var extraPropsObject = [];
+            for (var i = 0; i < this.rootIds.length; i++) {
+                var rootId = this.rootIds[i];
                 extraPropsObject.push({
                     id: rootId,
                     level: 0,
@@ -3833,7 +4128,8 @@ var zz;
                 });
                 traverse(rootId, this.nodes, extraPropsObject, 0);
             }
-            for (let o of extraPropsObject) {
+            for (var _i = 0, extraPropsObject_1 = extraPropsObject; _i < extraPropsObject_1.length; _i++) {
+                var o = extraPropsObject_1[_i];
                 o.childrenCount = countChildren(o.id);
             }
             return extraPropsObject;
@@ -3842,91 +4138,93 @@ var zz;
                     return 0;
                 }
                 else {
-                    const childrenCount = _this.nodes[id].length;
+                    var childrenCount = _this.nodes[id].length;
                     return childrenCount;
                 }
             }
-            function traverse(startId, nodes, returnArray, level = 0) {
+            function traverse(startId, nodes, returnArray, level) {
+                if (level === void 0) { level = 0; }
                 if (!startId || !nodes || !returnArray || !nodes[startId]) {
                     return;
                 }
                 level++;
-                let idsList = nodes[startId];
-                for (let i = 0; i < idsList.length; i++) {
-                    let id = idsList[i];
-                    returnArray.push({ id, level, hasParent: true });
+                var idsList = nodes[startId];
+                for (var i = 0; i < idsList.length; i++) {
+                    var id = idsList[i];
+                    returnArray.push({ id: id, level: level, hasParent: true });
                     traverse(id, nodes, returnArray, level);
                 }
                 level--;
             }
-        }
-        moveIdBeforeId(moveId, beforeId) {
+        };
+        MultiRootTree.prototype.moveIdBeforeId = function (moveId, beforeId) {
             return this.moveId(moveId, beforeId, Direction.BEFORE);
-        }
-        moveIdAfterId(moveId, afterId) {
+        };
+        MultiRootTree.prototype.moveIdAfterId = function (moveId, afterId) {
             return this.moveId(moveId, afterId, Direction.AFTER);
-        }
-        moveIdIntoId(moveId, insideId, atStart = true) {
+        };
+        MultiRootTree.prototype.moveIdIntoId = function (moveId, insideId, atStart) {
+            if (atStart === void 0) { atStart = true; }
             if (atStart) {
                 return this.moveId(moveId, insideId, Direction.INSIDE_AT_START);
             }
             else {
                 return this.moveId(moveId, insideId, Direction.INSIDE_AT_END);
             }
-        }
-        deleteId(id) {
+        };
+        MultiRootTree.prototype.deleteId = function (id) {
             this.rootDeleteId(id);
             this.nodeAndSubNodesDelete(id);
             this.nodeRefrencesDelete(id);
-        }
-        insertIdBeforeId(beforeId, insertId) {
-            let foundRootIdIndex = this.findRootId(beforeId);
+        };
+        MultiRootTree.prototype.insertIdBeforeId = function (beforeId, insertId) {
+            var foundRootIdIndex = this.findRootId(beforeId);
             if (foundRootIdIndex > -1) {
                 this.insertIdIntoRoot(insertId, foundRootIdIndex);
             }
-            for (let nodeKey in this.nodes) {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
-                    let foundNodeIdIndex = this.findNodeId(nodeKey, beforeId);
+                    var foundNodeIdIndex = this.findNodeId(nodeKey, beforeId);
                     if (foundNodeIdIndex > -1) {
                         this.insertIdIntoNode(nodeKey, insertId, foundNodeIdIndex);
                     }
                 }
             }
-        }
-        insertIdAfterId(belowId, insertId) {
-            let foundRootIdIndex = this.findRootId(belowId);
+        };
+        MultiRootTree.prototype.insertIdAfterId = function (belowId, insertId) {
+            var foundRootIdIndex = this.findRootId(belowId);
             if (foundRootIdIndex > -1) {
                 this.insertIdIntoRoot(insertId, foundRootIdIndex + 1);
             }
-            for (let nodeKey in this.nodes) {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
-                    let foundNodeIdIndex = this.findNodeId(nodeKey, belowId);
+                    var foundNodeIdIndex = this.findNodeId(nodeKey, belowId);
                     if (foundNodeIdIndex > -1) {
                         this.insertIdIntoNode(nodeKey, insertId, foundNodeIdIndex + 1);
                     }
                 }
             }
-        }
-        insertIdIntoId(insideId, insertId) {
+        };
+        MultiRootTree.prototype.insertIdIntoId = function (insideId, insertId) {
             this.nodeInsertAtEnd(insideId, insertId);
             this.nodes[insertId] = [];
-        }
-        insertIdIntoRoot(id, position) {
+        };
+        MultiRootTree.prototype.insertIdIntoRoot = function (id, position) {
             if (position === undefined) {
                 this.rootInsertAtEnd(id);
             }
             else {
                 if (position < 0) {
-                    const length = this.rootIds.length;
-                    this.rootIds.splice(position + length + 1, 0, id);
+                    var length_1 = this.rootIds.length;
+                    this.rootIds.splice(position + length_1 + 1, 0, id);
                 }
                 else {
                     this.rootIds.splice(position, 0, id);
                 }
             }
             this.nodes[id] = this.nodes[id] || [];
-        }
-        insertIdIntoNode(nodeKey, id, position) {
+        };
+        MultiRootTree.prototype.insertIdIntoNode = function (nodeKey, id, position) {
             this.nodes[nodeKey] = this.nodes[nodeKey] || [];
             this.nodes[id] = this.nodes[id] || [];
             if (position === undefined) {
@@ -3934,37 +4232,37 @@ var zz;
             }
             else {
                 if (position < 0) {
-                    const length = this.nodes[nodeKey].length;
-                    this.nodes[nodeKey].splice(position + length + 1, 0, id);
+                    var length_2 = this.nodes[nodeKey].length;
+                    this.nodes[nodeKey].splice(position + length_2 + 1, 0, id);
                 }
                 else {
                     this.nodes[nodeKey].splice(position, 0, id);
                 }
             }
-        }
-        moveId(moveId, beforeId, direction) {
-            let sourceId = moveId;
-            const sourceRootIndex = this.findRootId(sourceId);
-            let sourceNodeKey;
-            let sourceNodeIdIndex;
+        };
+        MultiRootTree.prototype.moveId = function (moveId, beforeId, direction) {
+            var sourceId = moveId;
+            var sourceRootIndex = this.findRootId(sourceId);
+            var sourceNodeKey;
+            var sourceNodeIdIndex;
             if (this.nodes[beforeId]) {
                 sourceNodeKey = beforeId;
             }
-            for (let nodeKey in this.nodes) {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
                     sourceNodeIdIndex = this.findNodeId(nodeKey, beforeId);
                     break;
                 }
             }
             // got all
-            let targetId = beforeId;
-            const targetRootIndex = this.findRootId(targetId);
-            let targetNodeKey;
-            let targetNodeIdIndex;
+            var targetId = beforeId;
+            var targetRootIndex = this.findRootId(targetId);
+            var targetNodeKey;
+            var targetNodeIdIndex;
             if (this.nodes[beforeId]) {
                 targetNodeKey = beforeId;
             }
-            for (let nodeKey in this.nodes) {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
                     targetNodeIdIndex = this.findNodeId(nodeKey, beforeId);
                     break;
@@ -3993,9 +4291,9 @@ var zz;
                     // moving root (source) ABOVE node (target)
                     // will remove one entry from roots
                     this.rootDelete(sourceRootIndex);
-                    for (let nodeKey in this.nodes) {
+                    for (var nodeKey in this.nodes) {
                         if (this.nodes.hasOwnProperty(nodeKey)) {
-                            let index = this.findNodeId(nodeKey, targetId);
+                            var index = this.findNodeId(nodeKey, targetId);
                             if (index > -1) {
                                 switch (direction) {
                                     case Direction.BEFORE:
@@ -4021,9 +4319,9 @@ var zz;
                 if (targetRootIndex > -1) {
                     // moving node (source) ABOVE root (target)
                     // delete source id from each node
-                    for (let nodeKey in this.nodes) {
+                    for (var nodeKey in this.nodes) {
                         if (this.nodes.hasOwnProperty(nodeKey)) {
-                            let index = this.findNodeId(nodeKey, sourceId);
+                            var index = this.findNodeId(nodeKey, sourceId);
                             if (index > -1) {
                                 // this.nodeInsertId(nodeKey, sourceId, index);
                                 this.nodeDeleteAtIndex(nodeKey, index);
@@ -4049,18 +4347,18 @@ var zz;
                 else {
                     // moving node (source) ABOVE node (target)
                     // delete source id from each node
-                    for (let nodeKey in this.nodes) {
+                    for (var nodeKey in this.nodes) {
                         if (this.nodes.hasOwnProperty(nodeKey)) {
-                            let index = this.findNodeId(nodeKey, sourceId);
+                            var index = this.findNodeId(nodeKey, sourceId);
                             if (index > -1) {
                                 this.nodeDeleteAtIndex(nodeKey, index);
                                 break;
                             }
                         }
                     }
-                    for (let nodeKey in this.nodes) {
+                    for (var nodeKey in this.nodes) {
                         if (this.nodes.hasOwnProperty(nodeKey)) {
-                            let index = this.findNodeId(nodeKey, targetId);
+                            var index = this.findNodeId(nodeKey, targetId);
                             if (index > -1) {
                                 switch (direction) {
                                     case Direction.BEFORE:
@@ -4082,74 +4380,75 @@ var zz;
                     }
                 }
             }
-        }
-        swapArrayElements(arr, indexA, indexB) {
+        };
+        MultiRootTree.prototype.swapArrayElements = function (arr, indexA, indexB) {
             var temp = arr[indexA];
             arr[indexA] = arr[indexB];
             arr[indexB] = temp;
             return arr;
-        }
-        rootDeleteId(id) {
-            let index = this.findRootId(id);
+        };
+        MultiRootTree.prototype.rootDeleteId = function (id) {
+            var index = this.findRootId(id);
             if (index > -1) {
                 this.rootDelete(index);
             }
-        }
-        nodeAndSubNodesDelete(nodeKey) {
-            let toDeleteLater = [];
-            for (let i = 0; i < this.nodes[nodeKey].length; i++) {
-                let id = this.nodes[nodeKey][i];
+        };
+        MultiRootTree.prototype.nodeAndSubNodesDelete = function (nodeKey) {
+            var toDeleteLater = [];
+            for (var i = 0; i < this.nodes[nodeKey].length; i++) {
+                var id = this.nodes[nodeKey][i];
                 this.nodeAndSubNodesDelete(id);
                 toDeleteLater.push(nodeKey);
             }
             this.nodeDelete(nodeKey);
-            for (let i = 0; i < toDeleteLater.length; i++) {
+            for (var i = 0; i < toDeleteLater.length; i++) {
                 this.nodeDelete(toDeleteLater[i]);
             }
-        }
-        nodeRefrencesDelete(id) {
-            for (let nodeKey in this.nodes) {
+        };
+        MultiRootTree.prototype.nodeRefrencesDelete = function (id) {
+            for (var nodeKey in this.nodes) {
                 if (this.nodes.hasOwnProperty(nodeKey)) {
-                    for (let i = 0; i < this.nodes[nodeKey].length; i++) {
-                        let targetId = this.nodes[nodeKey][i];
+                    for (var i = 0; i < this.nodes[nodeKey].length; i++) {
+                        var targetId = this.nodes[nodeKey][i];
                         if (targetId === id) {
                             this.nodeDeleteAtIndex(nodeKey, i);
                         }
                     }
                 }
             }
-        }
-        nodeDelete(nodeKey) {
+        };
+        MultiRootTree.prototype.nodeDelete = function (nodeKey) {
             delete this.nodes[nodeKey];
-        }
-        findRootId(id) {
+        };
+        MultiRootTree.prototype.findRootId = function (id) {
             return this.rootIds.indexOf(id);
-        }
-        findNodeId(nodeKey, id) {
+        };
+        MultiRootTree.prototype.findNodeId = function (nodeKey, id) {
             return this.nodes[nodeKey].indexOf(id);
-        }
-        findNode(nodeKey) {
+        };
+        MultiRootTree.prototype.findNode = function (nodeKey) {
             return this.nodes[nodeKey];
-        }
-        nodeInsertAtStart(nodeKey, id) {
+        };
+        MultiRootTree.prototype.nodeInsertAtStart = function (nodeKey, id) {
             this.nodes[nodeKey].unshift(id);
-        }
-        nodeInsertAtEnd(nodeKey, id) {
+        };
+        MultiRootTree.prototype.nodeInsertAtEnd = function (nodeKey, id) {
             this.nodes[nodeKey].push(id);
-        }
-        rootDelete(index) {
+        };
+        MultiRootTree.prototype.rootDelete = function (index) {
             this.rootIds.splice(index, 1);
-        }
-        nodeDeleteAtIndex(nodeKey, index) {
+        };
+        MultiRootTree.prototype.nodeDeleteAtIndex = function (nodeKey, index) {
             this.nodes[nodeKey].splice(index, 1);
-        }
-        rootInsertAtStart(id) {
+        };
+        MultiRootTree.prototype.rootInsertAtStart = function (id) {
             this.rootIds.unshift(id);
-        }
-        rootInsertAtEnd(id) {
+        };
+        MultiRootTree.prototype.rootInsertAtEnd = function (id) {
             this.rootIds.push(id);
-        }
-    }
+        };
+        return MultiRootTree;
+    }());
     zz.MultiRootTree = MultiRootTree;
 })(zz || (zz = {}));
 window.zz = zz;
@@ -4161,8 +4460,8 @@ var zz;
     /**
      * 资源加载管理; 包含预载字典和各种帮助方法;
      */
-    class ResMgr {
-        constructor() {
+    var ResMgr = /** @class */ (function () {
+        function ResMgr() {
             this.prefabMap = new zz.Dictionary();
             this.spriteMap = new zz.Dictionary();
         }
@@ -4173,50 +4472,63 @@ var zz;
          * @param type 资源类型
          * @param assetDict 各类型对应存储
          */
-        loadResDict(bundleName, dirName, type, assetDict) {
-            return __awaiter(this, void 0, void 0, function* () {
-                try {
-                    let bundle = yield zz.utils.getBundle(bundleName);
-                    const asset_1 = yield new Promise((resolveFn, rejectFn) => {
-                        bundle.loadDir(dirName, type, (err, res) => {
-                            err ? rejectFn(err) : resolveFn(res);
-                        });
-                    });
-                    let key = bundleName + '/' + dirName;
-                    if (!assetDict.containsKey(key)) {
-                        assetDict.setValue(key, new zz.Dictionary());
+        ResMgr.prototype.loadResDict = function (bundleName, dirName, type, assetDict) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_1, asset_1, key, subDict_1, err_1_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 3, , 4]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 1:
+                            bundle_1 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    bundle_1.loadDir(dirName, type, function (err, res) {
+                                        err ? rejectFn(err) : resolveFn(res);
+                                    });
+                                })];
+                        case 2:
+                            asset_1 = _a.sent();
+                            key = bundleName + '/' + dirName;
+                            if (!assetDict.containsKey(key)) {
+                                assetDict.setValue(key, new zz.Dictionary());
+                            }
+                            subDict_1 = assetDict.getValue(key);
+                            asset_1.forEach(function (v) {
+                                subDict_1.setValue(v.name, v);
+                            });
+                            return [3 /*break*/, 4];
+                        case 3:
+                            err_1_1 = _a.sent();
+                            zz.error('[loadResDict] error:' + err_1_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
                     }
-                    let subDict = assetDict.getValue(key);
-                    asset_1.forEach(v => {
-                        subDict.setValue(v.name, v);
-                    });
-                }
-                catch (err_1) {
-                    zz.error('[loadResDict] error:' + err_1);
-                }
+                });
             });
-        }
-        loadPrefabs(bundleName, dirName) {
+        };
+        ResMgr.prototype.loadPrefabs = function (bundleName, dirName) {
             this.loadResDict(bundleName, dirName, cc.Prefab, this.prefabMap);
-        }
-        loadSprites(bundleName, dirName) {
+        };
+        ResMgr.prototype.loadSprites = function (bundleName, dirName) {
             this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
-        }
-        getPrefab(bundleName, dirName, name) {
-            let key = bundleName + '/' + dirName;
+        };
+        ResMgr.prototype.getPrefab = function (bundleName, dirName, name) {
+            var key = bundleName + '/' + dirName;
             if (!this.prefabMap.containsKey(key)) {
                 return undefined;
             }
             return this.prefabMap.getValue(key).getValue(name);
-        }
-        getSpriteframe(bundleName, dirName, name) {
-            const key = bundleName + '/' + dirName;
+        };
+        ResMgr.prototype.getSpriteframe = function (bundleName, dirName, name) {
+            var key = bundleName + '/' + dirName;
             if (!this.spriteMap.containsKey(key)) {
                 return undefined;
             }
             return this.spriteMap.getValue(key).getValue(name);
-        }
-    }
+        };
+        return ResMgr;
+    }());
     /**动态资源管理 */
     zz.res = new ResMgr();
 })(zz || (zz = {}));
@@ -4236,8 +4548,8 @@ var zz;
      * 7.多场景以预制体管理;
      * 8.单场景可不用此管理器
      */
-    class SceneMgr {
-        constructor() {
+    var SceneMgr = /** @class */ (function () {
+        function SceneMgr() {
             /**已显示的场景节点字典; */
             this.sceneDict = new zz.Dictionary();
             /**预载场景节点字典;未显示 */
@@ -4247,101 +4559,136 @@ var zz;
             /**打开中标记;用于预载过程中打开 */
             this.openningDict = new zz.Dictionary();
         }
-        /**场景根节点 */
-        get sceneRoot() {
-            return this._sceneRoot;
-        }
+        Object.defineProperty(SceneMgr.prototype, "sceneRoot", {
+            /**场景根节点 */
+            get: function () {
+                return this._sceneRoot;
+            },
+            enumerable: false,
+            configurable: true
+        });
         /**设置场景根节点;在游戏开始时执行一次 */
-        setSceneRoot(sceneRoot) {
+        SceneMgr.prototype.setSceneRoot = function (sceneRoot) {
             this._sceneRoot = sceneRoot;
-        }
+        };
         /**
          * 加载场景
          * @param sceneName 场景预制体名
          * @param bundleName bundle名
          */
-        loadScene(sceneName, bundleName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (this.loadingDict.containsKey(sceneName)) {
-                    zz.warn('[Scene] 正在加载' + sceneName);
-                    this.openningDict.setValue(sceneName, 1);
-                    return;
-                }
-                if (this.sceneDict.containsKey(sceneName)) {
-                    zz.warn('[Scene] 已加载' + sceneName);
-                    return;
-                }
-                if (this.preloadDict.containsKey(sceneName)) {
-                    zz.warn('[Scene] 已预载' + sceneName);
-                    let node = this.preloadDict.getValue(sceneName);
-                    this.sceneRoot.addChild(node);
-                    this.preloadDict.remove(sceneName);
-                    return;
-                }
-                this.loadingDict.setValue(sceneName, 1);
-                try {
-                    let bundle = yield zz.utils.getBundle(bundleName);
-                    let prefab_1 = yield new Promise((resolve, reject) => {
-                        bundle.load(sceneName, (err, prefab) => {
-                            err ? reject(err) : resolve(prefab);
-                        });
-                    });
-                    this.loadingDict.remove(sceneName);
-                    let node = yield zz.utils.instantiatePrefab(prefab_1);
-                    this.sceneRoot.addChild(node);
-                    if (this.openningDict.containsKey(sceneName)) {
-                        this.openningDict.remove(sceneName);
+        SceneMgr.prototype.loadScene = function (sceneName, bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var node, bundle_2, prefab_1, node, e_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.loadingDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 正在加载' + sceneName);
+                                this.openningDict.setValue(sceneName, 1);
+                                return [2 /*return*/];
+                            }
+                            if (this.sceneDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已加载' + sceneName);
+                                return [2 /*return*/];
+                            }
+                            if (this.preloadDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已预载' + sceneName);
+                                node = this.preloadDict.getValue(sceneName);
+                                this.sceneRoot.addChild(node);
+                                this.preloadDict.remove(sceneName);
+                                return [2 /*return*/];
+                            }
+                            this.loadingDict.setValue(sceneName, 1);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_2 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    bundle_2.load(sceneName, function (err, prefab) {
+                                        err ? reject(err) : resolve(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            this.loadingDict.remove(sceneName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 4:
+                            node = _a.sent();
+                            this.sceneRoot.addChild(node);
+                            if (this.openningDict.containsKey(sceneName)) {
+                                this.openningDict.remove(sceneName);
+                            }
+                            return [3 /*break*/, 6];
+                        case 5:
+                            e_1 = _a.sent();
+                            throw new Error(e_1);
+                        case 6: return [2 /*return*/];
                     }
-                }
-                catch (e) {
-                    throw new Error(e);
-                }
+                });
             });
-        }
+        };
         /**销毁场景 */
-        destroyScene(sceneName) {
+        SceneMgr.prototype.destroyScene = function (sceneName) {
             if (this.sceneDict.containsKey(sceneName)) {
                 this.sceneDict.getValue(sceneName).destroy();
                 this.sceneDict.remove(sceneName);
             }
-        }
+        };
         /**预载场景节点 */
-        preloadScene(sceneName, bundleName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (this.sceneDict.containsKey(sceneName)) {
-                    zz.warn('[Scene] 已加载' + sceneName);
-                    return undefined;
-                }
-                if (this.loadingDict.containsKey(sceneName)) {
-                    zz.warn('[Scene] 正在加载' + sceneName);
-                    return undefined;
-                }
-                this.loadingDict.setValue(sceneName, 1);
-                try {
-                    const bundle = yield zz.utils.getBundle(bundleName);
-                    const prefab_1 = yield new Promise((resolve, reject) => {
-                        bundle.load(sceneName, (err, prefab) => {
-                            err ? reject(err) : resolve(prefab);
-                        });
-                    });
-                    this.loadingDict.remove(sceneName);
-                    let node = yield zz.utils.instantiatePrefab(prefab_1);
-                    if (this.openningDict.containsKey(sceneName)) {
-                        //如果需要打开,则直接打开
-                        this.openningDict.remove(sceneName);
-                        this.sceneRoot.addChild(node);
+        SceneMgr.prototype.preloadScene = function (sceneName, bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_3, prefab_1, node, e_2;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.sceneDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 已加载' + sceneName);
+                                return [2 /*return*/, undefined];
+                            }
+                            if (this.loadingDict.containsKey(sceneName)) {
+                                zz.warn('[Scene] 正在加载' + sceneName);
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingDict.setValue(sceneName, 1);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_3 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    bundle_3.load(sceneName, function (err, prefab) {
+                                        err ? reject(err) : resolve(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            this.loadingDict.remove(sceneName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 4:
+                            node = _a.sent();
+                            if (this.openningDict.containsKey(sceneName)) {
+                                //如果需要打开,则直接打开
+                                this.openningDict.remove(sceneName);
+                                this.sceneRoot.addChild(node);
+                            }
+                            else {
+                                // 否则存储在预载中;
+                                this.preloadDict.setValue(sceneName, node);
+                            }
+                            return [3 /*break*/, 6];
+                        case 5:
+                            e_2 = _a.sent();
+                            throw new Error(e_2);
+                        case 6: return [2 /*return*/];
                     }
-                    else {
-                        // 否则存储在预载中;
-                        this.preloadDict.setValue(sceneName, node);
-                    }
-                }
-                catch (e) {
-                    throw new Error(e);
-                }
+                });
             });
-        }
-    }
+        };
+        return SceneMgr;
+    }());
     /**场景管理 */
     zz.scene = new SceneMgr();
 })(zz || (zz = {}));
@@ -4350,8 +4697,8 @@ var zz;
 /// <reference path="zzLog.ts" />
 var zz;
 (function (zz) {
-    class SoundMgr {
-        constructor() {
+    var SoundMgr = /** @class */ (function () {
+        function SoundMgr() {
             this.dict_clip = new Map();
             this.dict_soundId = new zz.MultiDictionary();
             this.dict_musicID = new zz.MultiDictionary();
@@ -4362,295 +4709,350 @@ var zz;
             this._isSoundOn = true;
             this._isAllOn = true;
         }
-        set SoundVolume(volume) {
-            this.soundVolume = volume;
-            cc.audioEngine.setEffectsVolume(volume);
-        }
-        get SoundVolume() {
-            return this.soundVolume;
-        }
-        set MusicVolume(volume) {
-            this.musicVolume = volume;
-            cc.audioEngine.setMusicVolume(volume);
-        }
-        get MusicVolume() {
-            return this.musicVolume;
-        }
-        /**音乐开关 */
-        get isMusicOn() {
-            return this._isMusicOn;
-        }
-        set isMusicOn(v) {
-            if (v == false) {
-                this.stopMusic();
-            }
-            this._isMusicOn = v;
-        }
-        /**音效开关 */
-        get isSoundOn() {
-            return this._isSoundOn;
-        }
-        set isSoundOn(v) {
-            if (!v) {
-                this.stopAllSounds();
-            }
-            this._isSoundOn = v;
-        }
-        /**声音是否打开 */
-        get isAllOn() {
-            return this._isAllOn;
-        }
-        set isAllOn(v) {
-            this._isAllOn = v;
-            if (!v) {
-                this.stopAllSounds();
-                this.stopMusic();
-            }
-        }
-        playSound(soundName, loop = false) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (!this.isAllOn) {
-                    return;
+        Object.defineProperty(SoundMgr.prototype, "SoundVolume", {
+            get: function () {
+                return this.soundVolume;
+            },
+            set: function (volume) {
+                this.soundVolume = volume;
+                cc.audioEngine.setEffectsVolume(volume);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "MusicVolume", {
+            get: function () {
+                return this.musicVolume;
+            },
+            set: function (volume) {
+                this.musicVolume = volume;
+                cc.audioEngine.setMusicVolume(volume);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isMusicOn", {
+            /**音乐开关 */
+            get: function () {
+                return this._isMusicOn;
+            },
+            set: function (v) {
+                if (v == false) {
+                    this.stopMusic();
                 }
-                if (!this.isSoundOn) {
-                    return;
+                this._isMusicOn = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isSoundOn", {
+            /**音效开关 */
+            get: function () {
+                return this._isSoundOn;
+            },
+            set: function (v) {
+                if (!v) {
+                    this.stopAllSounds();
                 }
-                this.dict_flag.set(soundName, 1);
-                if (this.dict_clip.has(soundName)) {
-                    let clip = this.dict_clip.get(soundName);
-                    let soundID = cc.audioEngine.playEffect(clip, loop);
-                    this.dict_soundId.setValue(soundName, soundID);
-                    cc.audioEngine.setFinishCallback(soundID, () => {
-                        if (!loop || !this.dict_flag.get(soundName)) {
-                            this.dict_soundId.remove(soundName, soundID);
-                        }
-                    });
+                this._isSoundOn = v;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        Object.defineProperty(SoundMgr.prototype, "isAllOn", {
+            /**声音是否打开 */
+            get: function () {
+                return this._isAllOn;
+            },
+            set: function (v) {
+                this._isAllOn = v;
+                if (!v) {
+                    this.stopAllSounds();
+                    this.stopMusic();
                 }
-                else {
-                    let bundle = yield zz.utils.getBundle('audio');
-                    bundle.load(soundName, cc.AudioClip, (err, clip) => {
-                        if (this.dict_clip.get(soundName))
-                            return;
-                        if (!this.dict_flag.get(soundName))
-                            return;
-                        this.dict_clip.set(soundName, clip);
-                        let soundID = cc.audioEngine.playEffect(clip, loop);
-                        this.dict_soundId.setValue(soundName, soundID);
-                        cc.audioEngine.setFinishCallback(soundID, () => {
-                            if (!loop || !this.dict_flag.get(soundName)) {
-                                this.dict_soundId.remove(soundName, soundID);
+            },
+            enumerable: false,
+            configurable: true
+        });
+        SoundMgr.prototype.playSound = function (soundName, loop) {
+            if (loop === void 0) { loop = false; }
+            return __awaiter(this, void 0, void 0, function () {
+                var clip, soundID_1, bundle;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!this.isAllOn) {
+                                return [2 /*return*/];
                             }
-                        });
-                    });
-                }
-            });
-        }
-        playMusic(musicName, loop = true) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (!this.isAllOn) {
-                    return;
-                }
-                if (!this.isMusicOn) {
-                    return;
-                }
-                if (this.dict_musicID.containsKey(musicName)) {
-                    return;
-                }
-                if (this.dict_clip.has(musicName)) {
-                    let clip = this.dict_clip.get(musicName);
-                    let id = cc.audioEngine.playMusic(clip, loop);
-                    this.dict_musicID.setValue(musicName, id);
-                    cc.audioEngine.setFinishCallback(id, () => {
-                        if (!loop) {
-                            this.dict_musicID.remove(musicName, id);
-                        }
-                    });
-                }
-                else {
-                    try {
-                        let bundle = yield zz.utils.getBundle('audio');
-                        bundle.load(musicName, cc.AudioClip, (err, clip) => {
-                            if (err) {
-                                zz.error(err);
-                                return;
+                            if (!this.isSoundOn) {
+                                return [2 /*return*/];
                             }
-                            if (this.dict_clip.has(musicName))
-                                return;
-                            this.dict_clip.set(musicName, clip);
-                            let id = cc.audioEngine.playMusic(clip, loop);
-                            this.dict_musicID.setValue(musicName, id);
-                            cc.audioEngine.setFinishCallback(id, () => {
-                                if (!loop) {
-                                    this.dict_musicID.remove(musicName, id);
+                            this.dict_flag.set(soundName, 1);
+                            if (!this.dict_clip.has(soundName)) return [3 /*break*/, 1];
+                            clip = this.dict_clip.get(soundName);
+                            soundID_1 = cc.audioEngine.playEffect(clip, loop);
+                            this.dict_soundId.setValue(soundName, soundID_1);
+                            cc.audioEngine.setFinishCallback(soundID_1, function () {
+                                if (!loop || !_this.dict_flag.get(soundName)) {
+                                    _this.dict_soundId.remove(soundName, soundID_1);
                                 }
                             });
-                        });
+                            return [3 /*break*/, 3];
+                        case 1: return [4 /*yield*/, zz.utils.getBundle('audio')];
+                        case 2:
+                            bundle = _a.sent();
+                            bundle.load(soundName, cc.AudioClip, function (err, clip) {
+                                if (_this.dict_clip.get(soundName))
+                                    return;
+                                if (!_this.dict_flag.get(soundName))
+                                    return;
+                                _this.dict_clip.set(soundName, clip);
+                                var soundID = cc.audioEngine.playEffect(clip, loop);
+                                _this.dict_soundId.setValue(soundName, soundID);
+                                cc.audioEngine.setFinishCallback(soundID, function () {
+                                    if (!loop || !_this.dict_flag.get(soundName)) {
+                                        _this.dict_soundId.remove(soundName, soundID);
+                                    }
+                                });
+                            });
+                            _a.label = 3;
+                        case 3: return [2 /*return*/];
                     }
-                    catch (err) {
-                        zz.error(err);
-                    }
-                }
+                });
             });
-        }
+        };
+        SoundMgr.prototype.playMusic = function (musicName, loop) {
+            if (loop === void 0) { loop = true; }
+            return __awaiter(this, void 0, void 0, function () {
+                var clip, id_1, bundle, err_1;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (!this.isAllOn) {
+                                return [2 /*return*/];
+                            }
+                            if (!this.isMusicOn) {
+                                return [2 /*return*/];
+                            }
+                            if (this.dict_musicID.containsKey(musicName)) {
+                                return [2 /*return*/];
+                            }
+                            if (!this.dict_clip.has(musicName)) return [3 /*break*/, 1];
+                            clip = this.dict_clip.get(musicName);
+                            id_1 = cc.audioEngine.playMusic(clip, loop);
+                            this.dict_musicID.setValue(musicName, id_1);
+                            cc.audioEngine.setFinishCallback(id_1, function () {
+                                if (!loop) {
+                                    _this.dict_musicID.remove(musicName, id_1);
+                                }
+                            });
+                            return [3 /*break*/, 4];
+                        case 1:
+                            _a.trys.push([1, 3, , 4]);
+                            return [4 /*yield*/, zz.utils.getBundle('audio')];
+                        case 2:
+                            bundle = _a.sent();
+                            bundle.load(musicName, cc.AudioClip, function (err, clip) {
+                                if (err) {
+                                    zz.error(err);
+                                    return;
+                                }
+                                if (_this.dict_clip.has(musicName))
+                                    return;
+                                _this.dict_clip.set(musicName, clip);
+                                var id = cc.audioEngine.playMusic(clip, loop);
+                                _this.dict_musicID.setValue(musicName, id);
+                                cc.audioEngine.setFinishCallback(id, function () {
+                                    if (!loop) {
+                                        _this.dict_musicID.remove(musicName, id);
+                                    }
+                                });
+                            });
+                            return [3 /*break*/, 4];
+                        case 3:
+                            err_1 = _a.sent();
+                            zz.error(err_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
+        };
         /**切换音乐; 模拟的渐变切换; 替换PlayMusic使用*/
-        changeMusic(musicName, loop = true, inTime = 1, outTime = 1) {
-            let iTime = inTime;
-            let oTime = outTime;
-            let it = 0.1;
-            let iLen = iTime / it;
-            let oLen = oTime / it;
-            let volLmt = this.musicVolume;
-            let iVolIt = volLmt / iLen;
-            for (let i = 0; i < iLen; i++) {
-                setTimeout(() => {
+        SoundMgr.prototype.changeMusic = function (musicName, loop, inTime, outTime) {
+            var _this = this;
+            if (loop === void 0) { loop = true; }
+            if (inTime === void 0) { inTime = 1; }
+            if (outTime === void 0) { outTime = 1; }
+            var iTime = inTime;
+            var oTime = outTime;
+            var it = 0.1;
+            var iLen = iTime / it;
+            var oLen = oTime / it;
+            var volLmt = this.musicVolume;
+            var iVolIt = volLmt / iLen;
+            var _loop_1 = function (i) {
+                setTimeout(function () {
                     cc.audioEngine.setMusicVolume(volLmt - iVolIt * i);
                 }, i * it * 1000);
+            };
+            for (var i = 0; i < iLen; i++) {
+                _loop_1(i);
             }
-            setTimeout(() => {
-                this.stopMusic();
-                this.playMusic(musicName, loop);
+            setTimeout(function () {
+                _this.stopMusic();
+                _this.playMusic(musicName, loop);
             }, iTime * 1000);
-            let oVolIt = volLmt / oLen;
-            for (let i = 0; i < oLen; i++) {
-                setTimeout(() => {
+            var oVolIt = volLmt / oLen;
+            var _loop_2 = function (i) {
+                setTimeout(function () {
                     cc.audioEngine.setMusicVolume(oVolIt * i);
                 }, (i * it + iTime) * 1000);
+            };
+            for (var i = 0; i < oLen; i++) {
+                _loop_2(i);
             }
-        }
-        stopSound(soundName) {
+        };
+        SoundMgr.prototype.stopSound = function (soundName) {
             this.dict_flag.set(soundName, 0);
             if (this.dict_soundId.containsKey(soundName)) {
-                this.dict_soundId.getValue(soundName).forEach(v => {
+                this.dict_soundId.getValue(soundName).forEach(function (v) {
                     cc.audioEngine.stopEffect(v);
                 });
                 this.dict_soundId.remove(soundName);
             }
-        }
-        stopMusic() {
+        };
+        SoundMgr.prototype.stopMusic = function () {
             cc.audioEngine.stopMusic();
             this.dict_musicID.clear();
-        }
-        stopAllSounds() {
+        };
+        SoundMgr.prototype.stopAllSounds = function () {
+            var _this = this;
             cc.audioEngine.stopAllEffects();
-            this.dict_soundId.keys().forEach(v => {
-                this.dict_flag.set(v, 0);
+            this.dict_soundId.keys().forEach(function (v) {
+                _this.dict_flag.set(v, 0);
             });
             this.dict_soundId.clear();
-        }
-        releaseSound(soundName) {
+        };
+        SoundMgr.prototype.releaseSound = function (soundName) {
             this.stopSound(soundName);
             if (this.dict_clip.has(soundName)) {
                 this.dict_clip.delete(soundName);
             }
-            zz.utils.getBundle('audio').then(bundle => {
+            zz.utils.getBundle('audio').then(function (bundle) {
                 bundle.release(soundName);
             });
-        }
-    }
+        };
+        return SoundMgr;
+    }());
     /**声音管理 */
     zz.sound = new SoundMgr();
 })(zz || (zz = {}));
 /// <reference path="zzType.ts" />
 var zz;
 (function (zz) {
-    class StorageMgr {
+    var StorageMgr = /** @class */ (function () {
+        function StorageMgr() {
+        }
         /**
          * 清理本地存储
          */
-        clear() {
+        StorageMgr.prototype.clear = function () {
             cc.sys.localStorage.clear();
-        }
+        };
         /**
          * 移除目标key值的存储
          * @param key {string} 存储的键值
          */
-        remove(key) {
+        StorageMgr.prototype.remove = function (key) {
             cc.sys.localStorage.removeItem(key);
-        }
+        };
         /**
          * 存储int32值
          * @param key {string} 存储键值
          * @param value {number} 数字,会被取整;
          */
-        saveInt(key, value) {
+        StorageMgr.prototype.saveInt = function (key, value) {
             cc.sys.localStorage.setItem(key, zz.int(value));
-        }
+        };
         /**
          * 获取存储的int32
          * @param key {string} 键值
          * @returns {number} int32值;默认为0
          */
-        getInt(key) {
-            let sto = cc.sys.localStorage.getItem(key);
+        StorageMgr.prototype.getInt = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
             // null | undefine
             if (!sto)
                 return 0;
-            let n = parseInt(sto);
+            var n = parseInt(sto);
             // NaN
             if (!sto)
                 return 0;
             return n;
-        }
+        };
         /**
          * 存储数值
          * @param key {string} 键值
          * @param value {number} double值
          */
-        saveNumber(key, value) {
+        StorageMgr.prototype.saveNumber = function (key, value) {
             cc.sys.localStorage.setItem(key, value);
-        }
+        };
         /**
          * 获取存储的数值
          * @param key {string} 键值
          * @returns {number} 数值,默认为0
          */
-        getNumber(key) {
-            let sto = cc.sys.localStorage.getItem(key);
+        StorageMgr.prototype.getNumber = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
             // null | undefine
             if (!sto)
                 return 0;
-            let n = parseFloat(sto);
+            var n = parseFloat(sto);
             // NaN
             if (!sto)
                 return 0;
             return n;
-        }
+        };
         /**
          * 保存字符串
          * @param key {string} 键值
          * @param value {string} 字符串
          */
-        saveString(key, value) {
+        StorageMgr.prototype.saveString = function (key, value) {
             cc.sys.localStorage.setItem(key, value);
-        }
+        };
         /**
          * 读取保存的字符串;
          * @param key {string} 键值
          * @returns {string} 字符串,默认为''
          */
-        getString(key) {
-            let sto = cc.sys.localStorage.getItem(key);
+        StorageMgr.prototype.getString = function (key) {
+            var sto = cc.sys.localStorage.getItem(key);
             if (!sto)
                 return '';
             return sto;
-        }
+        };
         /**
          * 保存对象
          * @param key {string} 键值
          * @param value {T} 对象,包括数组等各种带__proto__的
          */
-        saveObject(key, value) {
+        StorageMgr.prototype.saveObject = function (key, value) {
             if (value) {
                 this.saveString(key, JSON.stringify(value));
             }
-        }
+        };
         /**
          * 读取对象
          * @param key {string} 键值
          * @returns {T} 对象,包括数组等
          */
-        getObject(key) {
-            let str = this.getString(key);
+        StorageMgr.prototype.getObject = function (key) {
+            var str = this.getString(key);
             if (str) {
                 try {
                     return JSON.parse(str);
@@ -4662,8 +5064,9 @@ var zz;
             else {
                 return undefined;
             }
-        }
-    }
+        };
+        return StorageMgr;
+    }());
     /**存储管理 */
     zz.sto = new StorageMgr();
 })(zz || (zz = {}));
@@ -4671,53 +5074,67 @@ var zz;
 /// <reference path="zzLog.ts" />
 var zz;
 (function (zz) {
-    class TableMgr {
-        constructor() {
+    var TableMgr = /** @class */ (function () {
+        function TableMgr() {
             this.allTables = null;
             this.allTables = new Map();
         }
-        loadConfig(tableType, bundleName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (this.allTables.has(tableType)) {
-                    this.allTables.set(tableType, new Map());
-                }
-                try {
-                    let bundle = yield zz.utils.getBundle(bundleName);
-                    const jsonAsset_1 = yield new Promise((resolveFn, rejectFn) => {
-                        bundle.load(tableType, (err, jsonAsset) => {
-                            err ? rejectFn(err) : resolveFn(jsonAsset);
-                        });
-                    });
-                    let jsonObj = jsonAsset_1.json;
-                    let tableMap = new Map();
-                    for (let k in jsonObj) {
-                        let obj = JSON.parse(JSON.stringify(jsonObj[k]));
-                        tableMap.set(obj.id, obj);
+        TableMgr.prototype.loadConfig = function (tableType, bundleName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_4, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.allTables.has(tableType)) {
+                                this.allTables.set(tableType, new Map());
+                            }
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 2:
+                            bundle_4 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    bundle_4.load(tableType, function (err, jsonAsset) {
+                                        err ? rejectFn(err) : resolveFn(jsonAsset);
+                                    });
+                                })];
+                        case 3:
+                            jsonAsset_1 = _a.sent();
+                            jsonObj = jsonAsset_1.json;
+                            tableMap = new Map();
+                            for (k in jsonObj) {
+                                obj = JSON.parse(JSON.stringify(jsonObj[k]));
+                                tableMap.set(obj.id, obj);
+                            }
+                            this.allTables.set(tableType, tableMap);
+                            bundle_4.release(tableType);
+                            return [3 /*break*/, 5];
+                        case 4:
+                            err_1_2 = _a.sent();
+                            zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_2);
+                            return [3 /*break*/, 5];
+                        case 5: return [2 /*return*/];
                     }
-                    this.allTables.set(tableType, tableMap);
-                    bundle.release(tableType);
-                }
-                catch (err_1) {
-                    zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1);
-                }
+                });
             });
-        }
+        };
         /**
          * TableComponent：获取表所有数据
          * @param tableType 数据表类型名称
          */
-        getTable(tableType) {
+        TableMgr.prototype.getTable = function (tableType) {
             if (this.allTables.has(tableType)) {
                 return this.allTables.get(tableType);
             }
             return null;
-        }
+        };
         /**
          * TableComponent：获取表数据项目
          * @param tableType 数据表类型名称
          * @param key 数据表id
          */
-        getTableItem(tableType, key) {
+        TableMgr.prototype.getTableItem = function (tableType, key) {
             if (this.allTables.has(tableType)) {
                 return this.allTables.get(tableType).get(key);
             }
@@ -4725,13 +5142,13 @@ var zz;
                 console.error('[Table] GetTableItem Error! tableType:' + tableType + '; key:' + key);
                 return null;
             }
-        }
+        };
         /**
          * TableComponent：表是否存在数据项目
          * @param tableType 数据表类型名称
          * @param key 数据表id
          */
-        hasTableItem(tableType, key) {
+        TableMgr.prototype.hasTableItem = function (tableType, key) {
             if (this.allTables.has(tableType)) {
                 return this.allTables.get(tableType).has(key);
             }
@@ -4739,8 +5156,9 @@ var zz;
                 console.error('[Table] HasTableItem Error! tableType' + tableType + '; key:' + key);
                 return false;
             }
-        }
-    }
+        };
+        return TableMgr;
+    }());
     /**表格管理 */
     zz.table = new TableMgr();
 })(zz || (zz = {}));
@@ -4749,20 +5167,25 @@ var zz;
 /// <reference path="zzUtils.ts" />
 var zz;
 (function (zz) {
-    const farPos = cc.v3(10000, 10000, 0);
-    class UIBase extends cc.Component {
+    var farPos = cc.v3(10000, 10000, 0);
+    var UIBase = /** @class */ (function (_super) {
+        __extends(UIBase, _super);
+        function UIBase() {
+            return _super !== null && _super.apply(this, arguments) || this;
+        }
         /**
          * 在onLoad之后调用; 代替onLoad使用; 注意无法重置; 由于无法确保调用一次, 事件注册不宜置于此;
          * @param args 参数列表
          */
-        onOpen(args) { }
+        UIBase.prototype.onOpen = function (args) { };
         /**代替onDestroy使用 */
-        onClose() { }
+        UIBase.prototype.onClose = function () { };
         /**代替onDiable使用 */
-        onHide() { }
+        UIBase.prototype.onHide = function () { };
         /**代替onEnable使用 */
-        onShow() { }
-    }
+        UIBase.prototype.onShow = function () { };
+        return UIBase;
+    }(cc.Component));
     zz.UIBase = UIBase;
     /**
      * UI管理器;
@@ -4776,8 +5199,8 @@ var zz;
      * 8.默认UIRoot为所有UI的根节点,位于最上方
      * 9.最上方UI默认为UICommon
      */
-    class UIMgr {
-        constructor() {
+    var UIMgr = /** @class */ (function () {
+        function UIMgr() {
             /**UI根节点; 从外部注入; */
             this._uiRoot = undefined;
             this.uiMap = new Map();
@@ -4791,84 +5214,104 @@ var zz;
             this.attachMapHost = new Map();
             this.topZIndex = 0;
         }
-        get uiRoot() {
-            if (!this._uiRoot) {
-                this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
-            }
-            if (!this._uiRoot) {
-                this._uiRoot = cc.director.getScene();
-            }
-            if (!this._uiRoot.isValid) {
-                this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+        Object.defineProperty(UIMgr.prototype, "uiRoot", {
+            get: function () {
+                if (!this._uiRoot) {
+                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+                }
                 if (!this._uiRoot) {
                     this._uiRoot = cc.director.getScene();
                 }
-            }
-            return this._uiRoot;
-        }
-        setUIRoot(rootNd) {
+                if (!this._uiRoot.isValid) {
+                    this._uiRoot = cc.Canvas.instance.node.getChildByName('UIRoot');
+                    if (!this._uiRoot) {
+                        this._uiRoot = cc.director.getScene();
+                    }
+                }
+                return this._uiRoot;
+            },
+            enumerable: false,
+            configurable: true
+        });
+        UIMgr.prototype.setUIRoot = function (rootNd) {
             this._uiRoot = rootNd;
-        }
-        setUIParams(params) {
-            params.forEach(v => {
-                this.pathMap.set(v.uiName, v.path);
-                this.layerMap.set(v.uiName, v.zIndex);
+        };
+        UIMgr.prototype.setUIParams = function (params) {
+            var _this = this;
+            params.forEach(function (v) {
+                _this.pathMap.set(v.uiName, v.path);
+                _this.layerMap.set(v.uiName, v.zIndex);
             });
-        }
-        openUI(uiArgs) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let uiName = uiArgs.uiName;
-                if (this.uiMap.has(uiName)) {
-                    let ui = this.uiMap.get(uiName);
-                    let uiNd = ui.node;
-                    if (uiNd && uiNd.isValid) {
-                        this.openUINode(uiNd, uiArgs);
-                        this.openUIClass(ui, uiArgs);
-                        return undefined;
-                    }
-                    else {
-                        this.uiMap.delete(uiName);
-                    }
-                }
-                if (this.loadingFlagMap.get(uiName)) {
-                    zz.warn('[openUI] 正在加载' + uiName);
-                    this.openingMap.set(uiName, uiArgs);
-                    zz.loadingPage(true, Math.random(), '');
-                    return undefined;
-                }
-                this.loadingFlagMap.set(uiName, true);
-                try {
-                    const bundle = yield this.getUIBundle(uiName);
-                    const prefab_1 = yield new Promise((resolveFn, rejectFn) => {
-                        bundle.load(uiName, (completedCount, totalCount, item) => {
-                            if (uiArgs.progressArgs) {
-                                if (uiArgs.progressArgs.showProgressUI) {
-                                    zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
+        };
+        UIMgr.prototype.openUI = function (uiArgs) {
+            return __awaiter(this, void 0, void 0, function () {
+                var uiName, ui_1, uiNd, bundle_5, prefab_1, uiNode, ui_2, err_1_3;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            uiName = uiArgs.uiName;
+                            if (this.uiMap.has(uiName)) {
+                                ui_1 = this.uiMap.get(uiName);
+                                uiNd = ui_1.node;
+                                if (uiNd && uiNd.isValid) {
+                                    this.openUINode(uiNd, uiArgs);
+                                    this.openUIClass(ui_1, uiArgs);
+                                    return [2 /*return*/, undefined];
+                                }
+                                else {
+                                    this.uiMap.delete(uiName);
                                 }
                             }
-                        }, (err, prefab) => {
-                            err ? rejectFn(err) : resolveFn(prefab);
-                        });
-                    });
-                    zz.loadingPage(false, 0, '');
-                    this.loadingFlagMap.delete(uiName);
-                    let uiNode = yield zz.utils.instantiatePrefab(prefab_1);
-                    uiNode.parent = this.uiRoot;
-                    let ui_2 = uiNode.getComponent(uiName);
-                    this.uiMap.set(uiName, ui_2);
-                    this.openUINode(uiNode, uiArgs);
-                    this.openUIClass(ui_2, uiArgs);
-                    if (this.openingMap.has(uiName))
-                        this.openingMap.delete(uiName);
-                }
-                catch (err_1) {
-                    zz.error('[openUI] error:' + err_1);
-                    return undefined;
-                }
+                            if (this.loadingFlagMap.get(uiName)) {
+                                zz.warn('[openUI] 正在加载' + uiName);
+                                this.openingMap.set(uiName, uiArgs);
+                                zz.loadingPage(true, Math.random(), '');
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingFlagMap.set(uiName, true);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 5, , 6]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 2:
+                            bundle_5 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    bundle_5.load(uiName, function (completedCount, totalCount, item) {
+                                        if (uiArgs.progressArgs) {
+                                            if (uiArgs.progressArgs.showProgressUI) {
+                                                zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
+                                            }
+                                        }
+                                    }, function (err, prefab) {
+                                        err ? rejectFn(err) : resolveFn(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            zz.loadingPage(false, 0, '');
+                            this.loadingFlagMap.delete(uiName);
+                            return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
+                        case 4:
+                            uiNode = _a.sent();
+                            uiNode.parent = this.uiRoot;
+                            ui_2 = uiNode.getComponent(uiName);
+                            this.uiMap.set(uiName, ui_2);
+                            this.openUINode(uiNode, uiArgs);
+                            this.openUIClass(ui_2, uiArgs);
+                            if (this.openingMap.has(uiName))
+                                this.openingMap.delete(uiName);
+                            return [3 /*break*/, 6];
+                        case 5:
+                            err_1_3 = _a.sent();
+                            zz.error('[openUI] error:' + err_1_3);
+                            return [2 /*return*/, undefined];
+                        case 6: return [2 /*return*/];
+                    }
+                });
             });
-        }
-        openUINode(uiNd, uiArgs) {
-            let uiName = uiArgs.uiName;
+        };
+        UIMgr.prototype.openUINode = function (uiNd, uiArgs) {
+            var uiName = uiArgs.uiName;
             if (!uiNd.parent) {
                 uiNd.parent = this.uiRoot;
             }
@@ -4877,7 +5320,7 @@ var zz;
             }
             else {
                 if (this.layerMap.has(uiName)) {
-                    let z = this.layerMap.get(uiName);
+                    var z = this.layerMap.get(uiName);
                     uiNd.zIndex = z;
                     if (this.topZIndex < z)
                         this.topZIndex = z;
@@ -4887,129 +5330,151 @@ var zz;
                 }
             }
             uiNd.x = uiNd.y = 0;
-        }
-        openUIClass(ui, uiArgs) {
+        };
+        UIMgr.prototype.openUIClass = function (ui, uiArgs) {
             var _a;
             ui.node.x = ui.node.y = 0;
             ui.node.opacity = 255;
             ui.onOpen(uiArgs.openArgs || []);
             ui.onShow();
-            let widget = ui.node.getComponent(cc.Widget);
+            var widget = ui.node.getComponent(cc.Widget);
             if (widget)
                 widget.updateAlignment();
-            let cb = uiArgs.callbackArgs;
-            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call(uiArgs.caller, ...cb.args);
-        }
-        getUIBundle(uiName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                let path = this.pathMap.get(uiName);
-                if (!path)
-                    path = 'resources';
-                let bundle = yield zz.utils.getBundle(path);
-                return bundle;
+            var cb = uiArgs.callbackArgs;
+            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
+        };
+        UIMgr.prototype.getUIBundle = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var path, bundle;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            path = this.pathMap.get(uiName);
+                            if (!path)
+                                path = 'resources';
+                            return [4 /*yield*/, zz.utils.getBundle(path)];
+                        case 1:
+                            bundle = _a.sent();
+                            return [2 /*return*/, bundle];
+                    }
+                });
             });
-        }
+        };
         /**从场景中移除UI; 保留本地缓存; */
-        closeUI(uiName) {
+        UIMgr.prototype.closeUI = function (uiName) {
+            var _this = this;
             if (this.uiMap.has(uiName)) {
                 this.hideUI(uiName);
-                let ui = this.uiMap.get(uiName);
-                ui.node.parent = null;
-                ui.onHide();
-                ui.onClose();
+                var ui_3 = this.uiMap.get(uiName);
+                ui_3.node.parent = null;
+                ui_3.onHide();
+                ui_3.onClose();
                 if (this.attachMapHost.has(uiName)) {
-                    this.attachMapHost.get(uiName).forEach((v, k) => {
-                        this.closeUI(k);
+                    this.attachMapHost.get(uiName).forEach(function (v, k) {
+                        _this.closeUI(k);
                     });
                 }
                 return true;
             }
             return false;
-        }
-        preloadUI(uiName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                if (this.uiMap.has(uiName)) {
-                    zz.warn('[preloadUI] 已经加载ui:' + uiName);
-                    return undefined;
-                }
-                if (this.loadingFlagMap.get(uiName)) {
-                    zz.warn('[preloadUI] 正在加载' + uiName);
-                    return undefined;
-                }
-                this.loadingFlagMap.set(uiName, true);
-                try {
-                    const bundle = yield this.getUIBundle(uiName);
-                    const prefab_1 = yield new Promise((resolveFn, rejectFn) => {
-                        bundle.load(uiName, (err, prefab) => {
-                            err ? rejectFn(err) : resolveFn(prefab);
-                        });
-                    });
-                    this.loadingFlagMap.delete(uiName);
-                    let uiNode = cc.instantiate(prefab_1);
-                    let ui = uiNode.getComponent(uiName);
-                    this.uiMap.set(uiName, ui);
-                    if (this.openingMap.has(uiName)) {
-                        let args = this.openingMap.get(uiName);
-                        this.openingMap.delete(uiName);
-                        zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-                        zz.loadingPage(false, 0, '');
-                        this.openUINode(uiNode, args);
-                        this.openUIClass(ui, args);
+        };
+        UIMgr.prototype.preloadUI = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_6, prefab_1, uiNode, ui_4, args, err_1_4;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            if (this.uiMap.has(uiName)) {
+                                zz.warn('[preloadUI] 已经加载ui:' + uiName);
+                                return [2 /*return*/, undefined];
+                            }
+                            if (this.loadingFlagMap.get(uiName)) {
+                                zz.warn('[preloadUI] 正在加载' + uiName);
+                                return [2 /*return*/, undefined];
+                            }
+                            this.loadingFlagMap.set(uiName, true);
+                            _a.label = 1;
+                        case 1:
+                            _a.trys.push([1, 4, , 5]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 2:
+                            bundle_6 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    bundle_6.load(uiName, function (err, prefab) {
+                                        err ? rejectFn(err) : resolveFn(prefab);
+                                    });
+                                })];
+                        case 3:
+                            prefab_1 = _a.sent();
+                            this.loadingFlagMap.delete(uiName);
+                            uiNode = cc.instantiate(prefab_1);
+                            ui_4 = uiNode.getComponent(uiName);
+                            this.uiMap.set(uiName, ui_4);
+                            if (this.openingMap.has(uiName)) {
+                                args = this.openingMap.get(uiName);
+                                this.openingMap.delete(uiName);
+                                zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
+                                zz.loadingPage(false, 0, '');
+                                this.openUINode(uiNode, args);
+                                this.openUIClass(ui_4, args);
+                            }
+                            return [2 /*return*/, uiNode];
+                        case 4:
+                            err_1_4 = _a.sent();
+                            zz.error('[preloadUI] error:' + err_1_4);
+                            return [2 /*return*/, undefined];
+                        case 5: return [2 /*return*/];
                     }
-                    return uiNode;
-                }
-                catch (err_1) {
-                    zz.error('[preloadUI] error:' + err_1);
-                    return undefined;
-                }
+                });
             });
-        }
+        };
         /**关闭ui; 移除本地缓存; */
-        destroyUI(uiName, resRelease) {
+        UIMgr.prototype.destroyUI = function (uiName, resRelease) {
             this.closeUI(uiName);
-            let ui = this.uiMap.get(uiName);
+            var ui = this.uiMap.get(uiName);
             ui === null || ui === void 0 ? void 0 : ui.destroy();
             this.uiMap.delete(uiName);
             if (resRelease) {
                 this.getUIBundle(uiName)
-                    .then((bundle) => {
+                    .then(function (bundle) {
                     cc.assetManager.releaseAsset(bundle.get(uiName));
                     bundle.release(uiName, cc.Prefab);
                 })
-                    .catch(reason => {
+                    .catch(function (reason) {
                     zz.error('[UIMgr] release ' + uiName + ' fail; reason' + reason);
                 });
             }
-        }
-        showUI(uiName) {
+        };
+        UIMgr.prototype.showUI = function (uiName) {
             if (this.uiMap.has(uiName)) {
-                let ui = this.uiMap.get(uiName);
-                let nd = ui.node;
+                var ui_5 = this.uiMap.get(uiName);
+                var nd = ui_5.node;
                 if (!nd) {
                     zz.warn('[showUI] ' + uiName + '被close过');
                     return false;
                 }
                 nd.x = nd.y = 0;
                 nd.opacity = 255;
-                ui.onShow();
+                ui_5.onShow();
                 return true;
             }
             else {
                 zz.error('[shouUI] 未加载的UI:' + uiName);
                 return false;
             }
-        }
-        hideUI(uiName) {
+        };
+        UIMgr.prototype.hideUI = function (uiName) {
+            var _this = this;
             if (this.uiMap.has(uiName)) {
-                let ui = this.uiMap.get(uiName);
-                let nd = ui.node;
+                var ui_6 = this.uiMap.get(uiName);
+                var nd = ui_6.node;
                 if (nd) {
                     nd.position = cc.v3(farPos);
                     nd.opacity = 0;
-                    ui.onHide();
+                    ui_6.onHide();
                     if (this.attachMapHost.has(uiName)) {
-                        this.attachMapHost.get(uiName).forEach((v, k) => {
-                            this.hideUI(k);
+                        this.attachMapHost.get(uiName).forEach(function (v, k) {
+                            _this.hideUI(k);
                         });
                     }
                     return true;
@@ -5019,12 +5484,12 @@ var zz;
                 }
             }
             return false;
-        }
-        getUI(uiName) {
+        };
+        UIMgr.prototype.getUI = function (uiName) {
             return this.uiMap.get(uiName);
-        }
-        isUIShown(uiName) {
-            let ui = this.getUI(uiName);
+        };
+        UIMgr.prototype.isUIShown = function (uiName) {
+            var ui = this.getUI(uiName);
             if (!ui)
                 return false;
             if (!ui.node)
@@ -5034,13 +5499,13 @@ var zz;
             if (!ui.node.opacity)
                 return false;
             return true;
-        }
-        reloadUI(uiName) {
+        };
+        UIMgr.prototype.reloadUI = function (uiName) {
             this.destroyUI(uiName, false);
             this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
-        }
+        };
         /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
-        setUIAttachment(hostUI, clientUI) {
+        UIMgr.prototype.setUIAttachment = function (hostUI, clientUI) {
             if (!this.attachMapClient.has(clientUI)) {
                 this.attachMapClient.set(clientUI, new Map());
             }
@@ -5049,28 +5514,39 @@ var zz;
             }
             this.attachMapHost.get(hostUI).set(clientUI, true);
             this.attachMapClient.get(clientUI).set(hostUI, true);
-        }
+        };
         /**移除UI之间的依附关系 */
-        removeUIAttachment(hostUI, clientUI) {
+        UIMgr.prototype.removeUIAttachment = function (hostUI, clientUI) {
             if (this.attachMapClient.has(clientUI)) {
                 this.attachMapClient.get(clientUI).delete(hostUI);
             }
             if (this.attachMapHost.has(hostUI)) {
                 this.attachMapHost.get(hostUI).delete(clientUI);
             }
-        }
-        releaseUI(uiName) {
-            return __awaiter(this, void 0, void 0, function* () {
-                try {
-                    let bundle = yield this.getUIBundle(uiName);
-                    bundle.release(uiName);
-                }
-                catch (err) {
-                    zz.error(err);
-                }
+        };
+        UIMgr.prototype.releaseUI = function (uiName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle, err_2;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 2, , 3]);
+                            return [4 /*yield*/, this.getUIBundle(uiName)];
+                        case 1:
+                            bundle = _a.sent();
+                            bundle.release(uiName);
+                            return [3 /*break*/, 3];
+                        case 2:
+                            err_2 = _a.sent();
+                            zz.error(err_2);
+                            return [3 /*break*/, 3];
+                        case 3: return [2 /*return*/];
+                    }
+                });
             });
-        }
-    }
+        };
+        return UIMgr;
+    }());
     /**UI管理 */
     zz.ui = new UIMgr();
 })(zz || (zz = {}));

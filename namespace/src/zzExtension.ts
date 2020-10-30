@@ -20,6 +20,7 @@ namespace zz.extension {
 
   Object.defineProperty(String.prototype, 'replaceAll', {
     enumerable: false,
+    configurable: true,
     value: function (search: string, replace: string): string {
       let str: string = this;
       if (str == null) return;
@@ -28,6 +29,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'forEachLeft', {
     enumerable: false,
+    configurable: true,
     value: function <T, U>(
       callback: (element: T, index: number) => U | undefined
     ) {
@@ -40,6 +42,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'forEachRight', {
     enumerable: false,
+    configurable: true,
     value: function <T, U>(
       callback: (element: T, index: number) => U | undefined
     ) {
@@ -52,6 +55,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'intersperse', {
     enumerable: false,
+    configurable: true,
     value: function <T>(element: T): T[] {
       let array = this as Array<T>;
       if (array) {
@@ -63,6 +67,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'countWhere', {
     enumerable: false,
+    configurable: true,
     value: function <T>(predicate: (x: T, i: number) => boolean) {
       let array = this as Array<T>;
       if (array) {
@@ -74,6 +79,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'eleAt', {
     enumerable: false,
+    configurable: true,
     value: function <T>(offset: number): T | undefined {
       let array = this as T[];
       return ts.elementAt(array, offset);
@@ -82,6 +88,7 @@ namespace zz.extension {
 
   Object.defineProperty(Array.prototype, 'compact', {
     enumerable: false,
+    configurable: true,
     value: function <T>(): T[] {
       let array = this as T[];
       return ts.compact(array);
@@ -89,6 +96,7 @@ namespace zz.extension {
   });
   Object.defineProperty(Array.prototype, 'addRange', {
     enumerable: false,
+    configurable: true,
     value: function <T>(
       from: readonly T[] | undefined,
       start?: number,
