@@ -1,3 +1,4 @@
+/// <reference path="zzType.ts" />
 namespace zz.utils {
   /**打乱字符串 */
   export function upsetString(oStr: string) {

@@ -1,5 +1,5 @@
+/// <reference path="zzHelper.ts" />
 /// <reference path="zzTs.ts" />
-/// <reference path="zzCC.ts" />
 namespace zz.extension {
   //#region CCC
   cc.Node.prototype.findCom = function <T extends cc.Component>(
@@ -99,3 +99,4 @@ namespace zz.extension {
     },
   });
 }
+window.zz = zz;

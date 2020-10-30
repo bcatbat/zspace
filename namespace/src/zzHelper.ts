@@ -1,5 +1,4 @@
 /// <reference path="zzLog.ts" />
-/// <reference path="zzTs.ts" />
 namespace zz {
   /**
    * 获取相对路径节点上的组件
@@ -43,8 +42,8 @@ namespace zz {
   export function tipMsg(msg: string) {
     tipFn(msg);
   }
-  /**读条页面的参数; Tuple真牛逼! */
-  type LoadingPageParam = [isShow: boolean, prog: number, des: string];
+  /**读条页面的参数; [是否展示,进度值,描述文字] */
+  export type LoadingPageParam = [boolean, number, string];
   /**读条页帮助函数 */
   let loadingFn = (...loadingPageParam: LoadingPageParam) => {
     warn('没有注入loadingPage方法', loadingPageParam);
@@ -60,3 +59,4 @@ namespace zz {
     loadingFn = func;
   }
 }
+window.zz = zz;

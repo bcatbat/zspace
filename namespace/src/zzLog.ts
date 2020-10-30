@@ -20,3 +20,4 @@ namespace zz {
     console.assert(a == b, msg);
   }
 }
+window.zz = zz;

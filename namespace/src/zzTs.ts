@@ -228,3 +228,4 @@ namespace zz.ts {
     return undefined;
   }
 }
+window.zz = zz;

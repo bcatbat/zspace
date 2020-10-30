@@ -1,1 +1,0 @@
-tsc --outFile zz.js

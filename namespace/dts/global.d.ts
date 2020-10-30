@@ -7,8 +7,7 @@ interface String {
   replaceAll(search: string, replace: string): string;
 }
 
-declare namespace cc {
-  interface Component{}
+namespace cc {
   interface Node {
     /**
      * 获取相对路径节点上的组件

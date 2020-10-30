@@ -3036,3 +3036,4 @@ namespace zz {
     }
   }
 }
+window.zz = zz;

@@ -30,3 +30,4 @@ namespace zz {
     return +x;
   }
 }
+window.zz = zz;

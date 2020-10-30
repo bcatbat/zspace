@@ -1,5 +1,6 @@
 /// <reference path="zzUtils.ts" />
 namespace zz {
+  const farPos: cc.Vec3 = cc.v3(10000, 10000, 0);
   export class NdPool {
     readonly rootNd: cc.Node = undefined;
     private readonly prefab: cc.Prefab | cc.Node = undefined;
@@ -71,7 +72,7 @@ namespace zz {
       this.returnAllNode();
       this.poolLeft.forEach(v => {
         v.parent = null;
-        v.destroy();        
+        v.destroy();
       });
       this.poolLeft = new Array<cc.Node>();
     }
@@ -170,3 +171,4 @@ namespace zz {
     }
   }
 }
+window.zz = zz;

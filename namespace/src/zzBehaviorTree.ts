@@ -1,3 +1,4 @@
+/// <reference path="zzType.ts" />
 namespace zz {
   enum BTState {
     Failure,
@@ -386,3 +387,4 @@ namespace zz {
     }
   }
 }
+window.zz = zz;

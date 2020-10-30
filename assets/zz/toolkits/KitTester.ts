@@ -20,7 +20,7 @@ export default class KitTester extends cc.Component {
 
     for (let k in [1, 2, 3]) {
       zz.log(k);
-    }
+    } 
   }
 }
 
