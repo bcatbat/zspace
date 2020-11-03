@@ -155,7 +155,7 @@ namespace zz {
         this.loadingFlagMap.delete(uiName);
         let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
         uiNode.parent = this.uiRoot;
-        let ui_2 = uiNode.getComponent(uiName) as UIBase;
+        let ui_2 = uiNode.getComponent(UIBase);
         this.uiMap.set(uiName, ui_2);
         this.openUINode(uiNode, uiArgs);
         this.openUIClass(ui_2, uiArgs);
