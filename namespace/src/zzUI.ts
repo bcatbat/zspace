@@ -256,7 +256,7 @@ namespace zz {
     destroyUI(uiName: string, resRelease: boolean) {
       this.closeUI(uiName);
       let ui = this.uiMap.get(uiName);
-      ui?.destroy();
+      ui.node?.destroy();
       this.uiMap.delete(uiName);
 
       if (resRelease) {
