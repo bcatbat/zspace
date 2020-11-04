@@ -2,7 +2,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -5294,7 +5294,7 @@ var zz;
                         case 4:
                             uiNode = _a.sent();
                             uiNode.parent = this.uiRoot;
-                            ui_2 = uiNode.getComponent(uiName);
+                            ui_2 = uiNode.getComponent(UIBase);
                             this.uiMap.set(uiName, ui_2);
                             this.openUINode(uiNode, uiArgs);
                             this.openUIClass(ui_2, uiArgs);
@@ -5430,9 +5430,10 @@ var zz;
         };
         /**关闭ui; 移除本地缓存; */
         UIMgr.prototype.destroyUI = function (uiName, resRelease) {
+            var _a;
             this.closeUI(uiName);
             var ui = this.uiMap.get(uiName);
-            ui === null || ui === void 0 ? void 0 : ui.destroy();
+            (_a = ui === null || ui === void 0 ? void 0 : ui.node) === null || _a === void 0 ? void 0 : _a.destroy();
             this.uiMap.delete(uiName);
             if (resRelease) {
                 this.getUIBundle(uiName)
