@@ -131,6 +131,11 @@ namespace zz {
       this.loadingFlagMap.set(uiName, true);
 
       try {
+        if (uiArgs.progressArgs) {
+          if (uiArgs.progressArgs.showProgressUI) {
+            loadingPage(true, 0, uiArgs.progressArgs.desTxt);
+          }
+        }
         const bundle = await this.getUIBundle(uiName);
         const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
           bundle.load(
@@ -255,7 +260,7 @@ namespace zz {
     /**关闭ui; 移除本地缓存; */
     destroyUI(uiName: string, resRelease: boolean) {
       this.closeUI(uiName);
-      let ui = this.uiMap.get(uiName);      
+      let ui = this.uiMap.get(uiName);
       ui?.node?.destroy();
       this.uiMap.delete(uiName);
 

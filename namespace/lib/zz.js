@@ -5272,6 +5272,11 @@ var zz;
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 5, , 6]);
+                            if (uiArgs.progressArgs) {
+                                if (uiArgs.progressArgs.showProgressUI) {
+                                    zz.loadingPage(true, 0, uiArgs.progressArgs.desTxt);
+                                }
+                            }
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
                             bundle_5 = _a.sent();
