@@ -28,9 +28,9 @@ declare namespace cc {
 
 interface Array<T> {
   /**TS版的foreach,[immutable];若callback有返回值,中断并返回此值 */
-  forEachLeft<U>(callback: (element: T, index: number) => U | undefined): void;
+  forEachLeft<U>(callback: (element: T, index: number) => U | undefined): U;
   /**TS版的forEachRight,[immutable];若callback有返回值,中断并返回此值 */
-  forEachRight<U>(callback: (element: T, index: number) => U | undefined): void;
+  forEachRight<U>(callback: (element: T, index: number) => U | undefined): U;
   /**TS版intersperse,[immutable];在数组元素中插入指定元素,长度1及以下的不做处理; */
   intersperse(element: T): T[];
   /**TS版本countWhere,[immutable]; 返回符合predicate要求的元素数量 */
