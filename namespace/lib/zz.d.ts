@@ -1814,21 +1814,33 @@ declare namespace zz {
      * 资源加载管理; 包含预载字典和各种帮助方法;
      */
     class ResMgr {
-        constructor();
-        private prefabMap;
-        private spriteMap;
+        /**资源字典;[目录路径,[目录名,资源名]] */
+        private assetDict;
         /**
-         * 批量读取目录内资源
+         * 批量读取目录内资源,并缓存
          * @param bundleName 资源包名
-         * @param dirName 资源目录名
-         * @param type 资源类型
+         * @param dirName 资源目录,可以多层,'/'分割
          * @param assetDict 各类型对应存储
          */
-        private loadResDict;
-        loadPrefabs(bundleName: string, dirName: string): void;
-        loadSprites(bundleName: string, dirName: string): void;
-        getPrefab(bundleName: string, dirName: string, name: string): cc.Prefab;
-        getSpriteframe(bundleName: string, dirName: string, name: string): cc.SpriteFrame;
+        loadResDict(bundleName: string, dirName: string): Promise<cc.Asset[]>;
+        /**
+         * 读取资源,并缓存
+         * @param bundleName 资源名
+         * @param dirName 路径
+         * @param assetName 资源名
+         */
+        loadRes(bundleName: string, dirName: string, assetName: string): Promise<cc.Asset>;
+        /**
+         * 获取资源；
+         * @param bundleName 资源包名
+         * @param dirName 目录
+         * @param name 资源名称
+         * @param type 类型
+         * @returns 返回缓存的资源；如果未缓存，或者传入类型错误，则返回undefined
+         */
+        getRes<T extends cc.Asset>(bundleName: string, dirName: string, name: string, type: {
+            new (): T;
+        }): T;
     }
     /**动态资源管理 */
     export const res: ResMgr;
@@ -2072,8 +2084,6 @@ declare namespace zz {
         private loadingFlagMap;
         /**打开中标记; */
         private openingMap;
-        private attachMapClient;
-        private attachMapHost;
         private topZIndex;
         setUIRoot(rootNd: cc.Node): void;
         setUIParams(params: Array<{
@@ -2095,10 +2105,6 @@ declare namespace zz {
         getUI(uiName: string): UIBase;
         isUIShown(uiName: string): boolean;
         reloadUI(uiName: string): void;
-        /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
-        setUIAttachment(hostUI: string, clientUI: string): void;
-        /**移除UI之间的依附关系 */
-        removeUIAttachment(hostUI: string, clientUI: string): void;
         releaseUI(uiName: string): Promise<void>;
     }
     /**UI管理 */

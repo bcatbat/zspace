@@ -2,7 +2,7 @@ var __extends = (this && this.__extends) || (function () {
     var extendStatics = function (d, b) {
         extendStatics = Object.setPrototypeOf ||
             ({ __proto__: [] } instanceof Array && function (d, b) { d.__proto__ = b; }) ||
-            function (d, b) { for (var p in b) if (b.hasOwnProperty(p)) d[p] = b[p]; };
+            function (d, b) { for (var p in b) if (Object.prototype.hasOwnProperty.call(b, p)) d[p] = b[p]; };
         return extendStatics(d, b);
     };
     return function (d, b) {
@@ -4462,17 +4462,16 @@ var zz;
      */
     var ResMgr = /** @class */ (function () {
         function ResMgr() {
-            this.prefabMap = new zz.Dictionary();
-            this.spriteMap = new zz.Dictionary();
+            /**资源字典;[目录路径,[目录名,资源名]] */
+            this.assetDict = new zz.Dictionary();
         }
         /**
-         * 批量读取目录内资源
+         * 批量读取目录内资源,并缓存
          * @param bundleName 资源包名
-         * @param dirName 资源目录名
-         * @param type 资源类型
+         * @param dirName 资源目录,可以多层,'/'分割
          * @param assetDict 各类型对应存储
          */
-        ResMgr.prototype.loadResDict = function (bundleName, dirName, type, assetDict) {
+        ResMgr.prototype.loadResDict = function (bundleName, dirName) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_1, asset_1, key, subDict_1, err_1_1;
                 return __generator(this, function (_a) {
@@ -4483,49 +4482,91 @@ var zz;
                         case 1:
                             bundle_1 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_1.loadDir(dirName, type, function (err, res) {
+                                    bundle_1.loadDir(dirName, function (err, res) {
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
                         case 2:
                             asset_1 = _a.sent();
                             key = bundleName + '/' + dirName;
-                            if (!assetDict.containsKey(key)) {
-                                assetDict.setValue(key, new zz.Dictionary());
+                            if (!this.assetDict.containsKey(key)) {
+                                this.assetDict.setValue(key, new zz.Dictionary());
                             }
-                            subDict_1 = assetDict.getValue(key);
+                            subDict_1 = this.assetDict.getValue(key);
                             asset_1.forEach(function (v) {
                                 subDict_1.setValue(v.name, v);
                             });
-                            return [3 /*break*/, 4];
+                            return [2 /*return*/, asset_1];
                         case 3:
                             err_1_1 = _a.sent();
-                            zz.error('[loadResDict] error:' + err_1_1);
+                            zz.error('[Res] loadResDict error:' + err_1_1);
                             return [3 /*break*/, 4];
                         case 4: return [2 /*return*/];
                     }
                 });
             });
         };
-        ResMgr.prototype.loadPrefabs = function (bundleName, dirName) {
-            this.loadResDict(bundleName, dirName, cc.Prefab, this.prefabMap);
+        /**
+         * 读取资源,并缓存
+         * @param bundleName 资源名
+         * @param dirName 路径
+         * @param assetName 资源名
+         */
+        ResMgr.prototype.loadRes = function (bundleName, dirName, assetName) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_2, asset_1, key, subDict, e_1;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 3, , 4]);
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 1:
+                            bundle_2 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolve, reject) {
+                                    bundle_2.load(dirName + '/' + assetName, function (err, res) {
+                                        err ? reject(err) : resolve(res);
+                                    });
+                                })];
+                        case 2:
+                            asset_1 = _a.sent();
+                            key = bundleName + '/' + dirName;
+                            if (!this.assetDict.containsKey(key)) {
+                                this.assetDict.setValue(key, new zz.Dictionary());
+                            }
+                            subDict = this.assetDict.getValue(key);
+                            subDict.setValue(asset_1.name, asset_1);
+                            return [2 /*return*/, asset_1];
+                        case 3:
+                            e_1 = _a.sent();
+                            zz.error('[Res] loadRes error:' + e_1);
+                            return [3 /*break*/, 4];
+                        case 4: return [2 /*return*/];
+                    }
+                });
+            });
         };
-        ResMgr.prototype.loadSprites = function (bundleName, dirName) {
-            this.loadResDict(bundleName, dirName, cc.SpriteFrame, this.spriteMap);
-        };
-        ResMgr.prototype.getPrefab = function (bundleName, dirName, name) {
+        /**
+         * 获取资源；
+         * @param bundleName 资源包名
+         * @param dirName 目录
+         * @param name 资源名称
+         * @param type 类型
+         * @returns 返回缓存的资源；如果未缓存，或者传入类型错误，则返回undefined
+         */
+        ResMgr.prototype.getRes = function (bundleName, dirName, name, type) {
             var key = bundleName + '/' + dirName;
-            if (!this.prefabMap.containsKey(key)) {
+            if (!this.assetDict.containsKey(key)) {
+                zz.error('[Res] not contained!');
                 return undefined;
             }
-            return this.prefabMap.getValue(key).getValue(name);
-        };
-        ResMgr.prototype.getSpriteframe = function (bundleName, dirName, name) {
-            var key = bundleName + '/' + dirName;
-            if (!this.spriteMap.containsKey(key)) {
+            var asset = this.assetDict.getValue(key).getValue(name);
+            if (asset instanceof type) {
+                return asset;
+            }
+            else {
+                zz.error('[Res] asset concontained, but type error!');
                 return undefined;
             }
-            return this.spriteMap.getValue(key).getValue(name);
         };
         return ResMgr;
     }());
@@ -4578,7 +4619,7 @@ var zz;
          */
         SceneMgr.prototype.loadScene = function (sceneName, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var node, bundle_2, prefab_1, node, e_1;
+                var node, bundle_3, prefab_1, node, e_2;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4604,9 +4645,9 @@ var zz;
                             _a.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_2 = _a.sent();
+                            bundle_3 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    bundle_2.load(sceneName, function (err, prefab) {
+                                    bundle_3.load(sceneName, function (err, prefab) {
                                         err ? reject(err) : resolve(prefab);
                                     });
                                 })];
@@ -4622,8 +4663,8 @@ var zz;
                             }
                             return [3 /*break*/, 6];
                         case 5:
-                            e_1 = _a.sent();
-                            throw new Error(e_1);
+                            e_2 = _a.sent();
+                            throw new Error(e_2);
                         case 6: return [2 /*return*/];
                     }
                 });
@@ -4639,7 +4680,7 @@ var zz;
         /**预载场景节点 */
         SceneMgr.prototype.preloadScene = function (sceneName, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_3, prefab_1, node, e_2;
+                var bundle_4, prefab_1, node, e_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -4657,9 +4698,9 @@ var zz;
                             _a.trys.push([1, 5, , 6]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_3 = _a.sent();
+                            bundle_4 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolve, reject) {
-                                    bundle_3.load(sceneName, function (err, prefab) {
+                                    bundle_4.load(sceneName, function (err, prefab) {
                                         err ? reject(err) : resolve(prefab);
                                     });
                                 })];
@@ -4680,8 +4721,8 @@ var zz;
                             }
                             return [3 /*break*/, 6];
                         case 5:
-                            e_2 = _a.sent();
-                            throw new Error(e_2);
+                            e_3 = _a.sent();
+                            throw new Error(e_3);
                         case 6: return [2 /*return*/];
                     }
                 });
@@ -5081,7 +5122,7 @@ var zz;
         }
         TableMgr.prototype.loadConfig = function (tableType, bundleName) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_4, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
+                var bundle_5, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5093,9 +5134,9 @@ var zz;
                             _a.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_4 = _a.sent();
+                            bundle_5 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_4.load(tableType, function (err, jsonAsset) {
+                                    bundle_5.load(tableType, function (err, jsonAsset) {
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
@@ -5108,7 +5149,7 @@ var zz;
                                 tableMap.set(obj.id, obj);
                             }
                             this.allTables.set(tableType, tableMap);
-                            bundle_4.release(tableType);
+                            bundle_5.release(tableType);
                             return [3 /*break*/, 5];
                         case 4:
                             err_1_2 = _a.sent();
@@ -5210,8 +5251,6 @@ var zz;
             this.loadingFlagMap = new Map();
             /**打开中标记; */
             this.openingMap = new Map();
-            this.attachMapClient = new Map();
-            this.attachMapHost = new Map();
             this.topZIndex = 0;
         }
         Object.defineProperty(UIMgr.prototype, "uiRoot", {
@@ -5245,7 +5284,7 @@ var zz;
         };
         UIMgr.prototype.openUI = function (uiArgs) {
             return __awaiter(this, void 0, void 0, function () {
-                var uiName, ui_1, uiNd, bundle_5, prefab_1, uiNode, ui_2, err_1_3;
+                var uiName, ui_1, uiNd, bundle_6, prefab_1, uiNode, ui_2, err_1_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5279,9 +5318,9 @@ var zz;
                             }
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_5 = _a.sent();
+                            bundle_6 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_5.load(uiName, function (completedCount, totalCount, item) {
+                                    bundle_6.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
                                             if (uiArgs.progressArgs.showProgressUI) {
                                                 zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
@@ -5367,25 +5406,19 @@ var zz;
         };
         /**从场景中移除UI; 保留本地缓存; */
         UIMgr.prototype.closeUI = function (uiName) {
-            var _this = this;
             if (this.uiMap.has(uiName)) {
                 this.hideUI(uiName);
                 var ui_3 = this.uiMap.get(uiName);
                 ui_3.node.parent = null;
                 ui_3.onHide();
                 ui_3.onClose();
-                if (this.attachMapHost.has(uiName)) {
-                    this.attachMapHost.get(uiName).forEach(function (v, k) {
-                        _this.closeUI(k);
-                    });
-                }
                 return true;
             }
             return false;
         };
         UIMgr.prototype.preloadUI = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_6, prefab_1, uiNode, ui_4, args, err_1_4;
+                var bundle_7, prefab_1, uiNode, ui_4, args, err_1_4;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5403,9 +5436,9 @@ var zz;
                             _a.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_6 = _a.sent();
+                            bundle_7 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_6.load(uiName, function (err, prefab) {
+                                    bundle_7.load(uiName, function (err, prefab) {
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
@@ -5470,7 +5503,6 @@ var zz;
             }
         };
         UIMgr.prototype.hideUI = function (uiName) {
-            var _this = this;
             if (this.uiMap.has(uiName)) {
                 var ui_6 = this.uiMap.get(uiName);
                 var nd = ui_6.node;
@@ -5478,11 +5510,6 @@ var zz;
                     nd.position = cc.v3(farPos);
                     nd.opacity = 0;
                     ui_6.onHide();
-                    if (this.attachMapHost.has(uiName)) {
-                        this.attachMapHost.get(uiName).forEach(function (v, k) {
-                            _this.hideUI(k);
-                        });
-                    }
                     return true;
                 }
                 else {
@@ -5509,26 +5536,6 @@ var zz;
         UIMgr.prototype.reloadUI = function (uiName) {
             this.destroyUI(uiName, false);
             this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
-        };
-        /**设置UI之间依附关系; 宿主UI关闭或隐藏时,同时关闭或隐藏附庸UI */
-        UIMgr.prototype.setUIAttachment = function (hostUI, clientUI) {
-            if (!this.attachMapClient.has(clientUI)) {
-                this.attachMapClient.set(clientUI, new Map());
-            }
-            if (!this.attachMapHost.has(hostUI)) {
-                this.attachMapHost.set(hostUI, new Map());
-            }
-            this.attachMapHost.get(hostUI).set(clientUI, true);
-            this.attachMapClient.get(clientUI).set(hostUI, true);
-        };
-        /**移除UI之间的依附关系 */
-        UIMgr.prototype.removeUIAttachment = function (hostUI, clientUI) {
-            if (this.attachMapClient.has(clientUI)) {
-                this.attachMapClient.get(clientUI).delete(hostUI);
-            }
-            if (this.attachMapHost.has(hostUI)) {
-                this.attachMapHost.get(hostUI).delete(clientUI);
-            }
         };
         UIMgr.prototype.releaseUI = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {

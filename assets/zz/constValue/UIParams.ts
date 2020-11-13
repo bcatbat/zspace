@@ -1,8 +1,8 @@
 export enum UIEnum {
-  UITestNormal = 'UITestNormal',
-  UITestExtern = 'UITestExtern',
+	UITestNormal = 'UITestNormal',
+	UITestSub = 'UITestSub',
 }
 export const uiParams = [
-  // { uiName: UIEnum.UIRedOffProp, zIndex: 14, path: 'sub_red' },
-  { uiName: UIEnum.UITestNormal, zIndex: 0, path: 'ui' },
+	{ uiName: UIEnum.UITestNormal, zIndex: 0, path: 'ui' },
+	{ uiName: UIEnum.UITestSub, zIndex: 1, path: 'ui' },
 ];
