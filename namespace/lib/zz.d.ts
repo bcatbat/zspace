@@ -1822,7 +1822,7 @@ declare namespace zz {
          * @param dirName 资源目录,可以多层,'/'分割
          * @param assetDict 各类型对应存储
          */
-        loadResDict(bundleName: string, dirName: string): Promise<cc.Asset[]>;
+        loadResDict(bundleName: string, dirName: string, showLoading?: boolean): Promise<cc.Asset[]>;
         /**
          * 读取资源,并缓存
          * @param bundleName 资源名
@@ -1995,9 +1995,14 @@ declare namespace zz {
     class TableMgr {
         private allTables;
         constructor();
+        /**加载指定bundle中指定名称的json */
         loadConfig<T extends {
-            id: string;
-        }>(tableType: string, bundleName: string): Promise<void>;
+            id: string | number;
+        }>(tableType: string, bundleName: string, showLoading?: boolean): Promise<void>;
+        /**加载指定bundle中全部json */
+        loadConfigs<T extends {
+            id: string | number;
+        }>(bundleName: string, showLoading?: boolean): Promise<void>;
         /**
          * TableComponent：获取表所有数据
          * @param tableType 数据表类型名称
@@ -2097,7 +2102,7 @@ declare namespace zz {
         private getUIBundle;
         /**从场景中移除UI; 保留本地缓存; */
         closeUI(uiName: string): boolean;
-        preloadUI(uiName: string): Promise<cc.Node>;
+        preloadUI(uiName: string, showLoading?: boolean): Promise<cc.Node>;
         /**关闭ui; 移除本地缓存; */
         destroyUI(uiName: string, resRelease: boolean): void;
         showUI(uiName: string): boolean;

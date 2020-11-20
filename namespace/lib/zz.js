@@ -4471,18 +4471,22 @@ var zz;
          * @param dirName 资源目录,可以多层,'/'分割
          * @param assetDict 各类型对应存储
          */
-        ResMgr.prototype.loadResDict = function (bundleName, dirName) {
+        ResMgr.prototype.loadResDict = function (bundleName, dirName, showLoading) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_1, asset_1, key, subDict_1, err_1_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 3, , 4]);
+                            zz.loadingPage(showLoading, 0, '加载资源');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
                             bundle_1 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_1.loadDir(dirName, function (err, res) {
+                                    bundle_1.loadDir(dirName, function (finish, total) {
+                                        zz.loadingPage(showLoading, finish / total, '加载资源');
+                                    }, function (err, res) {
+                                        zz.loadingPage(false, 0, '');
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
@@ -5120,7 +5124,8 @@ var zz;
             this.allTables = null;
             this.allTables = new Map();
         }
-        TableMgr.prototype.loadConfig = function (tableType, bundleName) {
+        /**加载指定bundle中指定名称的json */
+        TableMgr.prototype.loadConfig = function (tableType, bundleName, showLoading) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_5, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
                 return __generator(this, function (_a) {
@@ -5132,11 +5137,14 @@ var zz;
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, , 5]);
+                            zz.loadingPage(showLoading, 0, '加载配置表格');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
                             bundle_5 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_5.load(tableType, function (err, jsonAsset) {
+                                    bundle_5.load(tableType, function (finish, total) {
+                                        zz.loadingPage(showLoading, finish / total, '加载资源');
+                                    }, function (err, jsonAsset) {
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
@@ -5156,6 +5164,48 @@ var zz;
                             zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_2);
                             return [3 /*break*/, 5];
                         case 5: return [2 /*return*/];
+                    }
+                });
+            });
+        };
+        /**加载指定bundle中全部json */
+        TableMgr.prototype.loadConfigs = function (bundleName, showLoading) {
+            return __awaiter(this, void 0, void 0, function () {
+                var bundle_6, jsons_1, e_4;
+                var _this = this;
+                return __generator(this, function (_a) {
+                    switch (_a.label) {
+                        case 0:
+                            _a.trys.push([0, 3, , 4]);
+                            zz.loadingPage(showLoading, 0, '加载配置表格');
+                            return [4 /*yield*/, zz.utils.getBundle(bundleName)];
+                        case 1:
+                            bundle_6 = _a.sent();
+                            return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
+                                    bundle_6.loadDir('', cc.JsonAsset, function (finish, total) {
+                                        zz.loadingPage(showLoading, finish / total, '加载配置表格');
+                                    }, function (err, assets) {
+                                        zz.loadingPage(false, 0, '');
+                                        err ? rejectFn(err) : resolveFn(assets);
+                                    });
+                                })];
+                        case 2:
+                            jsons_1 = _a.sent();
+                            jsons_1.forEach(function (jsonAsset) {
+                                var jsonObj = jsonAsset.json;
+                                var tableMap = new Map();
+                                for (var k in jsonObj) {
+                                    var obj = JSON.parse(JSON.stringify(jsonObj[k]));
+                                    tableMap.set(obj.id, obj);
+                                }
+                                _this.allTables.set(jsonAsset.name, tableMap);
+                            });
+                            bundle_6.releaseAll();
+                            return [3 /*break*/, 4];
+                        case 3:
+                            e_4 = _a.sent();
+                            throw new Error(e_4);
+                        case 4: return [2 /*return*/];
                     }
                 });
             });
@@ -5284,7 +5334,7 @@ var zz;
         };
         UIMgr.prototype.openUI = function (uiArgs) {
             return __awaiter(this, void 0, void 0, function () {
-                var uiName, ui_1, uiNd, bundle_6, prefab_1, uiNode, ui_2, err_1_3;
+                var uiName, ui_1, uiNd, bundle_7, prefab_1, uiNode, ui_2, err_1_3;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5318,9 +5368,9 @@ var zz;
                             }
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_6 = _a.sent();
+                            bundle_7 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_6.load(uiName, function (completedCount, totalCount, item) {
+                                    bundle_7.load(uiName, function (completedCount, totalCount, item) {
                                         if (uiArgs.progressArgs) {
                                             if (uiArgs.progressArgs.showProgressUI) {
                                                 zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
@@ -5416,9 +5466,9 @@ var zz;
             }
             return false;
         };
-        UIMgr.prototype.preloadUI = function (uiName) {
+        UIMgr.prototype.preloadUI = function (uiName, showLoading) {
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_7, prefab_1, uiNode, ui_4, args, err_1_4;
+                var bundle_8, prefab_1, uiNode, ui_4, args, err_1_4;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
@@ -5431,14 +5481,18 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
+                            zz.loadingPage(showLoading, 0, '');
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_7 = _a.sent();
+                            bundle_8 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
-                                    bundle_7.load(uiName, function (err, prefab) {
+                                    bundle_8.load(uiName, function (finish, total) {
+                                        zz.loadingPage(showLoading, finish / total, '');
+                                    }, function (err, prefab) {
+                                        zz.loadingPage(false, 0, '');
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];

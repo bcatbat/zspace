@@ -1,5 +1,3 @@
-import { ConstText } from '../zz/constValue/ConstText';
-import { EventType } from '../zz/constValue/EventType';
 import { UIEnum } from '../zz/constValue/UIParams';
 
 const { ccclass, property } = cc._decorator;

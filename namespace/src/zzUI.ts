@@ -204,7 +204,7 @@ namespace zz {
 			}
 			return false;
 		}
-		async preloadUI(uiName: string) {
+		async preloadUI(uiName: string, showLoading?: boolean) {
 			if (this.uiMap.has(uiName)) {
 				warn('[preloadUI] 已经加载ui:' + uiName);
 				return undefined;
@@ -215,12 +215,20 @@ namespace zz {
 			}
 
 			this.loadingFlagMap.set(uiName, true);
+			loadingPage(showLoading, 0, '');
 			try {
 				const bundle = await this.getUIBundle(uiName);
 				const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
-					bundle.load(uiName, (err, prefab: cc.Prefab) => {
-						err ? rejectFn(err) : resolveFn(prefab);
-					});
+					bundle.load(
+						uiName,
+						(finish: number, total: number) => {
+							loadingPage(showLoading, finish / total, '');
+						},
+						(err, prefab: cc.Prefab) => {
+							loadingPage(false, 0, '');
+							err ? rejectFn(err) : resolveFn(prefab);
+						}
+					);
 				});
 				this.loadingFlagMap.delete(uiName);
 				let uiNode: cc.Node = cc.instantiate(prefab_1) as cc.Node;
