@@ -4471,22 +4471,22 @@ var zz;
          * @param dirName 资源目录,可以多层,'/'分割
          * @param assetDict 各类型对应存储
          */
-        ResMgr.prototype.loadResDict = function (bundleName, dirName, showLoading) {
+        ResMgr.prototype.loadResDict = function (bundleName, dirName, option) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_1, asset_1, key, subDict_1, err_1_1;
                 return __generator(this, function (_a) {
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 3, , 4]);
-                            zz.loadingPage(showLoading, 0, '加载资源');
+                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载资源');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
                             bundle_1 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_1.loadDir(dirName, function (finish, total) {
-                                        zz.loadingPage(showLoading, finish / total, '加载资源');
+                                        option && option.showLoading && zz.loadingPage(true, finish / total, '加载资源');
                                     }, function (err, res) {
-                                        zz.loadingPage(false, 0, '');
+                                        option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
@@ -5125,7 +5125,7 @@ var zz;
             this.allTables = new Map();
         }
         /**加载指定bundle中指定名称的json */
-        TableMgr.prototype.loadConfig = function (tableType, bundleName, showLoading) {
+        TableMgr.prototype.loadConfig = function (tableType, bundleName, option) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_5, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
                 return __generator(this, function (_a) {
@@ -5137,14 +5137,15 @@ var zz;
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, , 5]);
-                            zz.loadingPage(showLoading, 0, '加载配置表格');
+                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载配置表格');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
                             bundle_5 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_5.load(tableType, function (finish, total) {
-                                        zz.loadingPage(showLoading, finish / total, '加载资源');
+                                        option && option.showLoading && zz.loadingPage(option.showLoading, finish / total, '加载资源');
                                     }, function (err, jsonAsset) {
+                                        option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
@@ -5169,7 +5170,7 @@ var zz;
             });
         };
         /**加载指定bundle中全部json */
-        TableMgr.prototype.loadConfigs = function (bundleName, showLoading) {
+        TableMgr.prototype.loadConfigs = function (bundleName, option) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_6, jsons_1, e_4;
                 var _this = this;
@@ -5177,15 +5178,15 @@ var zz;
                     switch (_a.label) {
                         case 0:
                             _a.trys.push([0, 3, , 4]);
-                            zz.loadingPage(showLoading, 0, '加载配置表格');
+                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载配置表格');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
                             bundle_6 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_6.loadDir('', cc.JsonAsset, function (finish, total) {
-                                        zz.loadingPage(showLoading, finish / total, '加载配置表格');
+                                        option && option.showLoading && zz.loadingPage(true, finish / total, '加载配置表格');
                                     }, function (err, assets) {
-                                        zz.loadingPage(false, 0, '');
+                                        option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(assets);
                                     });
                                 })];
@@ -5354,35 +5355,28 @@ var zz;
                             if (this.loadingFlagMap.get(uiName)) {
                                 zz.warn('[openUI] 正在加载' + uiName);
                                 this.openingMap.set(uiName, uiArgs);
-                                zz.loadingPage(true, Math.random(), '');
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 5, , 6]);
-                            if (uiArgs.progressArgs) {
-                                if (uiArgs.progressArgs.showProgressUI) {
-                                    zz.loadingPage(true, 0, uiArgs.progressArgs.desTxt);
-                                }
-                            }
+                            uiArgs.progressArgs && uiArgs.progressArgs.showProgressUI && zz.loadingPage(true, 0, uiArgs.progressArgs.desTxt);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
                             bundle_7 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_7.load(uiName, function (completedCount, totalCount, item) {
-                                        if (uiArgs.progressArgs) {
-                                            if (uiArgs.progressArgs.showProgressUI) {
-                                                zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
-                                            }
-                                        }
+                                        uiArgs.progressArgs &&
+                                            uiArgs.progressArgs.showProgressUI &&
+                                            zz.loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
                                     }, function (err, prefab) {
+                                        uiArgs.progressArgs && uiArgs.progressArgs.closeLoadingOnFinish && zz.loadingPage(false, 100, uiArgs.progressArgs.desTxt);
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
                         case 3:
                             prefab_1 = _a.sent();
-                            zz.loadingPage(false, 0, '');
                             this.loadingFlagMap.delete(uiName);
                             return [4 /*yield*/, zz.utils.instantiatePrefab(prefab_1)];
                         case 4:
@@ -5466,7 +5460,7 @@ var zz;
             }
             return false;
         };
-        UIMgr.prototype.preloadUI = function (uiName, showLoading) {
+        UIMgr.prototype.preloadUI = function (uiName, option) {
             return __awaiter(this, void 0, void 0, function () {
                 var bundle_8, prefab_1, uiNode, ui_4, args, err_1_4;
                 return __generator(this, function (_a) {
@@ -5481,7 +5475,7 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            zz.loadingPage(showLoading, 0, '');
+                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '');
                             _a.label = 1;
                         case 1:
                             _a.trys.push([1, 4, , 5]);
@@ -5490,9 +5484,9 @@ var zz;
                             bundle_8 = _a.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_8.load(uiName, function (finish, total) {
-                                        zz.loadingPage(showLoading, finish / total, '');
+                                        option && option.showLoading && zz.loadingPage(option.showLoading, finish / total, '');
                                     }, function (err, prefab) {
-                                        zz.loadingPage(false, 0, '');
+                                        option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
@@ -5506,7 +5500,6 @@ var zz;
                                 args = this.openingMap.get(uiName);
                                 this.openingMap.delete(uiName);
                                 zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-                                zz.loadingPage(false, 0, '');
                                 this.openUINode(uiNode, args);
                                 this.openUIClass(ui_4, args);
                             }

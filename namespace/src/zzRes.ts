@@ -15,18 +15,25 @@ namespace zz {
 		 * @param dirName 资源目录,可以多层,'/'分割
 		 * @param assetDict 各类型对应存储
 		 */
-		async loadResDict(bundleName: string, dirName: string, showLoading?: boolean) {
+		async loadResDict(
+			bundleName: string,
+			dirName: string,
+			option?: {
+				showLoading?: boolean;
+				closeLoadingOnFinish?: boolean;
+			}
+		) {
 			try {
-				loadingPage(showLoading, 0, '加载资源');
+				option && option.showLoading && loadingPage(option.showLoading, 0, '加载资源');
 				let bundle = await utils.getBundle(bundleName);
 				const asset_1: cc.Asset[] = await new Promise((resolveFn, rejectFn) => {
 					bundle.loadDir(
 						dirName,
 						(finish: number, total: number) => {
-							loadingPage(showLoading, finish / total, '加载资源');
+							option && option.showLoading && loadingPage(true, finish / total, '加载资源');
 						},
 						(err, res: cc.Asset[]) => {
-							loadingPage(false, 0, '');
+							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
 							err ? rejectFn(err) : resolveFn(res);
 						}
 					);

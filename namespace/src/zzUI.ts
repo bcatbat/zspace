@@ -20,6 +20,8 @@ namespace zz {
 	interface UIProgressArgs {
 		/**是否显示进度条 */
 		showProgressUI: boolean;
+		/**加载完成时是否关闭加载页 */
+		closeLoadingOnFinish?: boolean;
 		/**描述文字 */
 		desTxt?: string;
 	}
@@ -116,35 +118,29 @@ namespace zz {
 			if (this.loadingFlagMap.get(uiName)) {
 				warn('[openUI] 正在加载' + uiName);
 				this.openingMap.set(uiName, uiArgs);
-				loadingPage(true, Math.random(), '');
 				return undefined;
 			}
 
 			this.loadingFlagMap.set(uiName, true);
 
 			try {
-				if (uiArgs.progressArgs) {
-					if (uiArgs.progressArgs.showProgressUI) {
-						loadingPage(true, 0, uiArgs.progressArgs.desTxt);
-					}
-				}
+				uiArgs.progressArgs && uiArgs.progressArgs.showProgressUI && loadingPage(true, 0, uiArgs.progressArgs.desTxt);
+
 				const bundle = await this.getUIBundle(uiName);
 				const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
 					bundle.load(
 						uiName,
 						(completedCount: number, totalCount: number, item: any) => {
-							if (uiArgs.progressArgs) {
-								if (uiArgs.progressArgs.showProgressUI) {
-									loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
-								}
-							}
+							uiArgs.progressArgs &&
+								uiArgs.progressArgs.showProgressUI &&
+								loadingPage(true, completedCount / totalCount, uiArgs.progressArgs.desTxt);
 						},
 						(err, prefab: cc.Prefab) => {
+							uiArgs.progressArgs && uiArgs.progressArgs.closeLoadingOnFinish && loadingPage(false, 100, uiArgs.progressArgs.desTxt);
 							err ? rejectFn(err) : resolveFn(prefab);
 						}
 					);
 				});
-				loadingPage(false, 0, '');
 				this.loadingFlagMap.delete(uiName);
 				let uiNode: cc.Node = await utils.instantiatePrefab(prefab_1);
 				uiNode.parent = this.uiRoot;
@@ -204,7 +200,13 @@ namespace zz {
 			}
 			return false;
 		}
-		async preloadUI(uiName: string, showLoading?: boolean) {
+		async preloadUI(
+			uiName: string,
+			option?: {
+				showLoading?: boolean;
+				closeLoadingOnFinish?: boolean;
+			}
+		) {
 			if (this.uiMap.has(uiName)) {
 				warn('[preloadUI] 已经加载ui:' + uiName);
 				return undefined;
@@ -215,17 +217,17 @@ namespace zz {
 			}
 
 			this.loadingFlagMap.set(uiName, true);
-			loadingPage(showLoading, 0, '');
+			option && option.showLoading && loadingPage(option.showLoading, 0, '');
 			try {
 				const bundle = await this.getUIBundle(uiName);
 				const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
 					bundle.load(
 						uiName,
 						(finish: number, total: number) => {
-							loadingPage(showLoading, finish / total, '');
+							option && option.showLoading && loadingPage(option.showLoading, finish / total, '');
 						},
 						(err, prefab: cc.Prefab) => {
-							loadingPage(false, 0, '');
+							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
 							err ? rejectFn(err) : resolveFn(prefab);
 						}
 					);
@@ -238,7 +240,6 @@ namespace zz {
 					let args = this.openingMap.get(uiName);
 					this.openingMap.delete(uiName);
 					warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
-					loadingPage(false, 0, '');
 					this.openUINode(uiNode, args);
 					this.openUIClass(ui, args);
 				}

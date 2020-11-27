@@ -11,20 +11,28 @@ namespace zz {
 			this.allTables = new Map<string, Map<number, { id: string | number }>>();
 		}
 		/**加载指定bundle中指定名称的json */
-		public async loadConfig<T extends { id: string | number }>(tableType: string, bundleName: string, showLoading?: boolean) {
+		public async loadConfig<T extends { id: string | number }>(
+			tableType: string,
+			bundleName: string,
+			option?: {
+				showLoading?: boolean;
+				closeLoadingOnFinish?: boolean;
+			}
+		) {
 			if (this.allTables.has(tableType)) {
 				this.allTables.set(tableType, new Map<string | number, T>());
 			}
 			try {
-				loadingPage(showLoading, 0, '加载配置表格');
+				option && option.showLoading && loadingPage(option.showLoading, 0, '加载配置表格');
 				let bundle = await utils.getBundle(bundleName);
 				const jsonAsset_1 = await new Promise<cc.JsonAsset>((resolveFn, rejectFn) => {
 					bundle.load(
 						tableType,
 						(finish: number, total: number) => {
-							loadingPage(showLoading, finish / total, '加载资源');
+							option && option.showLoading && loadingPage(option.showLoading, finish / total, '加载资源');
 						},
 						(err, jsonAsset: cc.JsonAsset) => {
+							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
 							err ? rejectFn(err) : resolveFn(jsonAsset);
 						}
 					);
@@ -42,19 +50,25 @@ namespace zz {
 			}
 		}
 		/**加载指定bundle中全部json */
-		public async loadConfigs<T extends { id: string | number }>(bundleName: string, showLoading?: boolean) {
+		public async loadConfigs<T extends { id: string | number }>(
+			bundleName: string,
+			option?: {
+				showLoading?: boolean;
+				closeLoadingOnFinish?: boolean;
+			}
+		) {
 			try {
-				loadingPage(showLoading, 0, '加载配置表格');
+				option && option.showLoading && loadingPage(option.showLoading, 0, '加载配置表格');
 				let bundle = await utils.getBundle(bundleName);
 				let jsons_1 = await new Promise<cc.JsonAsset[]>((resolveFn, rejectFn) => {
 					bundle.loadDir(
 						'',
 						cc.JsonAsset,
 						(finish: number, total: number) => {
-							loadingPage(showLoading, finish / total, '加载配置表格');
+							option && option.showLoading && loadingPage(true, finish / total, '加载配置表格');
 						},
 						(err, assets: cc.JsonAsset[]) => {
-							loadingPage(false, 0, '');
+							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
 							err ? rejectFn(err) : resolveFn(assets);
 						}
 					);
