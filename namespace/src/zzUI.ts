@@ -21,7 +21,7 @@ namespace zz {
 		/**是否显示进度条 */
 		showProgressUI: boolean;
 		/**加载完成时是否关闭加载页 */
-		closeLoadingOnFinish?: boolean;
+		closeLoadingOnFinish: boolean;
 		/**描述文字 */
 		desTxt?: string;
 	}
@@ -203,7 +203,9 @@ namespace zz {
 		async preloadUI(
 			uiName: string,
 			option?: {
+				/**是否开启读条页;默认在读条后不关闭 */
 				showLoading?: boolean;
+				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
 			}
 		) {
@@ -312,7 +314,7 @@ namespace zz {
 		}
 		reloadUI(uiName: string) {
 			this.destroyUI(uiName, false);
-			this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
+			this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true, closeLoadingOnFinish: true } });
 		}
 		async releaseUI(uiName: string) {
 			try {

@@ -1823,7 +1823,9 @@ declare namespace zz {
          * @param assetDict 各类型对应存储
          */
         loadResDict(bundleName: string, dirName: string, option?: {
+            /**是否开启读条页;默认在读条后不关闭 */
             showLoading?: boolean;
+            /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
         }): Promise<cc.Asset[]>;
         /**
@@ -2002,14 +2004,18 @@ declare namespace zz {
         loadConfig<T extends {
             id: string | number;
         }>(tableType: string, bundleName: string, option?: {
+            /**是否开启读条页;默认在读条后不关闭 */
             showLoading?: boolean;
+            /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
         }): Promise<void>;
         /**加载指定bundle中全部json */
         loadConfigs<T extends {
             id: string | number;
         }>(bundleName: string, option?: {
+            /**是否开启读条页;默认在读条后不关闭 */
             showLoading?: boolean;
+            /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
         }): Promise<void>;
         /**
@@ -2052,7 +2058,7 @@ declare namespace zz {
         /**是否显示进度条 */
         showProgressUI: boolean;
         /**加载完成时是否关闭加载页 */
-        closeLoadingOnFinish?: boolean;
+        closeLoadingOnFinish: boolean;
         /**描述文字 */
         desTxt?: string;
     }
@@ -2114,7 +2120,9 @@ declare namespace zz {
         /**从场景中移除UI; 保留本地缓存; */
         closeUI(uiName: string): boolean;
         preloadUI(uiName: string, option?: {
+            /**是否开启读条页;默认在读条后不关闭 */
             showLoading?: boolean;
+            /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
         }): Promise<cc.Node>;
         /**关闭ui; 移除本地缓存; */

@@ -19,7 +19,9 @@ namespace zz {
 			bundleName: string,
 			dirName: string,
 			option?: {
+				/**是否开启读条页;默认在读条后不关闭 */
 				showLoading?: boolean;
+				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
 			}
 		) {

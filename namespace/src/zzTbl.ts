@@ -15,7 +15,9 @@ namespace zz {
 			tableType: string,
 			bundleName: string,
 			option?: {
+				/**是否开启读条页;默认在读条后不关闭 */
 				showLoading?: boolean;
+				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
 			}
 		) {
@@ -53,7 +55,9 @@ namespace zz {
 		public async loadConfigs<T extends { id: string | number }>(
 			bundleName: string,
 			option?: {
+				/**是否开启读条页;默认在读条后不关闭 */
 				showLoading?: boolean;
+				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
 			}
 		) {

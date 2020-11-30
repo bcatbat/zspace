@@ -5582,7 +5582,7 @@ var zz;
         };
         UIMgr.prototype.reloadUI = function (uiName) {
             this.destroyUI(uiName, false);
-            this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true } });
+            this.openUI({ uiName: uiName, progressArgs: { showProgressUI: true, closeLoadingOnFinish: true } });
         };
         UIMgr.prototype.releaseUI = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {
