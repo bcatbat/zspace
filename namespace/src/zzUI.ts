@@ -109,6 +109,7 @@ namespace zz {
 				if (uiNd && uiNd.isValid) {
 					this.openUINode(uiNd, uiArgs);
 					this.openUIClass(ui, uiArgs);
+					uiArgs.progressArgs && uiArgs.progressArgs.closeLoadingOnFinish && loadingPage(false, 100, uiArgs.progressArgs.desTxt);
 					return undefined;
 				} else {
 					this.uiMap.delete(uiName);

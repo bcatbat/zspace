@@ -5346,6 +5346,7 @@ var zz;
                                 if (uiNd && uiNd.isValid) {
                                     this.openUINode(uiNd, uiArgs);
                                     this.openUIClass(ui_1, uiArgs);
+                                    uiArgs.progressArgs && uiArgs.progressArgs.closeLoadingOnFinish && zz.loadingPage(false, 100, uiArgs.progressArgs.desTxt);
                                     return [2 /*return*/, undefined];
                                 }
                                 else {
