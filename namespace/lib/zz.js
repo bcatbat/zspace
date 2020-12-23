@@ -1619,6 +1619,7 @@ var zz;
         RandomNodePool.prototype.returnBackToPool = function (node) {
             this.setActive(node, false);
             this.poolLeft.push(node);
+            //TODO 此处需要自动释放一些过多的资源
         };
         RandomNodePool.prototype.returnAllNode = function () {
             var _this = this;
@@ -5501,6 +5502,7 @@ var zz;
                                 args = this.openingMap.get(uiName);
                                 this.openingMap.delete(uiName);
                                 zz.warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
+                                zz.loadingPage(false, 0, '');
                                 this.openUINode(uiNode, args);
                                 this.openUIClass(ui_4, args);
                             }

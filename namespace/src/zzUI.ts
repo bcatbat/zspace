@@ -243,6 +243,7 @@ namespace zz {
 					let args = this.openingMap.get(uiName);
 					this.openingMap.delete(uiName);
 					warn('[Preload] 预载中打开了UI:' + uiName + '; 直接打开');
+					loadingPage(false, 0, '');
 					this.openUINode(uiNode, args);
 					this.openUIClass(ui, args);
 				}
