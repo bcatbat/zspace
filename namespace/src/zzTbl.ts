@@ -19,19 +19,27 @@ namespace zz {
 				showLoading?: boolean;
 				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
+				/**进度开始值 */
+				loadingDownLmt?: number;
+				/**进度结束值 */
+				loadingUpLmt?: number;
 			}
 		) {
+			let loadingLmtD = option?.loadingDownLmt ?? 0;
+			let loadingLmtU = option?.loadingUpLmt ?? 1;
 			if (this.allTables.has(tableType)) {
 				this.allTables.set(tableType, new Map<string | number, T>());
 			}
 			try {
-				option && option.showLoading && loadingPage(option.showLoading, 0, '加载配置表格');
+				option && option.showLoading && loadingPage(option.showLoading, loadingLmtD, '加载配置表格');
 				let bundle = await utils.getBundle(bundleName);
 				const jsonAsset_1 = await new Promise<cc.JsonAsset>((resolveFn, rejectFn) => {
 					bundle.load(
 						tableType,
 						(finish: number, total: number) => {
-							option && option.showLoading && loadingPage(option.showLoading, finish / total, '加载资源');
+							option &&
+								option.showLoading &&
+								loadingPage(option.showLoading, loadingLmtD + ((loadingLmtU - loadingLmtD) * finish) / total, '加载资源');
 						},
 						(err, jsonAsset: cc.JsonAsset) => {
 							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
@@ -59,17 +67,25 @@ namespace zz {
 				showLoading?: boolean;
 				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
+				/**进度开始值 */
+				loadingDownLmt?: number;
+				/**进度结束值 */
+				loadingUpLmt?: number;
 			}
 		) {
 			try {
-				option && option.showLoading && loadingPage(option.showLoading, 0, '加载配置表格');
+				let loadingLmtD = option?.loadingDownLmt ?? 0;
+				let loadingLmtU = option?.loadingUpLmt ?? 1;
+				option && option.showLoading && loadingPage(option.showLoading, loadingLmtD, '加载配置表格');
 				let bundle = await utils.getBundle(bundleName);
 				let jsons_1 = await new Promise<cc.JsonAsset[]>((resolveFn, rejectFn) => {
 					bundle.loadDir(
 						'',
 						cc.JsonAsset,
 						(finish: number, total: number) => {
-							option && option.showLoading && loadingPage(true, finish / total, '加载配置表格');
+							option &&
+								option.showLoading &&
+								loadingPage(true, loadingLmtD + ((loadingLmtU - loadingLmtD) * finish) / total, '加载配置表格');
 						},
 						(err, assets: cc.JsonAsset[]) => {
 							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');

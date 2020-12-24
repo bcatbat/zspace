@@ -845,23 +845,15 @@ var zz;
     }
     zz.tipMsg = tipMsg;
     /**读条页帮助函数 */
-    var loadingFn = function () {
-        var loadingPageParam = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            loadingPageParam[_i] = arguments[_i];
-        }
-        zz.warn('没有注入loadingPage方法', loadingPageParam);
+    var loadingFn = function (isShow, progress, des) {
+        zz.warn('没有注入loadingPage方法');
     };
     /**
      * 开关载入页;
      * @param parm 载入页参数
      */
-    function loadingPage() {
-        var parm = [];
-        for (var _i = 0; _i < arguments.length; _i++) {
-            parm[_i] = arguments[_i];
-        }
-        loadingFn.apply(void 0, parm);
+    function loadingPage(isShow, progress, des) {
+        loadingFn(isShow, progress, des);
     }
     zz.loadingPage = loadingPage;
     function setLoadingPageFn(func) {
@@ -4473,26 +4465,31 @@ var zz;
          * @param assetDict 各类型对应存储
          */
         ResMgr.prototype.loadResDict = function (bundleName, dirName, option) {
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_1, asset_1, key, subDict_1, err_1_1;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var loadingLmtD_1, loadingLmtU_1, bundle_1, asset_1, key, subDict_1, err_1_1;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
-                            _a.trys.push([0, 3, , 4]);
-                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载资源');
+                            _c.trys.push([0, 3, , 4]);
+                            loadingLmtD_1 = (_a = option === null || option === void 0 ? void 0 : option.loadingDownLmt) !== null && _a !== void 0 ? _a : 0;
+                            loadingLmtU_1 = (_b = option === null || option === void 0 ? void 0 : option.loadingUpLmt) !== null && _b !== void 0 ? _b : 1;
+                            option && option.showLoading && zz.loadingPage(true, loadingLmtD_1, '加载资源');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
-                            bundle_1 = _a.sent();
+                            bundle_1 = _c.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_1.loadDir(dirName, function (finish, total) {
-                                        option && option.showLoading && zz.loadingPage(true, finish / total, '加载资源');
+                                        option &&
+                                            option.showLoading &&
+                                            zz.loadingPage(true, loadingLmtD_1 + (finish / total) * (loadingLmtU_1 - loadingLmtD_1), '加载资源');
                                     }, function (err, res) {
                                         option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(res);
                                     });
                                 })];
                         case 2:
-                            asset_1 = _a.sent();
+                            asset_1 = _c.sent();
                             key = bundleName + '/' + dirName;
                             if (!this.assetDict.containsKey(key)) {
                                 this.assetDict.setValue(key, new zz.Dictionary());
@@ -4503,7 +4500,7 @@ var zz;
                             });
                             return [2 /*return*/, asset_1];
                         case 3:
-                            err_1_1 = _a.sent();
+                            err_1_1 = _c.sent();
                             zz.error('[Res] loadResDict error:' + err_1_1);
                             return [3 /*break*/, 4];
                         case 4: return [2 /*return*/];
@@ -5127,31 +5124,36 @@ var zz;
         }
         /**加载指定bundle中指定名称的json */
         TableMgr.prototype.loadConfig = function (tableType, bundleName, option) {
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_5, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var loadingLmtD, loadingLmtU, bundle_5, jsonAsset_1, jsonObj, tableMap, k, obj, err_1_2;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
+                            loadingLmtD = (_a = option === null || option === void 0 ? void 0 : option.loadingDownLmt) !== null && _a !== void 0 ? _a : 0;
+                            loadingLmtU = (_b = option === null || option === void 0 ? void 0 : option.loadingUpLmt) !== null && _b !== void 0 ? _b : 1;
                             if (this.allTables.has(tableType)) {
                                 this.allTables.set(tableType, new Map());
                             }
-                            _a.label = 1;
+                            _c.label = 1;
                         case 1:
-                            _a.trys.push([1, 4, , 5]);
-                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载配置表格');
+                            _c.trys.push([1, 4, , 5]);
+                            option && option.showLoading && zz.loadingPage(option.showLoading, loadingLmtD, '加载配置表格');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 2:
-                            bundle_5 = _a.sent();
+                            bundle_5 = _c.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_5.load(tableType, function (finish, total) {
-                                        option && option.showLoading && zz.loadingPage(option.showLoading, finish / total, '加载资源');
+                                        option &&
+                                            option.showLoading &&
+                                            zz.loadingPage(option.showLoading, loadingLmtD + ((loadingLmtU - loadingLmtD) * finish) / total, '加载资源');
                                     }, function (err, jsonAsset) {
                                         option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(jsonAsset);
                                     });
                                 })];
                         case 3:
-                            jsonAsset_1 = _a.sent();
+                            jsonAsset_1 = _c.sent();
                             jsonObj = jsonAsset_1.json;
                             tableMap = new Map();
                             for (k in jsonObj) {
@@ -5162,7 +5164,7 @@ var zz;
                             bundle_5.release(tableType);
                             return [3 /*break*/, 5];
                         case 4:
-                            err_1_2 = _a.sent();
+                            err_1_2 = _c.sent();
                             zz.error('[Table] loading error! table:' + tableType + '; err:' + err_1_2);
                             return [3 /*break*/, 5];
                         case 5: return [2 /*return*/];
@@ -5172,27 +5174,32 @@ var zz;
         };
         /**加载指定bundle中全部json */
         TableMgr.prototype.loadConfigs = function (bundleName, option) {
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_6, jsons_1, e_4;
+                var loadingLmtD_2, loadingLmtU_2, bundle_6, jsons_1, e_4;
                 var _this = this;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
-                            _a.trys.push([0, 3, , 4]);
-                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '加载配置表格');
+                            _c.trys.push([0, 3, , 4]);
+                            loadingLmtD_2 = (_a = option === null || option === void 0 ? void 0 : option.loadingDownLmt) !== null && _a !== void 0 ? _a : 0;
+                            loadingLmtU_2 = (_b = option === null || option === void 0 ? void 0 : option.loadingUpLmt) !== null && _b !== void 0 ? _b : 1;
+                            option && option.showLoading && zz.loadingPage(option.showLoading, loadingLmtD_2, '加载配置表格');
                             return [4 /*yield*/, zz.utils.getBundle(bundleName)];
                         case 1:
-                            bundle_6 = _a.sent();
+                            bundle_6 = _c.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_6.loadDir('', cc.JsonAsset, function (finish, total) {
-                                        option && option.showLoading && zz.loadingPage(true, finish / total, '加载配置表格');
+                                        option &&
+                                            option.showLoading &&
+                                            zz.loadingPage(true, loadingLmtD_2 + ((loadingLmtU_2 - loadingLmtD_2) * finish) / total, '加载配置表格');
                                     }, function (err, assets) {
                                         option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(assets);
                                     });
                                 })];
                         case 2:
-                            jsons_1 = _a.sent();
+                            jsons_1 = _c.sent();
                             jsons_1.forEach(function (jsonAsset) {
                                 var jsonObj = jsonAsset.json;
                                 var tableMap = new Map();
@@ -5205,7 +5212,7 @@ var zz;
                             bundle_6.releaseAll();
                             return [3 /*break*/, 4];
                         case 3:
-                            e_4 = _a.sent();
+                            e_4 = _c.sent();
                             throw new Error(e_4);
                         case 4: return [2 /*return*/];
                     }
@@ -5463,11 +5470,14 @@ var zz;
             return false;
         };
         UIMgr.prototype.preloadUI = function (uiName, option) {
+            var _a, _b;
             return __awaiter(this, void 0, void 0, function () {
-                var bundle_8, prefab_1, uiNode, ui_4, args, err_1_4;
-                return __generator(this, function (_a) {
-                    switch (_a.label) {
+                var loadingLmtD, loadingLmtU, bundle_8, prefab_1, uiNode, ui_4, args, err_1_4;
+                return __generator(this, function (_c) {
+                    switch (_c.label) {
                         case 0:
+                            loadingLmtD = (_a = option === null || option === void 0 ? void 0 : option.loadingDownLmt) !== null && _a !== void 0 ? _a : 0;
+                            loadingLmtU = (_b = option === null || option === void 0 ? void 0 : option.loadingUpLmt) !== null && _b !== void 0 ? _b : 1;
                             if (this.uiMap.has(uiName)) {
                                 zz.warn('[preloadUI] 已经加载ui:' + uiName);
                                 return [2 /*return*/, undefined];
@@ -5477,23 +5487,25 @@ var zz;
                                 return [2 /*return*/, undefined];
                             }
                             this.loadingFlagMap.set(uiName, true);
-                            option && option.showLoading && zz.loadingPage(option.showLoading, 0, '');
-                            _a.label = 1;
+                            option && option.showLoading && zz.loadingPage(option.showLoading, loadingLmtD, '');
+                            _c.label = 1;
                         case 1:
-                            _a.trys.push([1, 4, , 5]);
+                            _c.trys.push([1, 4, , 5]);
                             return [4 /*yield*/, this.getUIBundle(uiName)];
                         case 2:
-                            bundle_8 = _a.sent();
+                            bundle_8 = _c.sent();
                             return [4 /*yield*/, new Promise(function (resolveFn, rejectFn) {
                                     bundle_8.load(uiName, function (finish, total) {
-                                        option && option.showLoading && zz.loadingPage(option.showLoading, finish / total, '');
+                                        option &&
+                                            option.showLoading &&
+                                            zz.loadingPage(option.showLoading, loadingLmtD + ((loadingLmtU - loadingLmtD) * finish) / total, '');
                                     }, function (err, prefab) {
                                         option && option.closeLoadingOnFinish && zz.loadingPage(false, 100, '');
                                         err ? rejectFn(err) : resolveFn(prefab);
                                     });
                                 })];
                         case 3:
-                            prefab_1 = _a.sent();
+                            prefab_1 = _c.sent();
                             this.loadingFlagMap.delete(uiName);
                             uiNode = cc.instantiate(prefab_1);
                             ui_4 = uiNode.getComponent(uiName);
@@ -5508,7 +5520,7 @@ var zz;
                             }
                             return [2 /*return*/, uiNode];
                         case 4:
-                            err_1_4 = _a.sent();
+                            err_1_4 = _c.sent();
                             zz.error('[preloadUI] error:' + err_1_4);
                             return [2 /*return*/, undefined];
                         case 5: return [2 /*return*/];

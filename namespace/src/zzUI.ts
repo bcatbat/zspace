@@ -208,8 +208,14 @@ namespace zz {
 				showLoading?: boolean;
 				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
+				/**进度开始值 */
+				loadingDownLmt?: number;
+				/**进度结束值 */
+				loadingUpLmt?: number;
 			}
 		) {
+			let loadingLmtD = option?.loadingDownLmt ?? 0;
+			let loadingLmtU = option?.loadingUpLmt ?? 1;
 			if (this.uiMap.has(uiName)) {
 				warn('[preloadUI] 已经加载ui:' + uiName);
 				return undefined;
@@ -220,14 +226,16 @@ namespace zz {
 			}
 
 			this.loadingFlagMap.set(uiName, true);
-			option && option.showLoading && loadingPage(option.showLoading, 0, '');
+			option && option.showLoading && loadingPage(option.showLoading, loadingLmtD, '');
 			try {
 				const bundle = await this.getUIBundle(uiName);
 				const prefab_1 = await new Promise<cc.Prefab>((resolveFn, rejectFn) => {
 					bundle.load(
 						uiName,
 						(finish: number, total: number) => {
-							option && option.showLoading && loadingPage(option.showLoading, finish / total, '');
+							option &&
+								option.showLoading &&
+								loadingPage(option.showLoading, loadingLmtD + ((loadingLmtU - loadingLmtD) * finish) / total, '');
 						},
 						(err, prefab: cc.Prefab) => {
 							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');

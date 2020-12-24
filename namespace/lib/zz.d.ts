@@ -173,14 +173,18 @@ declare namespace zz {
      * @param msg 信息文字
      */
     function tipMsg(msg: string): void;
-    /**读条页面的参数; [是否展示,进度值,描述文字] */
-    type LoadingPageParam = [boolean, number, string];
+    /**读条页面的参数 */
+    type LoadingPageArgs = {
+        isShow: boolean;
+        progress: number;
+        des?: string;
+    };
     /**
      * 开关载入页;
      * @param parm 载入页参数
      */
-    function loadingPage(...parm: LoadingPageParam): void;
-    function setLoadingPageFn(func: (...param: LoadingPageParam) => void): void;
+    function loadingPage(isShow: boolean, progress: number, des?: string): void;
+    function setLoadingPageFn(func: (isShow: boolean, progress: number, des?: string) => void): void;
 }
 declare namespace zz.ts {
     /**
@@ -1823,8 +1827,12 @@ declare namespace zz {
          * @param assetDict 各类型对应存储
          */
         loadResDict(bundleName: string, dirName: string, option?: {
-            /**是否开启读条页;默认在读条后不关闭 */
+            /**读条参数*/
             showLoading?: boolean;
+            /**进度开始值 */
+            loadingDownLmt?: number;
+            /**进度结束值 */
+            loadingUpLmt?: number;
             /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
         }): Promise<cc.Asset[]>;
@@ -2008,6 +2016,10 @@ declare namespace zz {
             showLoading?: boolean;
             /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
+            /**进度开始值 */
+            loadingDownLmt?: number;
+            /**进度结束值 */
+            loadingUpLmt?: number;
         }): Promise<void>;
         /**加载指定bundle中全部json */
         loadConfigs<T extends {
@@ -2017,6 +2029,10 @@ declare namespace zz {
             showLoading?: boolean;
             /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
+            /**进度开始值 */
+            loadingDownLmt?: number;
+            /**进度结束值 */
+            loadingUpLmt?: number;
         }): Promise<void>;
         /**
          * TableComponent：获取表所有数据
@@ -2124,6 +2140,10 @@ declare namespace zz {
             showLoading?: boolean;
             /**是否在读条之后关闭读条页 */
             closeLoadingOnFinish?: boolean;
+            /**进度开始值 */
+            loadingDownLmt?: number;
+            /**进度结束值 */
+            loadingUpLmt?: number;
         }): Promise<cc.Node>;
         /**关闭ui; 移除本地缓存; */
         destroyUI(uiName: string, resRelease: boolean): void;

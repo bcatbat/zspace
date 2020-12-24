@@ -19,20 +19,28 @@ namespace zz {
 			bundleName: string,
 			dirName: string,
 			option?: {
-				/**是否开启读条页;默认在读条后不关闭 */
+				/**读条参数*/
 				showLoading?: boolean;
+				/**进度开始值 */
+				loadingDownLmt?: number;
+				/**进度结束值 */
+				loadingUpLmt?: number;
 				/**是否在读条之后关闭读条页 */
 				closeLoadingOnFinish?: boolean;
 			}
 		) {
 			try {
-				option && option.showLoading && loadingPage(option.showLoading, 0, '加载资源');
+				let loadingLmtD = option?.loadingDownLmt ?? 0;
+				let loadingLmtU = option?.loadingUpLmt ?? 1;
+				option && option.showLoading && loadingPage(true, loadingLmtD, '加载资源');
 				let bundle = await utils.getBundle(bundleName);
 				const asset_1: cc.Asset[] = await new Promise((resolveFn, rejectFn) => {
 					bundle.loadDir(
 						dirName,
 						(finish: number, total: number) => {
-							option && option.showLoading && loadingPage(true, finish / total, '加载资源');
+							option &&
+								option.showLoading &&
+								loadingPage(true, loadingLmtD + (finish / total) * (loadingLmtU - loadingLmtD), '加载资源');
 						},
 						(err, res: cc.Asset[]) => {
 							option && option.closeLoadingOnFinish && loadingPage(false, 100, '');
