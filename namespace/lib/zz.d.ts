@@ -2082,7 +2082,7 @@ declare namespace zz {
         /**回调函数 */
         fn: Function;
         /**回调函数参数 */
-        args: any[];
+        args?: any[];
     }
     interface UIArgs {
         /**ui名称;即uiClass名称; */

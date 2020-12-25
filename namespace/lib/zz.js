@@ -5438,7 +5438,7 @@ var zz;
             if (widget)
                 widget.updateAlignment();
             var cb = uiArgs.callbackArgs;
-            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call.apply(_a, __spreadArrays([uiArgs.caller], cb.args));
+            (_a = cb === null || cb === void 0 ? void 0 : cb.fn) === null || _a === void 0 ? void 0 : _a.call.apply(_a, __spreadArrays([uiArgs.caller], (cb.args || [])));
         };
         UIMgr.prototype.getUIBundle = function (uiName) {
             return __awaiter(this, void 0, void 0, function () {

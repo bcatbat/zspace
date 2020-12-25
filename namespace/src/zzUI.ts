@@ -29,7 +29,7 @@ namespace zz {
 		/**回调函数 */
 		fn: Function;
 		/**回调函数参数 */
-		args: any[];
+		args?: any[];
 	}
 	interface UIArgs {
 		/**ui名称;即uiClass名称; */
@@ -181,7 +181,7 @@ namespace zz {
 			let widget = ui.node.getComponent(cc.Widget);
 			if (widget) widget.updateAlignment();
 			let cb = uiArgs.callbackArgs;
-			cb?.fn?.call(uiArgs.caller, ...cb.args);
+			cb?.fn?.call(uiArgs.caller, ...(cb.args || []));
 		}
 		private async getUIBundle(uiName: string) {
 			let path = this.pathMap.get(uiName);
