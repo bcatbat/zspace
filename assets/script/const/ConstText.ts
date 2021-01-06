@@ -1,0 +1,20 @@
+//TODO i18n
+export const ConstText = {
+	t_1: '这是一行测试文字',
+	loading_table: '加载配置表格',
+	loading_entity: '加载游戏内物品',
+	loading_preload: '预载界面',
+	notImplement1: '功能正在开发中，敬请期待...',
+	notImplement2: '该功能暂不支持...',
+	powerGet: '获得精力x',
+	powerUse: '消耗精力x',
+	buffName1: '产出增加',
+	courseUnlock: '解锁课程',
+	bookSrc1: '    积累获得',
+	bookSrc2: '考试中有概率获得',
+	bookSrc3: '评优中有概率获得',
+	bookSrc4: '任务奖励',
+	selectionRoundSuccess: 'PK胜利^_^ 获奖概率+',
+	selectionRoundFail: 'PK失败了>_<',
+	selectionMaxBuff: '获奖概率已提升至最高',
+};

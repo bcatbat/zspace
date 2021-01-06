@@ -1,0 +1,16 @@
+export enum ModelTag {
+	activity = 'activity',
+	book = 'book',
+	buff = 'buff',
+	exam = 'exam',
+	global = 'global',
+	grade = 'grade',
+	honor = 'honor',
+	mission = 'mission',
+	point = 'point',
+	power = 'power',
+	selection = 'selection',
+	study = 'study',
+	task = 'task',
+	guide = 'guide',
+}

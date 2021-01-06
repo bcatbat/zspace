@@ -1,3 +1,82 @@
 # zspace
 
 a simple framework for cocos creator.
+
+## assets
+
+-   bundle
+    -   audio
+        -   _audio files loaded by audio manager_
+    -   config
+        -   _table files(.json) loaded by table manager_
+    -   ui
+        -   _'ui' prefabs_
+-   scene
+    -   GameEntry
+        -   _the only scene_
+    -   UICommon
+        -   _common ui, e.g. loading page, tips_
+-   script
+    -   const _const types, values_
+        -   Config.ts _global config_
+        -   EventType.ts
+        -   ModleTag.ts _used by model_
+        -   SoundEnum.ts
+        -   StoKey.ts
+        -   UIParams.ts _UIEnum and UILayerTable used by ui manager_
+    -   guide
+        -   _guide model_
+    -   kit
+        -   _some tool kits_
+    -   lib
+        -   behaviourTree
+        -   event
+            -   _event manager_
+        -   extensions
+            -   _extension modules_
+        -   log
+        -   nodePool
+            -   _node pool may be faster_
+        -   procedure
+            -   _procedure manager_
+        -   res
+            -   _resources manager_
+        -   scene
+            -   _scene manager._
+        -   sound
+            -   _sound manager_ _bullshit_
+        -   storage
+            -   _local storage helper_
+        -   structures
+            -   _typical data structure_
+        -   table
+            -   _table manager_
+        -   timer
+            -   _timer based on ccComponent_
+        -   type
+            -   _value type convertor_
+        -   ui
+            -   _ui base and ui manager_
+        -   utils
+            -   _util/helper/tool functions_
+    -   manager
+        -   _manager helper modules_
+    -   misc
+    -   model
+        -   _data models_
+    -   procedure
+        -   _game procedure instance_
+    -   sdk
+        -   _maybe you can implement your sdk here_
+    -   table
+        -   _table base and table manager_
+    -   ui
+        -   _views_
+    -   GameEntry.ts
+        -   _main_
+    -   global.d.ts
+        -   _dts for user extensions_
+    -   index.ts
+        -   _re-export for all discrete modules_
+    -   zz.ts
+        -   _a global helper entry, CANNOT imported by inner scripts_
